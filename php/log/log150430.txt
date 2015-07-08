@@ -1,0 +1,16 @@
+11:04:35  ::1            SESIóN INICIADA              ::1
+11:16:36  ::1            SESIóN INICIADA              ::1
+11:23:09  CJGEAGDGEI     CONTRASEÑA GENERADA          CJGEAGDGEI
+11:26:48  ::1            SESIóN INICIADA              ::1
+11:37:35  ::1            INTENTO SESIóN FALLIDO       ::1
+11:37:48  ::1            INTENTO SESIóN FALLIDO       ::1
+11:37:51  ::1            INTENTO SESIóN FALLIDO       ::1
+11:37:52  ::1            INTENTO SESIóN FALLIDO       ::1
+11:37:54  ::1            INTENTO SESIóN FALLIDO       ::1
+11:39:23  ::1            SESIóN INICIADA              ::1
+11:43:51  ::1            SESIóN INICIADA              ::1
+11:46:18  ::1            INTENTO SESIóN FALLIDO       ::1
+11:46:24  ::1            SESIóN INICIADA              ::1
+18:36:01  ::1            SESIóN INICIADA              ::1
+18:36:25  ::1            SESIóN INICIADA              ::1
+18:36:37  ::1            SESIóN INICIADA              ::1

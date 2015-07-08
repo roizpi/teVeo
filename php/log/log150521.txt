@@ -1,0 +1,17 @@
+17:49:40  ::1            INTENTO SESIóN FALLIDO       ::1
+17:52:07  ::1            INTENTO SESIóN FALLIDO       ::1
+17:52:08  ::1            INTENTO SESIóN FALLIDO       ::1
+17:52:09  ::1            INTENTO SESIóN FALLIDO       ::1
+17:52:15  ::1            INTENTO SESIóN FALLIDO       ::1
+17:57:57  ::1            INTENTO SESIóN FALLIDO       ::1
+17:58:52  ::1            INTENTO SESIóN FALLIDO       ::1
+17:58:53  ::1            INTENTO SESIóN FALLIDO       ::1
+17:58:55  ::1            INTENTO SESIóN FALLIDO       ::1
+17:58:56  ::1            INTENTO SESIóN FALLIDO       ::1
+18:43:07  FFJJJCAHGH     CONTRASEÑA GENERADA          FFJJJCAHGH
+19:38:02  ::1            INTENTO SESIóN FALLIDO       ::1
+21:16:30  ::1            INTENTO SESIóN FALLIDO       ::1
+21:16:44  ::1            INTENTO SESIóN FALLIDO       ::1
+21:16:51  ::1            SESIóN INICIADA              ::1
+21:21:28  ::1            SESIóN INICIADA              ::1
+22:05:10  ::1            SESIóN INICIADA              ::1

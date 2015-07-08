@@ -1,0 +1,20 @@
+10:09:30  ::1            SESIóN INICIADA              ::1
+11:37:09  DBFGHJCAIH     CONTRASEÑA GENERADA          DBFGHJCAIH
+11:38:04  ::1            INTENTO SESIóN FALLIDO       ::1
+11:38:08  ::1            SESIóN INICIADA              ::1
+17:43:02  ::1            SESIóN INICIADA              ::1
+17:46:22  ::1            SESIóN INICIADA              ::1
+17:50:15  BDCGDCAIHB     CONTRASEÑA GENERADA          BDCGDCAIHB
+18:19:54  ::1            INTENTO SESIóN FALLIDO       ::1
+18:20:35  ::1            SESIóN INICIADA              ::1
+18:36:38  ABJHAGCICJ     CONTRASEÑA GENERADA          ABJHAGCICJ
+18:37:08  ::1            SESIóN INICIADA              ::1
+18:57:16  EHCCDJAJAG     CONTRASEÑA GENERADA          EHCCDJAJAG
+18:57:54  ::1            INTENTO SESIóN FALLIDO       ::1
+18:58:00  ::1            INTENTO SESIóN FALLIDO       ::1
+18:58:08  ::1            INTENTO SESIóN FALLIDO       ::1
+18:58:19  ::1            SESIóN INICIADA              ::1
+19:06:07  GIJAIIEBBC     CONTRASEÑA GENERADA          GIJAIIEBBC
+19:07:17  ::1            SESIóN INICIADA              ::1
+19:14:12  JBEBACFDDA     CONTRASEÑA GENERADA          JBEBACFDDA
+19:14:44  ::1            SESIóN INICIADA              ::1

@@ -1,0 +1,37 @@
+<div data-component="contacts" data-type='main'>
+    <div class="actionList">
+        <ul class="containerItems" data-component="container">
+            <li class="item lineOfDivision template" data-component="contact" data-type='template' data-id>
+                <div class="body">
+                    <div class="dataGrid">
+                        <div class="row">
+                            <div class="column column-7x x-start y-center">
+                                <div class="row">
+                                    <div class="column column-4x x-start y-center">
+                                        <a href="#" class="small cycle" data-action='contactDetail'>
+                                            <img data-component="photo" data-type="img" src="" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="column column-8x x-start y-center">
+                                        <a href="#" class="noWrapText  link" data-action='contactDetail' data-mark data-component="name" data-type="text"></a>
+                                        <span data-component="status" data-type="text"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column column-5x x-center y-center padding10" data-component='id' data-type='hidden'>
+                                <a class="action" data-action="videocall" title="Iniciar Videollamada" href="#"><span class="fa fa-video-camera"></span></a>
+                                <a class="action" data-action="conversation" title="Iniciar Conversación" href="#"><span class="fa fa fa-weixin"></span></a>
+                                <a class="action" data-action="call" title="Iniciar llamada de voz" href="#"><span class="fa fa-phone"></span></a>
+                            </div> 
+                        </div>   
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <form action="" class="searchControl" data-component="searchContacts">
+        <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..."/>
+        <span data-component="microphone"></span>
+        <label for="search"><span class="fa fa-search"></span></label>
+    </form>
+</div>

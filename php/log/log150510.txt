@@ -1,0 +1,7 @@
+14:31:52  SQLSTATE[23000]: INTEGRITY CONSTRAINT VIOLATION: 1048 COLUMN 'FECHANAC' CANNOT BE NULLERROR_REGISTRO                SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'fechaNac' cannot be null
+14:38:43  AAAACDGBAE     CONTRASEÑA GENERADA          AAAACDGBAE
+14:39:07  ::1            INTENTO SESIóN FALLIDO       ::1
+14:39:38  ::1            SESIóN INICIADA              ::1
+17:28:07  ::1            SESIóN INICIADA              ::1
+18:38:13  ::1            SESIóN INICIADA              ::1
+19:04:45  ::1            SESIóN INICIADA              ::1

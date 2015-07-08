@@ -1,0 +1,64 @@
+<div class='viewContainer' data-component='settings' data-type='main'>
+    <h2 class="view-tittle">Preferencias</h2>
+    <h3 class="help  y-normal" data-component="help">Busca y edita la preferencia deseada</h3>
+    <section class="settings" data-component='container'>
+        <!-- Apariencia -->
+        <article class='ficha  animateCard' data-component='apariencia' data-preference>
+            <header class="head">
+                <span class="fa fa-paint-brush"></span>
+            </header>
+            <div class="body">
+                <div class="desc">
+                    <h2>Apariencia</h2>
+                    <p>Personaliza la apariencia de <span class="fa fa-eye"></span>TeVeo! con el tema que más encaje con tu personalidad y gustos</p>
+                    <a href="#" class="btn  btn-verySmall btn-edit   btn-roundedCorner  btn-textCapitalize  btn-styleItalic" data-action="edit"><span class="fa fa-edit"></span></a>
+                    <a href="#" class="btn  btn-verySmall btn-cancel btn-roundedCorner  btn-textCapitalize  btn-styleItalic" data-action="cancel"><span class="fa fa-close"></span></a>
+                    <a href="#" class="btn  btn-verySmall btn-save   btn-roundedCorner  btn-textCapitalize  btn-styleItalic" data-action="save"><span class="fa fa-save"></span></a>
+                </div>
+                <div class="optional">
+                    <h2>Temas</h2>
+                    <div class="flexContainer" data-component='themes'>
+                        <figure class="thumbnail template" data-theme data-component='theme' data-type='template'>
+                            <div data-component='thumbnail' data-type='background'></div>
+                            <figcaption data-component='alias' data-type='text'></figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Tono de llamada -->
+        <article class='ficha  animateCard' data-component='callSound' data-preference>
+            <header class="head">
+                <span class="fa fa-bell"></span>
+            </header>
+            <div class="body">
+                <div class="desc">
+                    <h2>Tono de llamada</h2>
+                    <p>Eliga el tono con el que quiere que se le avise cuando reciba una llamada</p>
+                    <a href="#" class="btn  btn-verySmall btn-edit   btn-roundedCorner  btn-textCapitalize  btn-styleItalic" data-action="edit"><span class="fa fa-edit"></span></a>
+                    <a href="#" class="btn  btn-verySmall btn-cancel btn-roundedCorner  btn-textCapitalize  btn-styleItalic" data-action="cancel"><span class="fa fa-close"></span></a>
+                    <a href="#" class="btn  btn-verySmall btn-save   btn-roundedCorner  btn-textCapitalize  btn-styleItalic" data-action="save"><span class="fa fa-save"></span></a>
+                </div>
+                <div class="optional">
+                    <h2>Tonos</h2>
+                    <div class="content">
+                        <div data-component="soundCallList" class="select">
+                            <div class="currentItem" data-component="currentSound">Ring08</div>
+                            <a href="#" class="desplegar" data-action="down"><span class="fa fa-angle-down"></span></a>
+                            <div class="options" data-component="options">
+                                <div class="option" data-component="option" data-type="template">
+                                    <span data-component='soundName' data-type='text'></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" data-component="soundCallActions">
+                            <a href="#" data-action="playSound" class="btn btn-large btn-action  type1">Escuchar</a>
+                            <a href="#" data-action="saveSound" class="btn btn-large btn-action  type1">Guardar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+        
+    </section>
+</div>

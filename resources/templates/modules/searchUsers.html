@@ -1,0 +1,45 @@
+<div class="viewContainer" data-component="searchs" data-type='main'>
+    <!-- Parcial para Buscar Usuarios -->
+    <h2 class="view-tittle">Buscar Usuarios</h2>
+    <div class="containerSearchUsers"  data-component="container">
+        <h3 class="help  y-normal" data-component="help">Utilice la opción sugerir usuarios para conocer gente de tu ciudad</h3>
+        <div class="actions">
+            <form action="#" class="searchControl medium" data-component="searchForm">
+                <input type="search" role="search" name="search" id="searchUsers" placeholder="introduce nick..." autofocus/>
+                <span data-component="microphone" class="fa"></span>
+                <label for="searchUsers"><span class="fa fa-search"></span></label>
+            </form>
+            <a href="#" data-action="sugerirUsuarios" title="Sugerir usuarios"   class="btn  btn-large  btn-action  invert">Sugerir Usuarios</a>
+            <a href="#" data-action="busquedaAvanzada" title="Búsqueda Avanzada" class="btn  btn-veryLarge  btn-action  invert">Búsqueda Avanzada</a>
+        </div>
+        <div class="sugerencias" data-component="usuariosSugeridos">
+            <figure class="user template" data-component="user" data-type="template">
+                <img data-component="photo" data-type="img" src="" alt=""/>
+                <figcaption data-mark data-component="name" data-type="text"></figcaption>
+                <a href="#" data-component="id" data-type="hidden" data-action="toAskForFriendship" class="enviarSolicitud"><span class="fa fa-plus-circle fa-4x"></span><br>Agregar a Contactos</a>
+            </figure>
+        </div>
+        <div class="contentToAskForFriendship  template" data-component="ToAskForFriendship" data-type="template">
+            <div class="content" data-component="content" data-type="template">
+                <div class="column">
+                    <img src="" alt="" data-component="photo" data-type="img" src="" />
+                </div>
+                <div class="column">
+                    <ul class="dataList">
+                        <li><span class="fa fa-user"></span><span data-component="name" data-type="text"></span></li>
+                        <li><span class="fa fa-user"></span><span data-component="age" data-type="text"></span></li>
+                        <li><span class="fa fa-map-marker"></span><span data-component="location" data-type="text"></span></li>
+                    </ul>
+                    <h3 class="help y-normal" data-component="help" data-type="text"></h3>
+                    <form action="#" method="post">
+                        <textarea rows="3" class="message" data-component="textarea" data-type="text"></textarea>
+                        <div class="actions" data-component="id" data-type="hidden" >
+                            <button class="btn btn-normal  btn-action" data-action='sendApplication'>Enviar</button>
+                            <button class="btn btn-normal  btn-action" data-action='cancel'>Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

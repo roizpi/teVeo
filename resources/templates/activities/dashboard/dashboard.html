@@ -1,0 +1,125 @@
+    <header role="heading" id="header">
+
+        <div class="navIcon" id="navIcon" >
+            <span class="fa fa-close fa-2x"></span>
+        </div>
+        <div class="logo">
+            <a href="index.html"><span  class="fa fa-eye"></span>TeVeo!</a>
+        </div>
+        <!-- Barra de Tareas -->
+        <ul data-actionsMenu class="tasksList" role="menu" id="task">
+            <!-- Inicio -->
+            <li class="task" role="listitem" data-action="goHome">
+                <a href="#" title="Volver a Inicio">
+                    <span class="fa  fa-home"></span>
+                </a>
+            </li>
+            <!--Configuracion -->
+            <li class="task" role="listitem" data-action="preferences">
+                <a href="#" title="Preferencias">
+                    <span class="fa  fa-gear"></span>
+                </a>
+            </li>
+            <!--Agregar Contactos -->
+            <li class="task" role="listitem" data-action="searchUsers">
+                <a href="#" title="Buscar Amigos">
+                    <span class="fa  fa-search-plus"></span>
+                </a>
+            </li>
+            <!-- Solicitudes de Amistad -->
+            <li class="task" role="listitem" data-action="viewApplications">
+                <a href="#" title="Ver Solicitudes de amistad">
+                    <span class="fa fa-user-plus"></span>
+                    <span class="badge" data-applications></span>
+                </a>
+            </li>
+            <!-- Notificaciones -->
+            <li class="task" role="listitem" data-action="showNotifications">
+                <a href="#" title="Ver Notificaciones">
+                    <span class="fa fa-bell"></span>
+                    <span class="badge" data-notifications></span>
+                </a>
+            </li>
+            <!-- Perfil -->
+            <li class="task" role="listitem">
+                <figure class="inline">
+                    <a href="#" class="small cycle">
+                        <img data-userphoto src="" alt="">
+                    </a>
+                    <figcaption data-username></figcaption>
+                </figure>
+            </li>
+            <!-- Logout -->
+            <li class="task" role="listitem">
+                <a href="#" title="Salir" data-action='logout' class="logout">Logout</a>
+            </li>            
+        </ul>
+
+    </header>
+        
+    <main id="main" class="dashboard  wallpaper">
+        
+        <div class="paneles">
+            
+            <aside id="panelMenu" class="panel-menu  active">
+                <img src="" class="userImage" data-userphoto alt="Imagen usuario"/>
+                <ul role="menu" class="actions" id="actions">
+                    <li role="menuitem">
+                        <a href="#" data-action="showAllContacts">
+                            <span class="fa fa-user fa-3x"></span>
+                            <br>
+                            Contactos
+                        </a> 
+                    </li>
+                    <li role="menuitem">
+                        <a href="#" data-action="showCalls">
+                            <span class="fa fa-phone  fa-3x"></span>
+                            <br>
+                            Llamadas
+                        </a>
+                    </li>
+                    <li role="menuitem">
+                        <a href="#" data-action="showGroups">
+                            <span class="fa fa-users  fa-3x"></span>
+                            <br>
+                            Grupos
+                        </a>
+                    </li>
+                </ul>
+                <div id="viewPanelMenu">
+                    <!-- Este contenido es dinámico -->  
+                </div>
+            </aside>
+            <section id="panelAction" class="panel-action">
+                <div id="viewPanelAction">
+                    <!-- Este contenido es dinámico-->   
+                </div>  
+            </section>
+
+        </div>
+    </main>
+        <!-- Dálogo de Alertas -->
+        <div class="padding20" role="alertdialog" data-role="dialog" data-overlay="true" data-overlay-color="overlay" data-width="800px" id="alert" data-close-button="true">
+            <h1 data-title></h1>
+            <p data-text></p>
+            <span class="dialog-close-button"></span>
+        </div>
+        <!-- Dálogo de Confirmación -->
+        <div class="padding20" role="dialog" data-role="dialog" data-overlay="true" data-overlay-color="overlay" data-width="800px" id="confirm">
+            <h1 data-title></h1>
+            <div data-content>
+                <div class="dataGrid">
+                    <div class="row">
+                        <div class="column column-12x x-center y-center">
+                            <p data-text></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column column-12x x-end y-center">
+                            <a href="#" data-action="success" class="button success">Aceptar</a>
+                            <a href="#" data-action="cancel" class="button danger">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>

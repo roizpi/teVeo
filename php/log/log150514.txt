@@ -1,0 +1,9 @@
+13:21:44  ::1            SESIóN INICIADA              ::1
+17:53:45  ::1            SESIóN INICIADA              ::1
+18:34:48  ::1            INTENTO SESIóN FALLIDO       ::1
+18:35:00  ::1            SESIóN INICIADA              ::1
+21:02:00  ::1            INTENTO SESIóN FALLIDO       ::1
+21:02:05  ::1            INTENTO SESIóN FALLIDO       ::1
+21:02:52  ::1            INTENTO SESIóN FALLIDO       ::1
+21:02:52  ::1            INTENTO SESIóN FALLIDO       ::1
+21:02:55  ::1            SESIóN INICIADA              ::1

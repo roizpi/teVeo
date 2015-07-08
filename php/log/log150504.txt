@@ -1,0 +1,27 @@
+09:01:46  ::1            SESIóN INICIADA              ::1
+09:03:55  ::1            SESIóN INICIADA              ::1
+09:06:26  ::1            SESIóN INICIADA              ::1
+09:06:26  ::1            SESIóN INICIADA              ::1
+09:07:05  ::1            SESIóN INICIADA              ::1
+09:12:14  ::1            INTENTO SESIóN FALLIDO       ::1
+09:12:31  ::1            INTENTO SESIóN FALLIDO       ::1
+09:12:42  ::1            INTENTO SESIóN FALLIDO       ::1
+09:12:56  ::1            SESIóN INICIADA              ::1
+09:15:01  ::1            SESIóN INICIADA              ::1
+18:59:30  ::1            SESIóN INICIADA              ::1
+18:59:52  ::1            SESIóN INICIADA              ::1
+20:08:46  ::1            SESIóN INICIADA              ::1
+20:17:07  ::1            SESIóN INICIADA              ::1
+20:17:46  ::1            SESIóN INICIADA              ::1
+20:22:07  ::1            SESIóN INICIADA              ::1
+20:26:25  ::1            SESIóN INICIADA              ::1
+20:29:10  ::1            SESIóN INICIADA              ::1
+20:34:52  ::1            SESIóN INICIADA              ::1
+20:39:46  ::1            SESIóN INICIADA              ::1
+20:43:23  ::1            SESIóN INICIADA              ::1
+20:46:42  ::1            SESIóN INICIADA              ::1
+20:48:55  ::1            SESIóN INICIADA              ::1
+20:52:00  ::1            SESIóN INICIADA              ::1
+20:56:38  ::1            SESIóN INICIADA              ::1
+21:00:19  ::1            SESIóN INICIADA              ::1
+21:04:22  ::1            SESIóN INICIADA              ::1

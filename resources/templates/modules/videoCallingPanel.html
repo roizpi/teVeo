@@ -1,0 +1,81 @@
+<div data-template>
+    <h2 class="panel-action-tittle">Videollamada</h2>
+    <div class="videoCallContainer">
+        <div class="videoCall">
+            <header class="header contentInline">
+                <h2 data-component="remoteUserName"></h2>
+                <h3>
+                    <span data-component="currentTime"></span>
+                </h3>
+            </header>
+            <div class="mediaElements" data-component="mediaContainer">
+                <div class="logo">
+                    <span class="fa fa-eye"></span>TeVeo!
+                </div>
+                <video data-component="videoreceptor" class="receptor" muted></video>
+                <a class="expand" data-component="expand" href="#"><span class="fa fa-expand fa-2x"></span></a>
+                <video data-component="videoemisor" class="emisor" muted></video>
+            </div>
+            <footer class="footer">
+                <p class="currentLocation">
+                    <strong>
+                        <span class="fa fa-map-marker"></span>&nbsp;
+                        <span data-component="remoteUserPosition"></span>
+                    </strong>
+                </p>
+                <div class="actions" data-component="actions">
+                    <a href="#" class="btn btn--roundedCorner btn-disabled btn-verySmall btn-hangUp" title="Colgar" data-action="endCall">
+                        <span class="fa fa-phone"></span>
+                    </a>
+                    <div role="button" class="btn btn--roundedCorner btn-disabled btn-verySmall btn-success btn-upload">
+                        <input data-action="sendFile" type="file" name="foto" id="inputFile"/>
+                        <p><span class="fa fa-plus"></span></p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <div class="chat">
+            <header class="header contentInline">
+                <!-- Título de la Conversación -->
+                <h2 data-component="conversationName"></h2>
+                <!--Buscador-->
+                <form class="search-form" action="#" method="GET" data-action='searchMessage'>
+                    <div class="input-group">
+                        <input type="search" class="form-control" placeholder="Search" name="query" autocomplete="off"> 
+                        <span class="input-group-btn">
+                            <button class="submit"><span class="fa fa-search"></span></button>
+                        </span>
+                    </div>
+                </form>
+            </header>
+            <div class="conversations">
+                <ul class="messages" data-component="conversation" dropzone="copy">
+                    <li class="message  template " data-subtemplate="message">
+                        <div class="grid">
+                            <div class="row">
+                                <div class="item">
+                                    <img class="authorImg" data-element data-name="photo" data-type="img" src="" alt="">
+                                </div>
+                                <div class="item authorName"   data-element data-name="name" data-type="text"></div>
+                                <div class="item messageDate"  data-element data-name="creation" data-type="text"></div>
+                                <div class="item">
+                                    <span class="fa fa-eye"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="item authorMsg" data-mark data-element data-name="text" data-type="html"></div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <form class="sendMessage" data-component="formChat" action="#" method="post">
+                <div class="textControl">
+                    <input type="text"  name="message" id="message" data-message required autocomplete="off" placeholder="escribe un mensaje"/>
+                    <label for="message"><span class="fa fa-paper-plane"></span></label>
+                </div>
+                <input type="submit" value="Enviar" disabled>
+            </form>
+        </div>
+    </div>
+</div>

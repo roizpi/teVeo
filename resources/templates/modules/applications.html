@@ -1,0 +1,45 @@
+﻿<div data-template>
+    <h2 class="panel-action-tittle">Solicitudes de Amistad Pendientes</h2>
+    <article class="applicationsContainer">
+        <header>
+            <h3>Solicitudes de amistad (<span data-component="countApplications"></span> )</h3>
+            <div class="actions" data-component="toOrder">
+                <a href="#" class="active" data-action="shortDesc">Más Recientes</a>
+                <a href="#" data-action="shortAsc">Más Antiguas</a>
+            </div>
+            <!--Buscador-->
+            <form class="search-form" action="#" method="GET" data-component="searchApplications">
+                <div class="input-group">
+                    <input type="search" class="form-control" placeholder="nombre usuario" name="query" autocomplete="off">
+                    <span class="input-group-btn">
+                        <button class="submit"><span class="fa fa-search"></span></button>
+                    </span>
+                </div>
+            </form>
+        </header>
+        <div class="applications" data-component="container">
+            <div class="application  mix  template" data-application data-subtemplate="application">
+                <div class="applicationContent">
+                    <figure>
+                        <img data-element data-name="photo" data-type="img" src="" alt=""/>
+                        <figcaption>
+                            <span data-element data-name="name" data-type="text"></span><br>
+                            <span data-element data-name="timestamp" data-type="text"></span>
+                            <p data-element data-name="message" data-type="text"></p>
+                        </figcaption>
+                    </figure>
+                    <div class="backFace">
+                        <p>
+                            <span data-element data-name="name" data-type="text"></span>&nbsp;quiere ser tu amigo</br>
+                            ¿Le agregamos a tu lista de contactos?
+                        </p>
+                        <div class="actions" data-element data-name="idSolicitador" data-type="hidden">
+                            <a href="#"  data-action="addContact">Agregar</a>
+                            <a href="#"  data-action="rejectApplication">Rechazar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>

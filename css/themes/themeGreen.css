@@ -1,0 +1,455 @@
+@charset 'utf-8';
+
+/*
+    
+color claro : #7CE96C
+color osucro : #B8C53C
+rgba(255,255,255,0.6);
+*/
+
+/*
+
+  Barra de Scroll (Sólo para navegadores webkit)
+  =============================================
+
+*/
+
+/* Carril*/
+
+::-webkit-scrollbar-track{
+  box-shadow:#A8152A 0px 0px 6px inset;
+  background-color:#A8152A;
+}
+
+::scrollbar-track{
+  box-shadow:#A8152A 0px 0px 6px inset;
+  background-color:#A8152A;
+}
+
+/* Anchura*/
+
+::-webkit-scrollbar{
+  width:15px;
+
+}
+
+::scrollbar{
+  width:15px;
+
+}
+/* La Barra*/
+
+::-webkit-scrollbar-thumb{
+  border-radius:10px;
+  box-shadow:#fff 0px 0px 6px inset;
+  background-color:#fff;
+}
+
+::scrollbar-thumb{
+  border-radius:10px;
+  box-shadow:#fff 0px 0px 6px inset;
+  background-color:#fff;
+}
+
+
+#header{
+    background-color: #7CE96C;
+}
+
+#header .logo a:hover{
+    color:#7CE96C;
+}
+
+/*
+    
+    Barra de Tareas
+    ===========================
+
+*/
+
+#header .tasks li > a{
+    background-color: #B8C53C;
+}
+
+#header .tasks li > a:hover,
+#header .tasks li.active > a{
+    color: #B8C53C;
+}
+
+
+#nav .menubar > li a{
+    color:#A8152A;
+}
+
+#nav .menubar > li a:hover{
+    background-color:#A8152A;
+}
+
+#main .panel-menu{
+    background-color: #7CE96C;
+}
+
+#main .panel-menu .actions a{
+    background-color: #B8C53C;
+}
+
+#main .panel-menu .actions a:hover,
+#main .panel-menu .actions a.active{
+    color:#B8C53C;
+}
+
+#main .panel-menu .contacts .contact .operations .operation{
+    background-color: #B8C53C;
+}
+
+.btn-action.type1{
+    background-color: #7CE96C;
+}
+
+.btn-action.type1:hover,
+.btn-action.type1.active{
+    border-color:#7CE96C;
+    color:#7CE96C;
+}
+
+.btn-action.type2{
+    background-color:#B8C53C;
+}
+
+.btn-action.type2:hover,
+.btn-action.type2.active{
+    border-color: #B8C53C;
+    color: #B8C53C;
+}
+
+/*
+    Listas
+    ======================
+*/
+
+.dataList li:nth-child(even){
+    background-color: #B8C53C;
+}
+
+.dataList li:nth-child(odd){
+    background-color: #7CE96C;
+}
+
+
+/*
+
+    Solicitudes Pendientes
+    ================================
+
+*/
+/*color claro : #7CE96C
+color osucro : #B8C53C*/
+
+.applicationsContainer header{
+    background-color: rgba(184, 197, 60, 0.7);
+    box-shadow: #B8C53C 0px 0px 10px 5px;
+}
+
+.applicationsContainer .actions a{
+    color:#B8C53C;
+}
+
+.applicationsContainer .actions a:hover,
+.applicationsContainer .actions a.active{
+    background-color:#B8C53C;
+}
+
+.applicationsContainer .applications .application figcaption span{
+    color: #7CE96C;
+}
+
+.applicationsContainer .applications .application .backFace{
+    color: #7CE96C;
+}
+
+.applicationsContainer .applications .application .backFace .actions > *{
+    background-color: #7CE96C;
+}
+
+.applicationsContainer .applications .application .backFace .actions > *:hover{
+    box-shadow: #7CE96C 0px 0px 10px 3px;
+}
+
+/*
+    Notificaciones Pendientes
+*/
+
+.pendingNotifications header{
+    background-color: rgba(184, 197, 60, 0.7);
+    box-shadow: #B8C53C 0px 0px 10px 5px;
+}
+
+.pendingNotifications .actions a{
+    color: #B8C53C;
+}
+
+.pendingNotifications .actions a:hover,
+.pendingNotifications .actions a.active{
+    background-color: #B8C53C;
+}
+
+/*
+
+    Preferencias
+    ===============
+
+*/
+
+.settings header{
+    background-color: rgba(184, 197, 60, 0.7);
+    box-shadow: #B8C53C 0px 0px 10px 5px;
+}
+
+.containerSettings .setting > h4{
+    color:#B8C53C;
+    border-bottom-color: #B8C53C;
+}
+
+/*
+    Estilo para listas
+    =====================
+*/
+
+.list-group .itemGroup .header.type1{
+    background-color: #7CE96C;
+}
+
+.list-group .itemGroup .header.type2{
+    background-color: #B8C53C;
+}
+
+.list-group .itemGroup .list .item .data{
+    color: #7CE96C;
+}
+
+
+.list .item .operations .operation,
+.list-group .itemGroup .header .operations .operation{
+    background-color: #B8C53C;
+}
+.list-group .itemGroup .header .operations .operation.active,
+.list-group .itemGroup .header .operations .operation:hover,
+.list .item .operations .operation.active,
+.list .item .operations .operation:hover{
+    color:#B8C53C;
+}
+
+.list .item:not(:last-child){
+    border-color:#B8C53C;
+}
+
+
+
+.searchControl{
+    background-color: #B8C53C;
+}
+
+#main .panel-action .panel-action-tittle{
+    background-color: #B8C53C;
+    border-top: 1px solid #7CE96C;
+}
+
+#main .panel-action .containerSearchUsers .sugerencias .user{
+    background-color: rgba(255,255,255,0.6);
+}
+
+.containerSearchUsers h3{
+    background-color: rgba(148, 212, 135, 0.46);
+    border-left-color:#B8C53C;
+}
+
+#main .panel-action .containerSearchUsers .sugerencias .user figcaption{
+    color: #7CE96C;
+}
+
+#main .panel-action .containerSearchUsers .sugerencias .user figcaption mark{
+    background-color: #7CE96C;
+}
+
+#main .panel-action .containerSearchUsers .sugerencias .user .enviarSolicitud{
+    background-color: rgba(148, 212, 135, 0.7);
+}
+
+.contentToAskForFriendship .content .data li:nth-child(even){
+    background-color: #B8C53C;
+}
+
+.contentToAskForFriendship .content .data li:nth-child(odd){
+    background-color: #7CE96C;
+}
+
+.contentToAskForFriendship .content p{
+    border-left-color: #B8C53C;
+    background-color:rgba(148, 212, 135, 0.66);
+}
+
+.contentToAskForFriendship .content form .message{
+    border-color:#7CE96C;
+}
+
+.contentToAskForFriendship .content form .message:focus{
+    box-shadow:#7CE96C 0px 0px 10px inset;
+}
+
+.callAlert{
+     background-color: #B8C53C;
+}
+
+.callAlert.active{
+    box-shadow: #B8C53C 0px 0px 10px 6px;
+}
+
+.videoCallContainer .videoCall .receptor,
+.callContainer .call .receptor{
+    border-color: rgba(148, 212, 135, 0.90);
+}
+
+.videoCallContainer .videoCall .receptor + .expand{
+    color: #7CE96C;
+}
+
+.videoCallContainer .videoCall .receptor + .expand:hover{
+    background-color: rgba(148, 212, 135, 0.5);
+}
+
+.videoCallContainer .chat .messages{
+    background-color: rgba(148, 212, 135, 0.78);
+}
+
+.videoCallContainer .chat .messages .message{
+    background-color: rgba(205, 212, 135, 1);
+    background:linear-gradient(to bottom,rgba(255,255,255,.3) 0%,rgba(205, 212, 135,1) 45%);  
+}
+
+.videoCallContainer .chat .sendMessage *{
+    color: #7CE96C;
+}
+
+.videoCallContainer .chat .sendMessage .textControl + button{
+    background-color: #7CE96C;
+}
+
+/*
+    Chat
+    =================
+    
+*/
+
+.chat .conversations{
+    background-color: rgba(184, 197, 60, 0.77);
+}
+
+.actionsChat .content{
+    background-color:rgba(184, 197, 60, 0.77);
+}
+
+.chat .messages .message{
+    background-color:rgba(184, 197, 60, 0.8);
+    background:linear-gradient(to bottom,rgba(255,255,255,.3) 0%,rgba(184, 197, 60, 1) 45%);  
+}
+
+.chat .sendMessage *{
+    color: #B8C53C;
+}
+
+.chat .sendMessage .textControl input[type=text]:focus + label > .fa{
+    text-shadow: #B8C53C 0px 0px 7px;
+}
+
+.chat .sendMessage .textControl + input[type=submit]{
+    background-color: #B8C53C;
+}
+
+.chat .sendMessage .textControl + input[type=submit]:hover{
+    background-color: #fff;
+    color: #B8C53C;
+    border: 2px solid #B8C53C;
+}
+
+/*
+
+    Control de Búsqueda 2
+    =========================
+
+*/
+
+.search-form .input-group{
+    background-color: #B8C53C;
+}
+
+.generalActions .btn-action.type1{
+    background-color: #7CE96C;
+}
+
+.generalActions .btn-action.type1:hover,
+.generalActions .btn-action.type1.active{
+    border-color:#7CE96C;
+    color:#7CE96C;
+}
+
+.generalActions .btn-action.type2{
+    background-color:#B8C53C;
+}
+
+.generalActions .btn-action.type2:hover,
+.generalActions .btn-action.type2.active{
+    border-color: #B8C53C;
+    color: #B8C53C;
+}
+
+/*
+    Select
+*/
+
+.select{
+    outline-color: #7CE96C;
+}
+
+.select .currentItem{
+    color: #7CE96C;
+}
+
+.select .currentItem + a{
+    background-color: #7CE96C;
+}
+
+.select .options .option{
+    background-color: #7CE96C;
+}
+
+.select .options .option:hover{
+    color: #7CE96C;
+}
+
+.contactDetail form .desc{
+    border-color:#7CE96C;
+}
+
+.contactDetail form .desc:focus{
+    box-shadow:#7CE96C 0px 0px 10px inset;
+}
+
+/*
+    Mensajes pendientes
+*/
+
+.newMessagesContainer .message header > *{
+    color: #B8C53C;
+}
+
+.newMessagesContainer .message header .userPhoto img{
+    border-color: #B8C53C;
+}
+
+.newMessagesContainer .message .text::first-letter{
+    color:#B8C53C;
+}
+
+.newMessagesContainer .message .date{
+    color: #B8C53C;
+}

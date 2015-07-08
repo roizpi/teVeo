@@ -1,0 +1,66 @@
+<div class="viewContainer" data-template>
+    <h2 class="view-tittle">Detalle contacto</h2>
+    <div data-component="container">
+        <div class="table  contactDetail" data-subtemplate="user">
+            <div class="row">
+                <div class="column" data-element data-name="photo" data-type="background"></div>
+                <div class="column">
+                    <ul class="dataList">
+                        <li>
+                            <span class="fa fa-user"></span>
+                            <span data-element data-name="name" data-type="text"></span>
+                        </li>
+                        <li>
+                            <span class="fa fa-birthday-cake"></span>
+                            <span data-element data-name="birthday" data-type="text"></span>
+                        </li>
+                        <li>
+                            <span class="fa fa-map-marker"></span>
+                            <span data-element data-name="location" data-type="text"></span>
+                        </li>
+                        <li>
+                            <span class="fa fa-user"></span>
+                            <span data-element data-name="mail" data-type="text"></span>
+                        </li>
+                        <li>
+                            <span class="fa fa-phone"></span>
+                            <span data-element data-name="phone" data-type="text"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <ul class="dataList">
+                        <li>
+                            <span class="fa fa-user"></span>Estado actual:&nbsp;
+                            <span data-element data-name="status" data-type="text"></span>
+                        </li>
+                        <li>
+                            <span class="fa fa-map-marker"></span>
+                            <span data-element data-name="currentPosition" data-type="text"></span>
+                        </li>
+                        <li>
+                            <span class="fa fa-comments"></span>Conversaciones:&nbsp;
+                            <span data-element data-name="conversations" data-type="text"></span>
+                        </li>
+                        <li>
+                            <span class="fa fa-phone"></span>Llamadas:&nbsp;
+                            <span data-element data-name="calls" data-type="text"></span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <form>
+                        <label for="desc">Descripción del Contacto</label>
+                        <textarea id="desc" class="desc" rows="3" data-element data-name="desc" data-type="text"></textarea>
+                        <div class="actions" data-component="contactActions" data-element data-name="id" data-type="hidden">
+                            <a href="#" class="btn btn-small btn-action type2" data-action="save">Guardar Cambios</a>
+                            <a href="#" class="btn btn-small btn-action type2" data-action="dropContact">Borrar Contacto</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

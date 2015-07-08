@@ -1,0 +1,54 @@
+<div data-template>
+    <div class="actionList">
+        <ul class="containerItems"  data-component="container">
+            <li class="item separate template" data-subtemplate="call">
+                <div class="head  type2" data-head>
+                    <div class="dataGrid">
+                        <div class="row">
+                            <div class="column column-2x x-center y-center">
+                                <span class="fa  mif-phone-missed"></span>
+                            </div>
+                            <div class="column column-10x x-start y-center">
+                                 <span class="noWrapText" data-element data-name="name" data-type="text"></span>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                <div class="body">
+                    <table>
+                        <caption>Detalle Conversación</caption>
+                        <tr>
+                            <th scope="row">Nombre:</th>
+                            <td data-element data-name="name" data-type="text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Tipo:</th>
+                            <td data-element data-name="type" data-type="text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Usuario:</th>
+                            <td data-element data-name="user" data-type="text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Estado:</th>
+                            <td data-element data-name="status" data-type="text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Fecha:</th>
+                            <td data-element data-name="timestamp" data-type="text"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Duración:</th>
+                            <td data-element data-name="duration" data-type="text"></td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="btn-group" data-component="filters">
+        <a href="#" data-action="seeReceivedCalls" class="btn btn-small btn-action type2">Recibidas</a>
+        <a href="#" data-action="seeDialedCalls" class="btn btn-small btn-action type2">Realizadas</a>
+        <a href="#" data-action="seeRejectedCalls" class="btn btn-small btn-action type2">Rechazadas</a>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+<h2 class="panel-action-tittle">llamada de voz</h2>
+<div class="callContainer">
+    <div class="call">
+        <header class="header contentInline">
+            <h2 data-component="remoteUserName"></h2>
+            <h3><span data-currentTime></span></h3>
+        </header>
+        <div class="mediaElements">
+            <div class="receptor" data-component="remoteUser"></div>
+            <audio data-component="audioreceptor"></audio>
+        </div>
+        <footer class="footer">
+            <p class="currentLocation">
+                <strong>
+                    <span class="fa fa-map-marker"></span>&nbsp;
+                    <span data-component="remoteUserPosition"></span>
+                </strong>
+            </p>
+            <div class="actions" id="CallActions">
+                <a href="#" class="btn btn--roundedCorner btn-disabled btn-verySmall btn-hangUp" title="Colgar" data-action="endCall"><span class="fa fa-phone"></span></a>
+                <div role="button" class="btn btn--roundedCorner btn-disabled btn-verySmall btn-success btn-upload">
+                    <input data-action="sendFile" type="file" name="foto" id="inputFile"/>
+                    <p><span class="fa fa-plus"></span></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div class="chat">
+        <header class="header contentInline">
+            <!-- Título de la Conversación -->
+            <h2 data-component="conversationName"></h2>
+            <!--Buscador-->
+            <form class="search-form" action="#" method="GET" data-action='searchMessage'>
+                <div class="input-group">
+                    <input type="search" class="form-control" placeholder="Search" name="query" autocomplete="off"> 
+                    <span class="input-group-btn">
+                        <button class="submit"><span class="fa fa-search"></span></button>
+                    </span>
+                </div>
+            </form>
+        </header>
+        <div id="conversation" class="conversations" dropzone="copy">
+            <ul class="messages template  templateConversation" >
+                <li class="message  template  templateMessage">
+                    <div class="grid">
+                        <div class="row">
+                            <div class="item">
+                                <img class="authorImg" data-photo src="" alt="">
+                            </div>
+                            <div class="item authorName" data-name></div>
+                            <div class="item messageDate" data-creation></div>
+                            <div class="item">
+                                <span class="fa fa-eye"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item authorMsg" data-mark data-text></div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <form class="sendMessage" id="formChat" data-action="send-message" action="#" method="post">
+            <div class="textControl">
+                <input type="text"  name="message" id="message" data-message required autocomplete="off" placeholder="escribe un mensaje"/>
+                <label for="message"><span class="fa fa-paper-plane"></span></label>
+            </div>
+            <input type="submit" value="Enviar" disabled>
+        </form>
+    </div>
+</div>
