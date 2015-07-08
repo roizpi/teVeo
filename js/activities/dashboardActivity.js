@@ -10,8 +10,12 @@ var DashboardActivity = (function(){
 	}
 
 	DashboardActivity.prototype.run = function() {
-		Alert("Corriendo la Actividad!!!");
+		console.log("Corriendo Actividad");
+		console.log("Estos son los módulos");
+		console.log(this.modules);
 	};
 
+
+	return DashboardActivity;
 
 })();

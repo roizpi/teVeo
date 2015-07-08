@@ -7,12 +7,61 @@ var Notificator = (function(_super,$){
     var defaultImg = "resources/img/logo.png";
     var state;
     var self;
+    //Muestra cuadros de diálogo.
+    var Dialog = (function(){
+
+        var $alert,$confirm;
+
+        function Dialog(){
+
+            $alert = $("#alert").data('dialog');
+            $confirm = $("#confirm").data('dialog');
+
+            $confirm.element.on("click","[data-action]",function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                var action = this.dataset.action;
+                if(action == "success")
+                    typeof($confirm.onSuccess) == "function" && $confirm.onSuccess();
+                else if(action == "cancel")
+                    typeof($confirm.onCancel) == "function" && $confirm.onCancel();
+                $confirm.close();
+            });
+        }
+
+        Dialog.prototype.alert = function(data,callback) {
+            var type = ["success","warning","alert","info"].indexOf(data.level.toLowerCase()) != -1 ? data.level.toLowerCase() : "success";
+            $alert.element.removeClass("success  warning  alert  info").addClass(type);
+            //Establecemos el título de la alerta
+            $alert.element.find("[data-title]").text(data.title);
+            //Establecemos el texto de la alerta.
+            $alert.element.find("[data-text]").text(data.text);
+            //Abrimos la alerta
+            $alert.open();
+        };
+
+        Dialog.prototype.confirm = function(data,success,cancel) {
+            $confirm.onSuccess = success;
+            $confirm.onCancel = cancel;
+            //Establecemos el título de la alerta
+            $confirm.element.find("[data-title]").text(data.title);
+            //Establecemos el texto de la alerta.
+            $confirm.element.find("[data-text]").text(data.text);
+            //Abrimos diálogo de confirmación.
+            $confirm.open();
+        };
+
+        return Dialog;
+        
+    })();
 
     function Notificator(templateManager,webSpeech){
 
         self = this;
         this.templateManager = templateManager;
         this.webSpeech = webSpeech;
+        //Instanciamos un dialogador.
+        //this.prototype.dialog = new Dialog();
         //Eventos del Módulo
         this.eventsModule = {
             "NOT_FOUND_NOTIFICATIONS":[],
@@ -168,49 +217,6 @@ var Notificator = (function(_super,$){
     Notificator.prototype.getNumOfNotifications = function() {
         return pendingNotifications.length;
     };
-
-    //Método para mostrar cuadros de diálogo.
-    Notificator.prototype.dialog = (function(){
-        var $alert,$confirm;
-        $(document).ready(function(){
-            $alert = $("#alert").data('dialog');
-            $confirm = $("#confirm").data('dialog');
-            $confirm.element.on("click","[data-action]",function(e){
-                e.preventDefault();
-                e.stopPropagation();
-                var action = this.dataset.action;
-                if(action == "success")
-                    typeof($confirm.onSuccess) == "function" && $confirm.onSuccess();
-                else if(action == "cancel")
-                    typeof($confirm.onCancel) == "function" && $confirm.onCancel();
-                $confirm.close();
-            })
-        });
-        return{
-            alert:function(data,callback){
-                var type = ["success","warning","alert","info"].indexOf(data.level.toLowerCase()) != -1 ? data.level.toLowerCase() : "success";
-                $alert.element.removeClass("success  warning  alert  info").addClass(type);
-                //Establecemos el título de la alerta
-                $alert.element.find("[data-title]").text(data.title);
-                //Establecemos el texto de la alerta.
-                $alert.element.find("[data-text]").text(data.text);
-                //Abrimos la alerta
-                $alert.open();
-            },
-            confirm:function(data,success,cancel){
-                $confirm.onSuccess = success;
-                $confirm.onCancel = cancel;
-                //Establecemos el título de la alerta
-                $confirm.element.find("[data-title]").text(data.title);
-                //Establecemos el texto de la alerta.
-                $confirm.element.find("[data-text]").text(data.text);
-                //Abrimos diálogo de confirmación.
-                $confirm.open();
-            }
-        }
-    
-    })();
-
     //Permite lanzar una web notification, siempre que el usuario haya dado permiso.
     Notificator.prototype.throwNotification = function(data){
         

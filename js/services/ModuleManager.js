@@ -1,6 +1,7 @@
 
 var ModuleManager = (function(){
 
+    var self;
     //modules
     var modules = {
         
@@ -103,8 +104,9 @@ var ModuleManager = (function(){
     };
 
 
-	function ModuleManager(){
-
+	function ModuleManager(environment){
+        self = this;
+        this.environment = environment;
 	}
 
     /**
@@ -168,6 +170,16 @@ var ModuleManager = (function(){
         
         return o;
     }
+
+
+    //Comprueba si todos los módulos especificados están cargados.
+    var allLoadedModules = function(modulesRequired){
+        return Object.keys(modules).filter(function(module){
+            return modulesRequired.indexOf(module) >= 0;
+        }).map(function(module){
+            return modules[module].loaded;
+        }).indexOf(false) == -1; 
+    }
     
     
     var downloadModules = function(modulesRequired,callback){
@@ -175,12 +187,16 @@ var ModuleManager = (function(){
         	if(modules[modulesRequired[i]]){
         	 	if(!modules[modulesRequired[i]].loaded){
         	 		(function(currentModule){
-		                loadScript(BASE_PATH+currentModule.fileName,function(){
-		                    currentModule.loaded = true;
-		                    Object.keys(modules).map(function(key){
-		                        return modules[key].loaded;
-		                    }).indexOf(false) == -1 && typeof(callback) == "function" && callback(); 
-		                });
+                        var modulePath = self.environment.MODULES_BASE_PATH + currentModule.fileName;
+                        self.environment.loadResource("script",modulePath).done(function(){
+                            currentModule.loaded = true;
+                            console.log("Módulo : " + currentModule.className + " ha sido descargado");
+                            //Si todos los módulos se han cargado pasamos el testigo a la siguiente función.
+                            allLoadedModules(modulesRequired) && typeof(callback) == "function" && callback(); 
+                        }).fail(function(jqxhr, settings, exception){
+                            console.log(exception);
+                            console.error("ERROR al cargar Módulo : " + currentModule.className)
+                        })
 		            })(modules[modulesRequired[i]]);
 		        }
         	}else{
@@ -198,11 +214,14 @@ var ModuleManager = (function(){
     */
 
     //Cargador de Módulos
-    ModuleManager.prototype.loadModules = function(modulesRequired,callback){
+    ModuleManager.prototype.loadModules = function(modulesRequired){
 
+        var deferred = $.Deferred();
     	if (modulesRequired.constructor.toString().match(/array/i)) {
     		//Descargamos los módulos
+            console.log("Descargando Módulos");
     		downloadModules(modulesRequired,function(){
+                console.log("Instanciando módulos...");
                 //instancias a devolver.
     			var instances = {};
                 //recuperamos instacias
@@ -216,11 +235,13 @@ var ModuleManager = (function(){
 	                instances[modulesRequired[i]] = module.instance;
 
     			};
-                //pasamos el testigo a la siguiente función con las instancias de los módulos.
-	            typeof(callback) == "function" && callback(instances);
+                //resolvemos la promise pasando instancias de módulos.
+                deferred.resolve(instances);
         	}); 
 
     	};
+
+        return deferred.promise();
                   
     }
     

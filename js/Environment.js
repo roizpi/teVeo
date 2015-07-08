@@ -85,7 +85,7 @@ var Environment = (function(){
 	 
 		// Use $.ajax() since it is more flexible than $.getScript
 		// Return the jqXHR object so we can chain callbacks
-		return jQuery.ajax( options );
+		return jQuery.ajax( options ).promise();
 	};
 
 	Environment.prototype.getService = function(name) {

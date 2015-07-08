@@ -1,9 +1,10 @@
 var ActivityManager = (function(){
+
+	var self;
 	//Actividades de la aplicación
 	var activities = {
 		
 		DASHBOARD_ACTIVITY:{
-			name:"dashboard",
 			className:"DashboardActivity",
 			file:"dashboardActivity.js",
 			status:"",
@@ -25,15 +26,17 @@ var ActivityManager = (function(){
 				"gui"
 			],
 			views:{
-				main:"dashboard.html",
-				uploadpage:"uploadpage.html",
+				main:"dashboard/dashboard.html",
+				uploadpage:"dashboard/uploadpage.html",
 				error:""
 			}
 		}
 	}
 
+
 	function ActivityManager(environment){
 
+		self = this;
 		this.environment = environment;
 
 
@@ -62,34 +65,40 @@ var ActivityManager = (function(){
 
 	ActivityManager.prototype.startActivity = function(name) {
 			
-			var activity = name ? activities[name] : getPitcherActivity();
-			//Descargar y muestra la pantalla de carga.
-			var uploadpagePath = this.environment.ACTIVITY_VIEWS_BASE_PATH + activity.name + "/" + activity.views.uploadpage;
-			this.environment.loadResource("html",uploadpagePath).done(function(html){
-				console.log(html);
-			});
-			/*//Descarga actividad.
-			var path = this.enviroment.ACTIVITIES_BASE_PATH + activities[name].file;
-			this.enviroment.loadResource(path,function(activity){
-
-				//Descarga interfaz y la muestra.
-
-				//Descarga Módulos.
-
-				//Instacia actividad,inyectándole los módulos y la vista.
-
-				var instance =  new activities[name].className();
-				activities[name].instance = instance;
-				delete window[activities[name].className];
+		var activity = name ? activities[name] : getPitcherActivity();
+		//Descargar y muestra la pantalla de carga.
+		var uploadpagePath = self.environment.ACTIVITY_VIEWS_BASE_PATH + activity.views.uploadpage;
+		self.environment.loadResource("html",uploadpagePath).done(function(uploadpage){
+			//Mostramos la página de carga.
+			var $uploadpage = $(uploadpage);
+			$uploadpage.appendTo("body");
+			
+			var moduleManager = self.environment.getService("MODULE_MANAGER");
+			//Ruta de la actividad.
+			var activityPath = self.environment.ACTIVITIES_BASE_PATH + activity.file;
+			//Ruta de la interfaz de la actividad.
+			var activityInterfacePath = self.environment.ACTIVITY_VIEWS_BASE_PATH + activity.views.main;
+			//Sincronizamos la descarga de la actividad, la interfaz y los módulos.
+			$.when(
+				self.environment.loadResource("script",activityPath),
+				self.environment.loadResource("html",activityInterfacePath),
+				moduleManager.loadModules(activity.modules)
+			).then(function(script,view,modules){
+				var $view = $(view[0]);
+				$view.appendTo("body");
+				//Instacia actividad,inyectándole el entorno, la vista y los módulos.
+				var instance =  new window[activity.className](self,$view,modules);
+				activity.instance = instance;
+				delete window[activity.className];
 				//ejecutamos la actividad
 				instance.run();
+				//Eliminamos pantalla de carga.
+				$uploadpage.fadeOut(1000,function(){
+					$(this).remove();
+				});
 			});
-
-			//Descarga Interfaz.
-
-			//Descarga Módulos.
-
-			//Descarga act*/
+				
+		});
 		
 	};
 
