@@ -87,7 +87,7 @@ var ActivityManager = (function(){
 				var $view = $(view[0]);
 				$view.appendTo("body");
 				//Instacia actividad,inyectándole el entorno, la vista y los módulos.
-				var instance =  new window[activity.className](self,$view,modules);
+				var instance =  new window[activity.className](self.environment,$view,modules);
 				activity.instance = instance;
 				delete window[activity.className];
 				//ejecutamos la actividad

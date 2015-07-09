@@ -40,6 +40,10 @@ var Environment = (function(){
 		//Directorio de los servicios
 		this.SERVICES_BASE_PATH = "js/services/";
 		this.ACTIVITY_VIEWS_BASE_PATH = "resources/templates/activities/";
+		//Wallpapers folder.
+		this.WALLPAPERS_FOLDER = "resources/img/wallpaper/";
+		//themes folder
+		this.THEMES_FOLDER = "css/themes/";
 		
 	}
 

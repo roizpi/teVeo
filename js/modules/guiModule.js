@@ -18,7 +18,7 @@ var GUI = (function(_super,$){
 	function GUI(serviceLocator,searchs,contacts,applicationsManager,notificator,preferences){
 		
 		self = this;
-        visibilityState = document.visibilityState ? "visibilityState" : "webkitVisibilityState";
+        
 		this.serviceLocator = serviceLocator;
 		this.searchs = searchs;
 		this.contacts = contacts;
@@ -190,18 +190,7 @@ var GUI = (function(_super,$){
                 });
         });*/
 
-        //Navicon
-        $("#navIcon").on("click",function(){
-            var $navicon = $(this).find("span.fa");
-            var $panelMenu = $("#panelMenu");
-            if($navicon.hasClass("fa-navicon")){
-                $navicon.removeClass("fa-navicon").addClass("fa-close");
-                $panelMenu.show("drop",{direction:"left"},700);
-            }else{
-                $navicon.removeClass("fa-close").addClass("fa-navicon");
-                $panelMenu.hide("drop",{direction:"left"},700);
-            }
-        });
+        
 
         /*
         
@@ -209,73 +198,7 @@ var GUI = (function(_super,$){
             ==============================
         
         */
-        $("#task").delegate("[data-action]","click",function(e){
-            
-            e.preventDefault();
-            e.stopPropagation();
-            var $this = $(this);
-            if(!$this.hasClass("active")){
-                //recogemos la acción.
-                var action = this.dataset.action;
-                try{
-                    switch(action){
-                        case 'goHome':
-                            /*loadHomeTemplate(function(){
-                                //mostramos panel de estadisticas.
-                                setTimeout(function(){
-                                    $("[data-summary]").addClass("visible");
-                                },500);
-                                setTimeout(function(){
-                                    // lo ocultamos al cabo de 3 segundos
-                                    $("[data-summary]").removeClass("visible");
-                                },3000);
-                            });*/
-                            break;
-                        case 'preferences':
-                            //Mostramos plantilla para la edición de algunas de las preferencias.
-                            self.preferences.editPreferences();
-                            break;
-                        case 'searchUsers':
-                            //Inicializamos Módulo de Búsquedas
-                            self.searchs.initSearch();
-                            break;
-                        case 'viewApplications':
-                            //Mostramos solicitudes de amistad.
-                            self.applicationsManager.showApplications();
-                            break;
-                        case 'showNotifications':
-                            //Mostramos la notificaciones pendientes.
-                            self.notificator.showNotifications();
-                            break;
-                        case 'logout':
-                            self.serviceLocator.logout()
-                            .done(function(){
-                                //cerramos socket
-                                self.serviceLocator.closeConnection();
-                                //limpimos el sessionStorage
-                                sessionStorage.clear();
-                                //Redirigimos la página de inicio
-                                window.location = "index.html";
-                            })
-                            .fail()
-                            break;
-                    }
-                        
-                    $("[data-actionsMenu]").find("[data-action].active").removeClass("active");
-                    //Marcamos como activo al elemento actual.
-                    $this.addClass("active");
-                    
-                }catch(e){
-                    
-                    self.notificator.dialog.alert({
-                    	title:"Operación no realizada",
-                    	text:e.message,
-                        level:"info"
-                    });
-                }
-            }
-                
-        });
+        
 
 		/*
             
