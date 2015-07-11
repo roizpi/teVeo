@@ -5,6 +5,7 @@ var ActivityManager = (function(){
 	var activities = {
 		
 		DASHBOARD_ACTIVITY:{
+			name:"DASHBOARD",
 			className:"DashboardActivity",
 			file:"dashboardActivity.js",
 			status:"",
@@ -24,22 +25,18 @@ var ActivityManager = (function(){
 				"searchs",
 				"contacts",
 				"gui"
-			],
-			views:{
-				main:"dashboard/dashboard.html",
-				uploadpage:"dashboard/uploadpage.html",
-				error:""
-			}
+			]
 		}
 	}
 
 
-	function ActivityManager(environment){
+	function ActivityManager(templateManager,moduleManager,sessionManager){
 
 		self = this;
-		this.environment = environment;
-
-
+		this.templating = templateManager;
+		this.moduleManager = moduleManager;
+		this.session = sessionManager;
+	
 	}
 
  
@@ -67,12 +64,8 @@ var ActivityManager = (function(){
 			
 		var activity = name ? activities[name] : getPitcherActivity();
 		//Descargar y muestra la pantalla de carga.
-		var uploadpagePath = self.environment.ACTIVITY_VIEWS_BASE_PATH + activity.views.uploadpage;
-		self.environment.loadResource("html",uploadpagePath).done(function(uploadpage){
-			//Mostramos la página de carga.
-			var $uploadpage = $(uploadpage);
-			$uploadpage.appendTo("body");
-			
+		templating.loadUploadPage(activity.name,function(){
+
 			var moduleManager = self.environment.getService("MODULE_MANAGER");
 			//Ruta de la actividad.
 			var activityPath = self.environment.ACTIVITIES_BASE_PATH + activity.file;
@@ -97,8 +90,9 @@ var ActivityManager = (function(){
 					$(this).remove();
 				});
 			});
-				
-		});
+
+		})
+		var uploadpagePath = self.environment.ACTIVITY_VIEWS_BASE_PATH + activity.views.uploadpage;
 		
 	};
 
