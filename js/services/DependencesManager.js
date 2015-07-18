@@ -88,5 +88,4 @@ var DependencesManager = (function(){
 
 	return DependencesManager;
 
-
 })();

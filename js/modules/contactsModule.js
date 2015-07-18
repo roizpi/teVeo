@@ -5,23 +5,23 @@ var Contacts = (function(_super,$){
         
     var userContacts = [];
     var self;
+    var envir;
 
-    function Contacts(templateManager,serviceLocator,webSpeech,notificator,geoLocation){
+    function Contacts(webSpeech,notificator,geoLocation){
 
         self = this;
-        this.templateManager = templateManager;
-        this.serviceLocator = serviceLocator;
+    
         this.webSpeech = webSpeech;
         this.notificator = notificator;
         this.geoLocation = geoLocation;
 
-        //Eventos que notifica el módulo.
-        this.eventsModule = {
+        //Reporting the module events .
+        this.events = {
             "CONTACTS_AVALIABLE":[],
             "NEW_CONTACT":[],
             "CONTACT_DROPED":[]
         }
-        //Configuramos manejadores
+        //configuration handlers
         attachHandlers();
         //Obtenemos datos necesarios para el funcionamiento del módulo.
         getData();
@@ -32,6 +32,7 @@ var Contacts = (function(_super,$){
         Métodos Privados
         ***************************
     */
+
 
     var getMainView = function(name){
         return self.templateManager.getView({

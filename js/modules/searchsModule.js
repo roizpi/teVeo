@@ -5,7 +5,7 @@ var Searchs = (function(_super,$){
 
     var self;
 
-    function Searchs(templateManager,serviceLocator,webSpeech,applicationsManager,notificator){
+    function Searchs(webSpeech,applicationsManager,notificator){
 
         self = this;
         this.templateManager = templateManager;

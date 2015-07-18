@@ -8,8 +8,6 @@
         userConnected.ubicacion = "avila";
         sessionStorage.setItem("session_token",1234);
 
-
-        console.log("Hola estoy aquí");
 		$.getScript("js/Environment.js").done(function(){
 
 			Environment.create().done(function(environment){

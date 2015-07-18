@@ -1,13 +1,19 @@
 
 var DashboardActivity = (function(){
 
-	var visibilityState,modules,view,environment,timerChangeWallpaper,$theme,currentTheme;
+	var visibilityState;
+    var mods;
+    var gui;
+    var envir;
+    var timerChangeWallpaper;
+    var $theme;
+    var currentTheme;
 
-	function DashboardActivity (e,v,m) {
+	function DashboardActivity (environment,view,modules) {
 
-		environment = e;
-		view = v;
-		modules = m;
+		envir = environment;
+		gui = view;
+		mods = modules;
 		$theme = $("#currentTheme"); 
 		visibilityState = document.visibilityState ? "visibilityState" : "webkitVisibilityState";
 		//aplicamos preferencias

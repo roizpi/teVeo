@@ -1,12 +1,19 @@
 
-var SessionManager = (function(){
+var SessionManager = (function(_super,environment){
+
+	__extends(SessionManager, _super);
 
 	var token;
 	
-	function SessionManager(){
+	function SessionManager(debug){
+
+		this.debug = debug;
 		//recuperamos el token del almacenamiento local.
 		var item = sessionStorage.getItem("session_token");
 		token = item ? JSON.parse(item) : false;
+
+		this.debug.log("Este es el entorno","LOG");
+		this.debug.log(environment,"LOG");
 
 	}
 
@@ -24,4 +31,5 @@ var SessionManager = (function(){
 	};
 	
 	return SessionManager;
-})();
+	
+})(Component,environment);

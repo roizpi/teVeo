@@ -55,15 +55,14 @@ var Notificator = (function(_super,$){
         
     })();
 
-    function Notificator(templateManager,webSpeech){
+    function Notificator(webSpeech){
 
         self = this;
-        this.templateManager = templateManager;
         this.webSpeech = webSpeech;
         //Instanciamos un dialogador.
         //this.prototype.dialog = new Dialog();
         //Eventos del Módulo
-        this.eventsModule = {
+        this.events = {
             "NOT_FOUND_NOTIFICATIONS":[],
             "NEW_NOTIFICATION":[]
         }

@@ -1,4 +1,6 @@
-var HistoryManager = (function(){
+var HistoryManager = (function(_super,environment){
+
+	__extends(HistoryManager, _super);
 
 	function HistoryManager () {
 		// body...
@@ -15,4 +17,4 @@ var HistoryManager = (function(){
 
 	return HistoryManager;
 
-})();
+})(Component,environment);
