@@ -1,4 +1,4 @@
-var TemplateManager = (function(_super,$){
+var TemplateManager = (function(_super,$,environment){
 
 	__extends(TemplateManager, _super);
 
@@ -484,6 +484,10 @@ var TemplateManager = (function(_super,$){
 	//Carga la template especificada.
 	TemplateManager.prototype.loadTemplate = function(data,callback) {
 
+		
+		//Obtenemos la actividad actual.
+		var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
+
 		if (templates[data.moduleName] && templates[data.moduleName][data.templateName]) {
 			var template = templates[data.moduleName][data.templateName];
 			if(panels[template["target"]]){
@@ -525,4 +529,4 @@ var TemplateManager = (function(_super,$){
 
 	return TemplateManager;
 
-})(BaseModule,jQuery);
+})(BaseModule,jQuery,environment);

@@ -1,25 +1,27 @@
 
-var DashboardActivity = (function(){
+var DashboardActivity = (function(environment,$){
 
 	var visibilityState;
-    var mods;
+    var modules;
     var gui;
     var envir;
     var timerChangeWallpaper;
     var $theme;
     var currentTheme;
 
-	function DashboardActivity (environment,view,modules) {
+	function DashboardActivity (view,mods) {
 
 		envir = environment;
 		gui = view;
-		mods = modules;
+		modules = mods;
 		$theme = $("#currentTheme"); 
 		visibilityState = document.visibilityState ? "visibilityState" : "webkitVisibilityState";
-		//aplicamos preferencias
-		applyPreferences();
+		console.log("Estos son los módulos cargados.");
+        console.log(mods);
+        //aplicamos preferencias
+		//applyPreferences();
 		//Configuramos manejadores
-		attachHandlers();
+		//attachHandlers();
 		
 	}
 
@@ -180,16 +182,16 @@ var DashboardActivity = (function(){
 
 	DashboardActivity.prototype.run = function() {
 
-		timerWallpaper();
+		//timerWallpaper();
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();
 		console.log("Corriendo Actividad");
-		console.log("Estos son los módulos");
-		console.log(this.modules);
+		console.log("Esta es la vista");
+		console.log(gui);
 	};
 
 
 	return DashboardActivity;
 
-})();
+})(environment,jQuery);

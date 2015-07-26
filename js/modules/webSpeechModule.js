@@ -12,7 +12,7 @@ var WebSpeech = (function(_super,$){
 
     function WebSpeech(){
         //Eventos del Módulo
-        this.eventsModule = {
+        this.events = {
             "SpeechEnabled":[],
             "SpeechDisabled":[]
         }
@@ -127,4 +127,4 @@ var WebSpeech = (function(_super,$){
 
     return WebSpeech;
 
-})(BaseModule,jQuery);
+})(Component,jQuery);

@@ -1477,7 +1477,7 @@ var Caller = (function(_super,$) {
 
     return Caller;
 
-})(BaseModule,jQuery);
+})(Component,jQuery);
         
         
         

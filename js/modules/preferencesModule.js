@@ -340,4 +340,4 @@ var Preferences = (function(_super,$){
 
     return Preferences;
 
-})(BaseModule,jQuery);
+})(Component,jQuery);

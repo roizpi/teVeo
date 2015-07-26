@@ -31,7 +31,6 @@ var DependencesManager = (function(){
     * @return {Array} 
     */
     var getArgs = function(target) {
-
         if (!target instanceof Function) {
             throw new TypeError('Target to process should be a Function');
         }else{
@@ -39,7 +38,7 @@ var DependencesManager = (function(){
             var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
             var COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
             var SPACES = /[\s|\t|\n|\r]+/mg;
-    
+
             var result = target.toString().match(FN_ARGS);
             //Comprobamos si existe alguna dependencia a inyectar
             if(result && result[1])
@@ -58,6 +57,8 @@ var DependencesManager = (function(){
     * @return {Object} object created from its constructor
     */
     var create = function(constructor) {
+        console.log("Este es el constructor");
+        console.log(constructor);
         var args = getArgs(constructor);
         if (args) {
             var args = [null].concat(getDependencies(args));

@@ -80,4 +80,4 @@ var GeoLocation = (function(_super,$){
 
   return GeoLocation;
 
-})(BaseModule,jQuery);
+})(Component,jQuery);

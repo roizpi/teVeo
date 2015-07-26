@@ -1,37 +1,16 @@
-var ActivityManager = (function(_super,environment){
+var ActivityManager = (function(_super,$,environment){
 
 	__extends(ActivityManager, _super);
 
-	var self;
 	//Actividades de la aplicación
-	var activities = {
-		
-		DASHBOARD_ACTIVITY:{
-			name:"DASHBOARD",
-			className:"DashboardActivity",
-			file:"dashboardActivity.js",
-			status:"",
-			auth:"required",
-			tokenExpiration:null,
-			pitcher:true,
-			instance:null,
-			modules:[
-				"preferences",
-				"webSpeech",
-				"geoLocation",
-				"notificator",
-				"applicationsManager",
-				"searchs",
-				"contacts"
-			]
-		}
-	}
+	var self,activities;
+	
 
-
-	function ActivityManager(templateManager,sessionManager){
+	function ActivityManager(templateManager,managerModule,sessionManager){
 
 		self = this;
 		this.templating = templateManager;
+		this.managerModule = managerModule;
 		this.session = sessionManager;
 	
 	}
@@ -47,8 +26,19 @@ var ActivityManager = (function(_super,environment){
 
 	}
 
+	ActivityManager.prototype.loadActivities = function() {
+		//Obtenemos las actividades configuradas.
+		return $.getJSON(environment.RESOURCES_BASE_PATH+"activities.json").done(function(activitiesLoaded){
+			activities = activitiesLoaded;
+		});
+	};
+
+	//Devuelve la actividad actual.
 	ActivityManager.prototype.getCurrentActivity = function() {
-		// body...
+		for (activity in activities) {
+			if (activities[activity].active)
+				return activities[activity];
+		};
 	};
 
 	//Informa sobre el tiempo de sesión permitido para una actividad.
@@ -65,40 +55,50 @@ var ActivityManager = (function(_super,environment){
 		//Comprobamos si existe actividad con ese nombre, en caso contrario lanzamos
 		// actividad principal.
 		var activity = name ? activities[name] : getPitcherActivity();
+		//marcamos la actividad como activa.
+		activity.active = true;
 		//Descargar y muestra la pantalla de carga.
-		this.templating.loadUploadPage(activity.name,function(){
+		this.templating.loadTemplate({
+			type:"ACTIVITY_UPLOADPAGE_VIEWS",
+			handlers:{
+				onAfterShow:function(){
+					//aplicamos animaciones a la página de carga.
+					var uploadpage = this;
+					uploadpage.getComponent('title').get().addClass("fadeInDown").on("webkitAnimationEnd  animationend",function(e){
+			            $("<img>",{
+			                src:"resources/img/mainLoader.gif",
+			                alt:""
+			            }).insertAfter(this);
+					});
+				}
+			}
+		}).done(function(uploadpage){
+
 			//Ruta de la actividad.
 			var activityPath = environment.ACTIVITIES_BASE_PATH + activity.file;
-			//Ruta de la interfaz de la actividad.
-			var activityInterfacePath = environment.ACTIVITY_VIEWS_BASE_PATH + activity.main.file;
 			//Sincronizamos la descarga de la actividad, la interfaz y los módulos.
 			$.when(
 				environment.loadResource({
 					type:"script",
 					src:activityPath
 				}),
-				environment.loadResource({
-					type:"html",
-					src:activityInterfacePath
+				self.templating.loadTemplate({
+					type:"ACTIVITY_VIEWS"
 				}),
-				environment.getModules(activity.modules)
-			).then(function(script,view,modules){
+				self.managerModule.getModules(activity["modules"])
+			).done(function(script,view,modules){
 				//recogemos el html de la view
-				var $view = $(view[0]);
-				//lo añadimos al body
-				$view.appendTo("body");
-				//Instacia actividad,inyectándole el entorno, la vista y los módulos.
-				var instance =  new window[activity.className](self.environment,$view,modules);
+				//Instacia actividad inyectándola la vista y los módulos.
+				var instance =  new window[activity.className](view,modules);
+				console.log("MODULOS CARGADOS ..............");
+				console.log(modules);
 				//guardamos la instancia.
 				activity.instance = instance;
 				//eliminamos la clase del contexto global.
 				delete window[activity.className];
 				//ejecutamos la actividad
-				instance.run();
-				//Eliminamos pantalla de carga.
-				$uploadpage.fadeOut(1000,function(){
-					$(this).remove();
-				});
+				//instance.run();
+				uploadpage.detach();
 			});
 
 		});
@@ -107,4 +107,4 @@ var ActivityManager = (function(_super,environment){
 
 	return ActivityManager;
 
-})(Component,environment);
+})(Component,jQuery,environment);

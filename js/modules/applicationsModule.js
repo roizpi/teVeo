@@ -7,22 +7,20 @@ var ApplicationsManager = (function(_super,$){
     var applicationsOfFriendship = [];
     var self;
 
-    function ApplicationsManager(templateManager,serviceLocator,notificator){
+    function ApplicationsManager(notificator){
         self = this;
-        this.templateManager = templateManager;
-        this.serviceLocator = serviceLocator;
         this.notificator = notificator;
         //Eventos del Módulo
-        this.eventsModule = {
+        this.events = {
             "APPLICATIONS_AVALIABLE":[],
             "ACCEPT_APPLICATION":[],
             "REJECT_APPLICATION":[],
             "NO_APPLICATION_FOUND":[]
         }
         //Configuramos manejadores.
-        attachHandlers();
+        //attachHandlers();
         //Obtenemos la solicitudes de amistad pendientes.
-        getData();
+        //getData();
         
         
     }
@@ -333,4 +331,4 @@ var ApplicationsManager = (function(_super,$){
    
     return ApplicationsManager;
 
-})(BaseModule,jQuery);
+})(Component,jQuery);

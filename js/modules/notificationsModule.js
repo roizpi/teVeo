@@ -67,7 +67,7 @@ var Notificator = (function(_super,$){
             "NEW_NOTIFICATION":[]
         }
         //Configuramos handlers
-        attachHandlers();
+        //attachHandlers();
 
     }
 
@@ -318,4 +318,4 @@ var Notificator = (function(_super,$){
 
    return Notificator;
     
-})(BaseModule,jQuery);
+})(Component,jQuery);

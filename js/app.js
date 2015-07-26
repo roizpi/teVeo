@@ -41,20 +41,13 @@
 					//Arrancamos la actividad por defecto.
 					activityManager.startActivity();
 				}
+
 			});
-			
+				
+				
 		}).fail(function(){
 			console.log("Error al descargar Environment...");
 		})
-			
-			/*Environment.create().done(function(environment){
-				console.log("Este es el entorno");
-				console.log(environment);*/
-				
-			/*})
-
-
-		});*/
 
 		
 	}

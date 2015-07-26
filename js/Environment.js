@@ -59,6 +59,14 @@ var Environment = (function(){
 			auto:true,
 			instance:null
 		},
+		MANAGER_MODULE:{
+			name:"managerModule",
+			className:"ManagerModule",
+			file:"managerModule.js",
+			type:"application",
+			loaded:false,
+			instance:null
+		},
 		TEMPLATE_MANAGER:{
 			name:"templateManager",
 			className:"TemplateManager",
@@ -82,7 +90,7 @@ var Environment = (function(){
 			className:"ActivityManager",
 			file:"ActivityManager.js",
 			type:"application",
-			dependences:["TEMPLATE_MANAGER","SESSION_MANAGER"],
+			dependences:["TEMPLATE_MANAGER","MANAGER_MODULE","SESSION_MANAGER"],
 			loaded:false,
 			auto:true,
 			instance:null
@@ -111,81 +119,18 @@ var Environment = (function(){
 
 	};
 
-	//modules
-    var modules = {
-        
-        PREFERENCES:{
-            className:"Preferences",
-            file:"preferencesModule.js",
-            order:1,
-            loaded:false,
-            dependences:null,
-            instance:null
-        },
-        WEB_SPEECH:{
-        	name:"webSpeech",
-            className:"WebSpeech",
-            file:"webSpeechModule.js",
-            order:3,
-            loaded:false,
-            dependences:null,
-            instance:null
-        },
-        GEO_LOCATION:{
-        	name:"geoLocation",
-            className:"GeoLocation",
-            file:"geolocationModule.js",
-            order:4,
-            loaded:false,
-            instance:null
-        },
-        NOTIFICATOR:{
-        	name:"notificator",
-            className:"Notificator",
-            file:"notificationsModule.js",
-            order:5,
-            loaded:false,
-            dependences:["WEB_SPEECH"],
-            instance:null
-        },
-        APPLICATIONS:{
-        	name:"applications",
-            className:"Applications",
-            file:"applicationsModule.js",
-            order:6,
-            loaded:false,
-            dependences:["NOTIFICATOR"],
-            instance:null
-        },
-        SEARCHS:{
-        	name:"searchs",
-            className:"Searchs",
-            file:"searchsModule.js",
-            order:7,
-            loaded:false,
-            dependences:["WEB_SPEECH","APPLICATIONS","NOTIFICATOR"],
-            instance:null
-        },
-        CONTACTS:{
-        	name:"contacts",
-            className:"Contacts",
-            file:"contactsModule.js",
-            order:8,
-            loaded:false,
-            dependences:["WEB_SPEECH","NOTIFICATOR","GEO_LOCATION"],
-            instance:null
-        }
-    };
-
 	function Environment () {
 
+		//Directorio de Recursos.
+		this.RESOURCES_BASE_PATH = "resources/";
 		//Directorio donde se encuentran los modulos
 		this.MODULES_BASE_PATH = "js/modules/";
 		//Directorio donde se encuentran las actividades.
 		this.ACTIVITIES_BASE_PATH = "js/activities/";
 		//Directorio de los servicios
 		this.SERVICES_BASE_PATH = "js/services/";
-		this.ACTIVITY_VIEWS_BASE_PATH = "resources/templates/activities/";
+		this.ACTIVITY_TEMPLATES_BASE_PATH = "resources/templates/activities/";
+		this.MODULES_TEMPLATES_BASE_PATH = "resources/templates/modules/";
 		//Wallpapers folder.
 		this.WALLPAPERS_FOLDER = "resources/img/wallpaper/";
 		//themes folder
@@ -278,8 +223,14 @@ var Environment = (function(){
 			//Instanciamos servicios de la aplicación.
 			var applicationServices = getApplicationServices();
 			services["DEPENDENCES_MANAGER"].instance.getInstances(applicationServices);
-			deferred.resolve(self);
-			delete window["environment"];
+			//delete window["environment"];
+			$.when(
+				services["MANAGER_MODULE"].instance.loadModules(),
+				services["ACTIVITY_MANAGER"].instance.loadActivities()
+			).done(function(){
+				console.log("Actividades y Modulos descargados");
+				deferred.resolve(self);
+			})
 		});
 		
 
@@ -308,25 +259,7 @@ var Environment = (function(){
 		return services["ACTIVITY_MANAGER"].instance.getCurrentActivity();
 	};
 
-	Environment.prototype.getModules = function(names) {
-		var deferred = $.Deferred();
-    	if (names.constructor.toString().match(/array/i)) {
-    		//Descargamos los módulos
-            console.log("Descargando Módulos");
-    		downloadComponents("MODULES",names).done(function(){
-                console.log("Instanciando módulos...");
-                var instances = dependencesManager.getInstances(modules,names);
-                //resolvemos la promise pasando instancias de módulos.
-                deferred.resolve(instances);
-        	}); 
-
-    	};
-
-        return deferred.promise();
-	};
-
-
-
+	
 	return {
 
 		create:create

@@ -497,7 +497,7 @@ var Contacts = (function(_super,$){
 
     return Contacts;
 
-})(BaseModule,jQuery);
+})(Component,jQuery);
 
     
   
