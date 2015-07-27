@@ -283,8 +283,6 @@ figure.inline > *{
 }
 
 
-
-
 /*
 
   Tipografía
@@ -431,6 +429,7 @@ h1,h2,h3,.logo,.btn{
   line-height: 90px;
 }
 
+/*Cuadro de ayuda activado.*/
 .help.active{
     width: 98%;
     text-shadow: #fff 0px 0px 10px;
@@ -766,94 +765,94 @@ h1,h2,h3,.logo,.btn{
 */
 
 /*
-    Control de Búsqueda Tipo 1
+  Control de Búsqueda Tipo 1
 
-    Anchura: 350px
-    Alturas: 40px (defecto), 50px y 60px
+  Anchura: 350px
+  Alturas: 40px (defecto), 50px y 60px
 
-    Válido para incluir Micrófono para reconocimiento de voz.
+  Válido para incluir Micrófono para reconocimiento de voz.
 
 */
 
 .searchControl{
-    height: 40px;
-    margin: 10px auto;
-    width: 350px;
-    color: #fff;
-    overflow: hidden; /*clear fix hack*/
-    box-shadow:#fff 0px 0px 10px 3px;
-    position: relative;
+  height: 40px;
+  margin: 10px auto;
+  width: 350px;
+  color: #fff;
+  overflow: hidden; /*clear fix hack*/
+  box-shadow:#fff 0px 0px 10px 3px;
+  position: relative;
 }
 
 /*Tamaños*/
 .searchControl.medium{
-    height: 50px;
+  height: 50px;
 }
 
 .searchControl.big{
-    height: 60px;
+  height: 60px;
 }
 
 .searchControl input[type=search],
 .searchControl label{
-    float: right;
-    height:100%;
+  float: right;
+  height:100%;
 }
 
 .searchControl input[type=search]{
-    -webkit-box-sizing:border-box;
-        -moz-box-sizing:border-box;
-            box-sizing: border-box;
-    background-color: inherit;
-    border: none;
-    width: 85%;
-    text-indent: 14px;
+  -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+      box-sizing: border-box;
+  background-color: inherit;
+  border: none;
+  width: 85%;
+  text-indent: 14px;
 }
 
 .searchControl label{
-    width: 15%;
-    text-align: center;
-    line-height: 40px;
-    -webkit-transition:font-size .5s;
-        -moz-transition:font-size .5s;
-            transition: font-size .5s;
+  width: 15%;
+  text-align: center;
+  line-height: 40px;
+  -webkit-transition:font-size .5s;
+    -moz-transition:font-size .5s;
+      transition: font-size .5s;
 }
 
 .searchControl.medium label{
-    line-height: 50px;
+  line-height: 50px;
 }
 
 .searchControl.big label{
-    line-height: 60px;
+  line-height: 60px;
 }
 
-
+/*Estado focus para el control de búsqueda*/
 .searchControl input[type=search]:focus + label{
-    font-size: 1.3em;
+  font-size: 1.3em;
 }
 
 .searchControl.medium input[type=search]:focus + label{
-    font-size: 1.4em;
+  font-size: 1.4em;
 }
 
 .searchControl.big input[type=search]:focus + label{
-    font-size: 1.5em;
+  font-size: 1.5em;
 }
 
 /*
-    Control de Búsqueda Tipo 2
+  Control de Búsqueda Tipo 2
 
-    No válido para reconocimiento de voz
-    Se despliega con animación.
+  No válido para reconocimiento de voz
+  Ideal para páginas donde la búsqueda no es algo prioritario.
 
 */
 
 .search-form{
-    display: inline-block;
-    float: right;
-    height: 100%;
-    margin-top: 10px;
-    position: relative;
+  display: inline-block;
+  float: right;
+  height: 100%;
+  margin-top: 10px;
+  position: relative;
     
 }
 

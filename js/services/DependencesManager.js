@@ -1,4 +1,6 @@
-var DependencesManager = (function(){
+var DependencesManager = (function(_super,$,environment){
+
+    __extends(DependencesManager, _super);
 
     var source;
 
@@ -57,8 +59,6 @@ var DependencesManager = (function(){
     * @return {Object} object created from its constructor
     */
     var create = function(constructor) {
-        console.log("Este es el constructor");
-        console.log(constructor);
         var args = getArgs(constructor);
         if (args) {
             var args = [null].concat(getDependencies(args));
@@ -71,22 +71,28 @@ var DependencesManager = (function(){
     }
 
     DependencesManager.prototype.getInstances = function(components) {
-    	source = components;
-        console.log("Componentes a instanciar....");
-        console.log(components);
-        for(var component in components){
-            var currentComponent = components[component];
-            console.log("Cargando Componente : " + currentComponent.className);
+        
+        source = {};
+        
+
+        for (var i = 0; i < components.length; i++) {
+            source[components[i].name] = components[i];
+        }
+
+        for(var component in source){
+            var currentComponent = source[component];
+            console.log("Instanciando Componente : " + currentComponent.className);
             if (!currentComponent.instance) {
                 currentComponent.instance = create(window[currentComponent.className]);
             };
             delete window[currentComponent.className];
-
         }
+
+        return source;
     
     };
 
 
 	return DependencesManager;
 
-})();
+})(Component,jQuery,environment);

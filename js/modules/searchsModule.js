@@ -11,10 +11,10 @@ var Searchs = (function(_super,$,environment){
         templating = environment.getService("TEMPLATE_MANAGER");
         serviceLocator = environment.getService("SERVICE_LOCATOR");
         this.webSpeech = webSpeech;
-        this.applicationsManager = applicationsManager;
+        //MANEJADOR DE SOLICITUDES.
+        //this.applicationsManager = applicationsManager;
         this.notificator = notificator;
-        //Configuramos manejadores.
-        attachHandlers();
+
             
     }
 

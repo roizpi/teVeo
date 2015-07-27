@@ -64,6 +64,7 @@ var Environment = (function(){
 			className:"ManagerModule",
 			file:"managerModule.js",
 			type:"application",
+			dependences:["UTILS","DEBUG"],
 			loaded:false,
 			instance:null
 		},
@@ -150,10 +151,10 @@ var Environment = (function(){
 
 	var getApplicationServices = function(){
 
-		var applicationServices = {};
+		var applicationServices = [];
 		for(var service in services){
 			if(services[service].type.toUpperCase() == "APPLICATION")
-				applicationServices[services[service].name] = services[service];
+				applicationServices.push(services[service]);
 		}
 		return applicationServices;
 	
