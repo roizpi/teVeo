@@ -1871,7 +1871,7 @@ h1,h2,h3,.logo,.btn{
 
 .sidenav{
   width: 30%;
-  min-width: 400px;
+  min-width: 450px;
   max-width: 600px;
   height: 100%;
   position: relative;
@@ -1882,6 +1882,21 @@ h1,h2,h3,.logo,.btn{
   height: 350px;
   background:#fff url("../resources/img/prueba.png") no-repeat center;
   background-size: cover;
+  position: relative;
+}
+
+.sidenav-header .edit{
+  position: absolute;
+  font-size: 2rem;
+  font-weight: bold;
+  right: 4%;bottom: -50px;
+  width: 75px;height: 75px;
+  border-radius: 50%;
+  background-color: #008ABD;
+  color: #fff;
+  text-align: center;
+  line-height: 75px;
+  box-shadow: #000 5px 5px 10px 3px;
 }
 
 .sidenav .sidenav-header .user-info{
@@ -1906,16 +1921,38 @@ h1,h2,h3,.logo,.btn{
 
 .sidenav .sidenav-header .user-info p:nth-child(1){
   font-size: 1.3rem;
+  font-size: 1.5vw;
 }
 
 .sidenav .sidenav-header .user-info p:nth-child(2){
   font-size: .9rem;
+  font-size: 1vw;
 }
 
 .sidenav .sidenav-header .user-statistics{
   width: 100%;
   align-self:flex-end;
   background-color: rgba(0,0,0,.3);
+  color: #fff;
+  overflow: hidden;
+}
+
+.sidenav .sidenav-header .user-statistics .statistics{
+  margin: 0;
+}
+
+.sidenav .sidenav-header .user-statistics .statistics > *{
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.sidenav .sidenav-header .user-statistics .statistics .fa{
+  font-size: 3rem;
+}
+
+.sidenav .sidenav-header .user-statistics .statistics figcaption{
+  font-size: 1.5rem;
+  margin-left: 0.15rem;
 }
 
 
