@@ -65,7 +65,7 @@
         "templates":{
             "searchUsers":{
                 "DASHBOARD":{
-                    "region":"#panelAction",
+                    "region":"action",
                     "file":"searchUsers.html",
                     "animations":{
                         "animationIn":"fadeInLeft",

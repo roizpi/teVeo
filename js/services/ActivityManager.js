@@ -90,15 +90,14 @@ var ActivityManager = (function(_super,$,environment){
 				//recogemos el html de la view
 				//Instacia actividad inyectándola la vista y los módulos.
 				var instance =  new window[activity.className](view,modules);
-				console.log("MODULOS CARGADOS ..............");
-				console.log(modules);
 				//guardamos la instancia.
 				activity.instance = instance;
 				//eliminamos la clase del contexto global.
 				delete window[activity.className];
-				//ejecutamos la actividad
-				//instance.run();
 				uploadpage.detach();
+				//ejecutamos la actividad
+				instance.run();
+				
 			});
 
 		});

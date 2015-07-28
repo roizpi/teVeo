@@ -11,7 +11,8 @@
 		"WEB_SPEECH",
 		"APPLICATIONS",
 		"NOTIFICATOR",
-		"SEARCHS"
+		"SEARCHS",
+		"PREFERENCES"
 	],
 	"templates":{
 		"gui":{
@@ -21,8 +22,8 @@
 				"animationOut":"zoomOutDown"
 			},
 			"regions":{
-				"menu":"",
-				"action":""
+				"menu":"#panelMenu",
+				"action":"#panelAction"
 			}
 		},
 		"uploadPage":{

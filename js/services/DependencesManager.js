@@ -73,22 +73,27 @@ var DependencesManager = (function(_super,$,environment){
     DependencesManager.prototype.getInstances = function(components) {
         
         source = {};
-        
+        var instances = {};
 
         for (var i = 0; i < components.length; i++) {
             source[components[i].name] = components[i];
         }
 
         for(var component in source){
-            var currentComponent = source[component];
-            console.log("Instanciando Componente : " + currentComponent.className);
-            if (!currentComponent.instance) {
-                currentComponent.instance = create(window[currentComponent.className]);
-            };
-            delete window[currentComponent.className];
+            var current = source[component];
+            console.log("Instanciando Componente : " + current.className);
+            //Comprobamos si el componente no está ya instanciado.
+            if (!current.instance) {
+                //instanciamos el componente.
+                current.instance = create(window[current.className]);
+            }
+            //guardamos la instancia.
+            instances[current.name] = current.instance;
+            //Eliminamos la referencia a la clase del contexto.
+            delete window[current.className];
         }
-
-        return source;
+        //Devolvemos las instancias obtenidas.
+        return instances;
     
     };
 

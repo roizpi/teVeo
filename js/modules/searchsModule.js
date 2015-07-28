@@ -363,7 +363,7 @@ var Searchs = (function(_super,$,environment){
     */
 
     //Método utilizado para iniciar una búsqueda.
-    Searchs.prototype.initSearch = function() {
+    Searchs.prototype.startSearch = function() {
         templating.loadTemplate({
             type:"MODULE_VIEWS",
             handlers:{

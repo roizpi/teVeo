@@ -57,16 +57,15 @@ var Preferences = (function(_super,$){
     
     
 
-    function Preferences(templateManager){
+    function Preferences(){
 
         self = this;
-        this.templateManager = templateManager;
         //Eventos que notifica el módulo.
-        this.eventsModule = {
+        this.events = {
             "PREFERENCE_CHANGED":[]
         }
         //Configuramos manejadores.
-        attachHandlers();
+        //attachHandlers();
 
         
 

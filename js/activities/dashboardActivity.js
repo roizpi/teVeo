@@ -19,14 +19,23 @@ var DashboardActivity = (function(environment,$){
 		console.log("Estos son los módulos cargados.");
         console.log(mods);
         //aplicamos preferencias
-		//applyPreferences();
+		applyPreferences();
 		//Configuramos manejadores
-		//attachHandlers();
+		attachHandlers();
 		
 	}
 
-	var attachHandlers = function(){
+    var applyPreferences = function(){
 
+        currentTheme = modules['preferences'].getPreference('theme');
+        //Aplicamos el tema seleccionado
+        $theme.attr("href",environment.THEMES_FOLDER + currentTheme.name);
+    }
+
+	var attachHandlers = function(){
+        console.log("CONFIGURANDO MANEJADORES");
+        console.log("========================");
+        //Controlamos si la pestaña cambia a estado no visible.
 		$(document).on("visibilitychange webkitvisibilitychange",function(){
             if(document[visibilityState] == "hidden")
                 document.title = "TeVeo! | (" + modules["notificator"].getNumOfNotifications() + ") notificaciones pendientes";
@@ -41,10 +50,11 @@ var DashboardActivity = (function(environment,$){
             var $panelMenu = $("#panelMenu");
             if($navicon.hasClass("fa-navicon")){
                 $navicon.removeClass("fa-navicon").addClass("fa-close");
-                $panelMenu.show("drop",{direction:"left"},700);
+                $panelMenu.removeClass("slideOutLeft").addClass("slideInLeft");
             }else{
                 $navicon.removeClass("fa-close").addClass("fa-navicon");
-                $panelMenu.hide("drop",{direction:"left"},700);
+                $panelMenu.removeClass("slideInLeft").addClass("slideOutLeft");
+                
             }
         });
 
@@ -77,7 +87,7 @@ var DashboardActivity = (function(environment,$){
                             break;
                         case 'searchUsers':
                             //Inicializamos Módulo de Búsquedas
-                            self.searchs.initSearch();
+                            modules['searchs'].startSearch();
                             break;
                         case 'viewApplications':
                             //Mostramos solicitudes de amistad.
@@ -120,14 +130,8 @@ var DashboardActivity = (function(environment,$){
 
 	}
 
-	var applyPreferences = function(){
-
-        currentTheme = modules['preferences'].getPreference('theme');
-        //Aplicamos el tema seleccionado
-        $theme.attr("href",environment.THEMES_FOLDER + currentTheme.name);
-    }
-
-	var timerWallpaper = function(){
+    //Inicia el configurador de wallpapers.
+	var startWallpaperConfigurator = function(){
         
         clearTimeout(timerChangeWallpaper);
         var $main = $("#main").children("img.wallpaper:eq(0)").remove().end();
@@ -181,8 +185,10 @@ var DashboardActivity = (function(environment,$){
 
 
 	DashboardActivity.prototype.run = function() {
-
-		//timerWallpaper();
+        //Aplicamos animaciones.
+        $("#userImageMain").addClass("cutEffect-visible");
+        //Iniciamos el configurador de wallpapers.
+		startWallpaperConfigurator();
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();
