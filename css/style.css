@@ -290,7 +290,7 @@ figure.inline > *{
 
 */
 
-h1,h2,h3,.logo,.btn{
+h1,h2,h3,p,li,.logo,.btn{
     font: 500 1.5rem/1.1 'Handlee', cursive;
  /*font-family: 'Fontdiner Swanky', cursive;*/
 }
@@ -987,6 +987,65 @@ h1,h2,h3,.logo,.btn{
     Listas
 
 */
+
+/*
+  Nombre: Contact List.
+  DESC:Estilos para mostrar una lista de usuarios, incluye foto estado y breve información.
+*/
+
+.contact-list{
+  overflow: hidden;
+}
+
+.contact-list .contact{
+  height: 80px;
+}
+
+.contact-list .contact > *{
+  height: 100%;
+  float: left;
+}
+
+.contact-list .contact .photo{
+  width: 30%;
+  background:#fff url(../resources/img/wallpaper/RedEaredSlider.jpg) no-repeat center;
+  background-size: cover;
+}
+
+.contact-list .contact .info{
+  width: 70%;
+  position: relative;
+  background-color: #C6CFE2;
+}
+
+.contact-list .contact .info p{
+  margin: 0;
+  color: #002761;
+}
+
+.contact-list .contact .info .name{
+  font-size: 1.1rem;
+}
+
+.contact-list .contact .info .sentece{
+  font-size: .9rem;
+}
+
+.contact-list .contact .info::before{
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;bottom: 0;left: 0;
+  width: 8px;
+}
+
+.contact-list .contact:nth-child(1) .info::before{
+  background-color: red;
+}
+
+.contact-list .contact:nth-child(2) .info::before{
+  background-color: green;
+}
 
 /*
     Lista de Datos Simple
@@ -1873,30 +1932,32 @@ h1,h2,h3,.logo,.btn{
   width: 30%;
   min-width: 450px;
   max-width: 600px;
-  height: 100%;
+  height: calc(100vh - 70px);
   position: relative;
+  will-change: transform;/*Hacking overflow hidden*/
 }
 
 .sidenav .sidenav-header{
   width: 100%;
-  height: 350px;
+  height: 40%;
   background:#fff url("../resources/img/prueba.png") no-repeat center;
   background-size: cover;
-  position: relative;
+  overflow: hidden;
 }
 
+/* Botón de edición del perfil */
 .sidenav-header .edit{
-  position: absolute;
+  position: fixed;
   font-size: 2rem;
   font-weight: bold;
-  right: 4%;bottom: -50px;
+  right:-30px;top:calc(40% - 37.5px);
   width: 75px;height: 75px;
   border-radius: 50%;
-  background-color: #008ABD;
-  color: #fff;
+  background-color:#fff;
+  color: #008ABD;
   text-align: center;
   line-height: 75px;
-  box-shadow: #000 5px 5px 10px 3px;
+  box-shadow: #000 3px 3px 10px 3px;
 }
 
 .sidenav .sidenav-header .user-info{
@@ -1931,8 +1992,11 @@ h1,h2,h3,.logo,.btn{
 
 .sidenav .sidenav-header .user-statistics{
   width: 100%;
-  align-self:flex-end;
-  background-color: rgba(0,0,0,.3);
+  background:rgba(0,0,0,.3);
+  background: -webkit-linear-gradient(top, rgba(255,0,0,0),rgba(0,0,0,.2), rgba(0,0,0,.5)); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(top, rgba(255,0,0,0),rgba(0,0,0,.2), rgba(0,0,0,.5)); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(top, rgba(255,0,0,0),rgba(0,0,0,.2), rgba(0,0,0,.5)); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(top, rgba(255,0,0,0),rgba(0,0,0,.2), rgba(0,0,0,.5)); /* Standard syntax (must be last)*/
   color: #fff;
   overflow: hidden;
 }
@@ -1953,6 +2017,69 @@ h1,h2,h3,.logo,.btn{
 .sidenav .sidenav-header .user-statistics .statistics figcaption{
   font-size: 1.5rem;
   margin-left: 0.15rem;
+}
+
+.sidenav .sidenav-menu{
+  height: 10%;
+  margin: 0;
+  background-color: #008ABD;
+  color: #fff;
+  letter-spacing: -0.35rem;
+}
+
+.sidenav .sidenav-menu > li{
+  display: inline-block;
+  vertical-align: top;
+  width: 33.33%;
+  height: 100%;
+  letter-spacing: normal;
+  line-height: 80px;
+  text-align: center;
+  font-size: 1.3rem;
+  position: relative;
+  cursor: pointer;
+}
+
+.sidenav .sidenav-menu > li::after{
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;right: 0;bottom:0;
+  height: 0;
+  background-color: #fff;
+}
+
+.sidenav .sidenav-menu > li,
+.sidenav .sidenav-menu > li::after{
+  -webkit-transition:all .5s;
+  transition:all .5s;
+}
+
+.sidenav .sidenav-menu > li:hover{
+  text-shadow:#fff 2px 2px 5px;
+}
+
+.sidenav .sidenav-menu > li:hover::after{
+  height: .35rem;
+}
+
+.sidenav .sidenav-menu > li:not(:first-child)::before{
+  content: '';
+  display: block;
+  width: 1px;
+  height: 60%;
+  position: absolute;
+  top: 50%;left: 0;
+  -webkit-transform:translateY(-50%);
+  transform:translateY(-50%);
+  background-color: #fff;
+
+}
+
+.sidenav .sidenav-content{
+  height: 50%;
+  background-color:#1ACBD0;
+  padding-top: 1px;
 }
 
 
