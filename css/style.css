@@ -249,8 +249,7 @@ mark{
     font-weight: bold;
 }
 
-.noWrapText{
-    display: inline-block;
+.singleLine{
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -302,7 +301,7 @@ h1,h2,h3,p,li,.logo,.btn{
     
 */
 
-.action{
+/*.action{
     outline: none;
     display: inline-block;
     text-align: center;
@@ -328,7 +327,7 @@ h1,h2,h3,p,li,.logo,.btn{
 
 .action span{
     pointer-events: none;
-}
+}*/
 
 /*
 
@@ -792,32 +791,31 @@ h1,h2,h3,p,li,.logo,.btn{
 
 */
 
-.searchControl{
+.search-form{
   height: 40px;
-  margin: 10px auto;
-  width: 350px;
+  width:100%;
   color: #fff;
   overflow: hidden; /*clear fix hack*/
-  box-shadow:#fff 0px 0px 10px 3px;
   position: relative;
+  background-color: #4353ff;
 }
 
 /*Tamaños*/
-.searchControl.medium{
+.search-form.search-form-medium{
   height: 50px;
 }
 
-.searchControl.big{
+.search-form.search-form-large{
   height: 60px;
 }
 
-.searchControl input[type=search],
-.searchControl label{
+.search-form input[type=search],
+.search-form label{
   float: right;
   height:100%;
 }
 
-.searchControl input[type=search]{
+.search-form input[type=search]{
   -webkit-box-sizing:border-box;
     -moz-box-sizing:border-box;
       box-sizing: border-box;
@@ -827,34 +825,38 @@ h1,h2,h3,p,li,.logo,.btn{
   text-indent: 14px;
 }
 
-.searchControl label{
+.search-form label{
   width: 15%;
+  font-size: 1.3rem;
   text-align: center;
   line-height: 40px;
-  -webkit-transition:font-size .5s;
-    -moz-transition:font-size .5s;
-      transition: font-size .5s;
+  -webkit-transition:font-size .5s linear,text-shadow .4s ease-in-out .5s;
+    -moz-transition:font-size .5s,text-shadow .4s ease-in-out .5s;
+      transition: font-size .5s,text-shadow .4s ease-in-out .5s;
 }
 
-.searchControl.medium label{
+.search-form.search-form-medium label{
   line-height: 50px;
+  font-size: 1.5rem;
 }
 
-.searchControl.big label{
+.search-form.search-form-large label{
   line-height: 60px;
+  font-size: 1.7rem;
 }
 
 /*Estado focus para el control de búsqueda*/
-.searchControl input[type=search]:focus + label{
-  font-size: 1.3em;
-}
-
-.searchControl.medium input[type=search]:focus + label{
-  font-size: 1.4em;
-}
-
-.searchControl.big input[type=search]:focus + label{
+.search-form input[type=search]:focus + label{
   font-size: 1.5em;
+  text-shadow:#fff 0px 0px 5px;
+}
+
+.search-form.search-form-medium input[type=search]:focus + label{
+  font-size: 1.7em;
+}
+
+.search-form.search-form-large input[type=search]:focus + label{
+  font-size: 2em;
 }
 
 /*
@@ -865,7 +867,7 @@ h1,h2,h3,p,li,.logo,.btn{
 
 */
 
-.search-form{
+.search-form-type2{
   display: inline-block;
   float: right;
   height: 100%;
@@ -874,25 +876,25 @@ h1,h2,h3,p,li,.logo,.btn{
     
 }
 
-.search-form .input-group{
+.search-form-type2 .input-group{
     height: 50px;
     border-radius: 100%;
     line-height: 1;
 }
 
-.search-form .input-group > *{
+.search-form-type2 .input-group > *{
     display: inline-block;
     vertical-align: middle;
     height: 100%;
 }
 
-.search-form .input-group,
-.search-form .input-group > *{
+.search-form-type2 .input-group,
+.search-form-type2 .input-group > *{
     -webkit-transition:all .5s;
             transition:all .5s;
 }
 
-.search-form .input-group .form-control {
+.search-form-type2 .input-group .form-control {
     border: 0;
     padding: 0;
     outline: none;
@@ -903,24 +905,24 @@ h1,h2,h3,p,li,.logo,.btn{
     width:0;
 }
 
-.search-form .input-group:hover{
+.search-form-type2 .input-group:hover{
     border-radius: 15px;
 }
 
-.search-form .input-group:hover .form-control{
+.search-form-type2 .input-group:hover .form-control{
     width: 176px;
 }
 
-.search-form .input-group:hover .input-group-btn .submit > .fa{
+.search-form-type2 .input-group:hover .input-group-btn .submit > .fa{
     font-size: 1.2em;
     text-shadow: #fff 0px 0px 4px;
 }
 
-.search-form .input-group .input-group-btn{
+.search-form-type2 .input-group .input-group-btn{
     width: 50px;
 }
 
-.search-form .input-group-btn .submit {
+.search-form-type2 .input-group-btn .submit {
     display: block;
     background-color: transparent;
     border: none;
@@ -931,8 +933,8 @@ h1,h2,h3,p,li,.logo,.btn{
     padding: 0;
 }
 
-.search-form .input-group .form-control,
-.search-form .input-group-btn .submit > .fa{
+.search-form-type2 .input-group .form-control,
+.search-form-type2 .input-group-btn .submit > .fa{
     color: #fff;
     line-height: 50px;
     font-size: 0.7em;
@@ -998,40 +1000,35 @@ h1,h2,h3,p,li,.logo,.btn{
 }
 
 .contact-list .contact{
-  height: 80px;
+  height: 90px;
 }
 
-.contact-list .contact > *{
-  height: 100%;
+.contact-list .contact > *,
+.contact-list .contact .content > *{
   float: left;
+  height: 100%;
 }
-
+/*Foto del usuario*/
 .contact-list .contact .photo{
   width: 30%;
   background:#fff url(../resources/img/wallpaper/RedEaredSlider.jpg) no-repeat center;
   background-size: cover;
 }
-
-.contact-list .contact .info{
+/*Contenido donde aparecerá información del usuario y las acciones*/
+.contact-list .contact .content{
   width: 70%;
   position: relative;
-  background-color: #C6CFE2;
+  padding-top: 1px;
+  background:#C6CFE2;
+  background: -webkit-linear-gradient(top, #fff,#C6CFE2,#989A9C); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(top, #fff,#C6CFE2,#989A9C); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(top, #fff,#C6CFE2,#989A9C); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(top, #fff,#C6CFE2,#989A9C); /* Standard syntax (must be last)*/
+  letter-spacing: -0.25rem;
+  overflow: hidden;/*clear fix hack*/
 }
-
-.contact-list .contact .info p{
-  margin: 0;
-  color: #002761;
-}
-
-.contact-list .contact .info .name{
-  font-size: 1.1rem;
-}
-
-.contact-list .contact .info .sentece{
-  font-size: .9rem;
-}
-
-.contact-list .contact .info::before{
+/*Barra de estado, indica visualmente si el contacto está disponible*/
+.contact-list .contact .content::before{
   content: '';
   display: block;
   position: absolute;
@@ -1039,13 +1036,84 @@ h1,h2,h3,p,li,.logo,.btn{
   width: 8px;
 }
 
-.contact-list .contact:nth-child(1) .info::before{
-  background-color: red;
+.contact-list .contact .content::before{
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;bottom: 0;left: 0;
+  width: 8px;
 }
 
-.contact-list .contact:nth-child(2) .info::before{
-  background-color: green;
+.contact-list .contact .content::before,
+.contact-list .contact[data-status='unknow'] .content::before {
+  background-color: #8B008B;
 }
+
+.contact-list .contact[data-status='connected'] .content::before{
+  background-color: #ADFF2F;
+}
+
+.contact-list .contact[data-status='disconnected'] .content::before{
+  background-color: #B22222;
+}
+
+.contact-list .contact[data-status='absent'] .content::before{
+  background-color: #B22222;
+}
+
+
+
+.contact-list .contact .content .info{
+  width: 80%;
+}
+
+.contact-list .contact .content .actions{
+  width: 20%;
+}
+
+
+.contact-list .contact .content .info p{
+  margin: 5px auto;
+  width: 80%;
+  color: #002761;
+  letter-spacing: normal;
+}
+
+.contact-list .contact .content .info .personality{
+  text-transform: uppercase;
+}
+
+.contact-list .contact .content .info .name{
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.contact-list .contact .content  .sentece,
+.contact-list .contact .content .info .personality{
+  font-size: .9rem;
+}
+
+
+
+
+
+.contact-list .contact .content .actions .action2{
+  display: block;
+  height: 33.33%;
+  font-size: 1.2rem;
+  padding-top: 5px;
+  color: #fff;
+  text-align: center;
+}
+
+.contact-list .contact .content .actions .action2:nth-child(even){
+  background-color: #00aff0;
+}
+
+.contact-list .contact .content .actions .action2:nth-child(odd){
+  background-color: #008abd;
+}
+
 
 /*
     Lista de Datos Simple
@@ -1440,6 +1508,10 @@ h1,h2,h3,p,li,.logo,.btn{
 .flex-block.flex-x-content-center{
   justify-content:center;
 }
+
+.flex-block.flex-x-content-end{
+  justify-content:flex-end;
+}
     
 .flex-block.flex-direction-column{
   flex-direction: column;
@@ -1716,17 +1788,92 @@ h1,h2,h3,p,li,.logo,.btn{
 
 /* 
     
-    Header
+    Action Bar
     =============================
     
 */
 
-#header{
-    height: 70px;
-    text-align: right;
+.actionbar{
+  height: 70px;
+  letter-spacing: -0.25rem;
+  background-color:  #00aff0;
+  box-shadow: #C6CFE2 5px 0px 10px 5px;
 }
 
-#header .logo,
+.actionbar > *{
+  display: inline-block;
+  vertical-align: top;
+  height: 100%;
+  color: #fff;
+  text-align: center;
+  position: relative;
+}
+
+.actionbar .nav-icon > *,
+.actionbar .title > *,
+.actionbar .actions .action > *{
+  position: absolute;
+  top: 50%;left: 50%;
+  -webkit-transform:translatex(-50%) translateY(-50%);
+  transform:translatex(-50%) translateY(-50%);
+}
+
+.actionbar .nav-icon{
+  width: 10%
+}
+.actionbar .title{
+  width: 20%;
+}
+
+.actionbar .title .logo{
+  display: block;
+  width: 100%;
+  height: 70%;
+}
+
+.actionbar .actions{
+  width: 70%;
+  overflow: hidden;
+  text-align: right;
+}
+
+.actionbar .actions .action{
+  display: inline-block;
+  vertical-align: middle;
+  width: 50px;
+  height: 100%;
+  position: relative;
+  margin-right: 20px;
+}
+
+
+.actionbar .actions .action > a{
+  display: block;
+  color: #fff;
+  font-size: 1.4rem;
+  -webkit-transition:all .5s;
+  transition:all .5s;
+}
+
+.actionbar .actions .action > a:hover{
+  text-shadow:#fff 0px 0px 10px;
+  font-size: 1.6rem;
+}
+
+
+/*
+  Tabs Container
+  ==================
+*/
+
+.tabs-container{
+  width: 100%;
+}
+
+
+
+
+/*#header .logo,
 #header .navIcon,
 #nav{
     display: inline-block;
@@ -1766,7 +1913,7 @@ h1,h2,h3,p,li,.logo,.btn{
 
 #header .navIcon .fa{
     line-height: 70px
-}
+}*/
 
 
 
@@ -1847,25 +1994,6 @@ h1,h2,h3,p,li,.logo,.btn{
 
 }
 
-/*
-    Paneles
-    ====================
-*/
-
-#main .paneles{
-    display: flex;
-    height: 100%;
-}
-
-#main .panel-menu,
-#main .panel-action{
-    height: 100%;
-    position: relative;
-}
-
-#main .panel-action > *{
-  height: 100%;
-}
 
 /*
 
@@ -1926,13 +2054,21 @@ h1,h2,h3,p,li,.logo,.btn{
     width: 100%;
 }
 
+.body{
+  display: -webkit-flex;
+  display: flex;
+  height: 100%;
+}
 
+.body .sidenav,
+.body .tabs-container{
+  height: 100%;
+  flex:1 1 auto;
+}
 
 .sidenav{
-  width: 30%;
-  min-width: 450px;
+  width: 40%;
   max-width: 600px;
-  height: calc(100vh - 70px);
   position: relative;
   will-change: transform;/*Hacking overflow hidden*/
 }
@@ -2055,11 +2191,13 @@ h1,h2,h3,p,li,.logo,.btn{
   transition:all .5s;
 }
 
-.sidenav .sidenav-menu > li:hover{
+.sidenav .sidenav-menu > li:hover,
+.sidenav .sidenav-menu > li.active{
   text-shadow:#fff 2px 2px 5px;
 }
 
-.sidenav .sidenav-menu > li:hover::after{
+.sidenav .sidenav-menu > li:hover::after,
+.sidenav .sidenav-menu > li.active::after{
   height: .35rem;
 }
 
@@ -2079,7 +2217,6 @@ h1,h2,h3,p,li,.logo,.btn{
 .sidenav .sidenav-content{
   height: 50%;
   background-color:#1ACBD0;
-  padding-top: 1px;
 }
 
 
@@ -5352,7 +5489,7 @@ span.css-emoticon.nintendo-controller {
 
   100% {
     opacity: 0;
-    visibility: hidden;
+    width: 0;
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
   }
@@ -5369,8 +5506,8 @@ span.css-emoticon.nintendo-controller {
   }
 
   100% {
-    opacity: 0;
-    visibility: hidden;
+     opacity: 0;
+     width: 0;
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
   }
@@ -5391,7 +5528,6 @@ span.css-emoticon.nintendo-controller {
   0% {
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
-    visibility: visible;
     opacity: 0;
   }
 
@@ -5410,7 +5546,6 @@ span.css-emoticon.nintendo-controller {
   0% {
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
-    visibility: visible;
     opacity: 0;
   }
 
