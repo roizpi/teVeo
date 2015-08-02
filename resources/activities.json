@@ -12,7 +12,9 @@
 		"APPLICATIONS",
 		"NOTIFICATOR",
 		"SEARCHS",
-		"PREFERENCES"
+		"PREFERENCES",
+		"CONTACTS",
+		"GEO_LOCATION"
 	],
 	"templates":{
 		"gui":{
@@ -22,7 +24,7 @@
 				"animationOut":"zoomOutDown"
 			},
 			"regions":{
-				"menu":"#panelMenu",
+				"menu":"#viewPanelSideNav",
 				"action":"#panelAction"
 			}
 		},

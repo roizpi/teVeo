@@ -83,8 +83,8 @@
         "dependences":["WEB_SPEECH","NOTIFICATOR","GEO_LOCATION"],
         "templates":{
             "contacts":{
-                "actividad":{
-                    "region":"",
+                "DASHBOARD":{
+                    "region":"menu",
                     "file":"contacts.html",
                     "animations":{
                         "animationIn":"bounceInLeft",
@@ -93,10 +93,13 @@
                 }  
             },
             "contactDetail":{
-                "file":"contactDetail.html",
-                "animations":{
-                    "animationIn":"zoomInUp",
-                    "animationOut":"zoomOutDown"
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"contactDetail.html",
+                    "animations":{
+                        "animationIn":"zoomInUp",
+                        "animationOut":"zoomOutDown"
+                    }
                 }
             }
         }

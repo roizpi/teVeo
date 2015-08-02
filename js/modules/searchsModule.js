@@ -366,6 +366,8 @@ var Searchs = (function(_super,$,environment){
     Searchs.prototype.startSearch = function() {
         templating.loadTemplate({
             type:"MODULE_VIEWS",
+            module:"SEARCHS",
+            template:"searchUsers",
             handlers:{
                 onCreate:onCreate,
                 onAfterShow:onAfterShow,

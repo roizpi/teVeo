@@ -2,7 +2,7 @@ var TemplateManager = (function(_super,$,environment){
 
 	__extends(TemplateManager, _super);
 
-	var views = {};
+	var viewsLoaded = {};
 
 	var componentPrototype = {
 
@@ -190,6 +190,8 @@ var TemplateManager = (function(_super,$,environment){
 					case 'HIDDEN':
 						components[componentName].el.data(componentName,value);
 						break;
+					case 'DATA':
+						components[componentName].el.attr("data-"+componentName,value);
 					default:
 						console.log("Valor no conocido");
 				}
@@ -249,11 +251,22 @@ var TemplateManager = (function(_super,$,environment){
 	}
 
 	var hasActiveView = function(type,target){
-		var viewsCategory = views[type] || [];
+		var viewsCategory = viewsLoaded[type] || [];
 		for(var view in viewsCategory){
 			if (viewsCategory[view].active && viewsCategory[view].target == target)
 				return viewsCategory[view];
 		}
+	}
+
+	var isLoaded = function(type,activity,view){
+		return viewsLoaded[type] && viewsLoaded[type][activity] && viewsLoaded[type][activity][view];
+	}
+
+	var convertToRegion = function(target){
+		var values = target.split(":");
+		var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
+		return activity["templates"]["gui"]["regions"][values[1]];
+
 	}
 
 	var hideView = function(view,callback){
@@ -274,8 +287,7 @@ var TemplateManager = (function(_super,$,environment){
 	var showView = function(view,callback){
 		//llamamos al beforeShow
 		typeof(view["handlers"] && view["handlers"]["onBeforeShow"]) == "function" && view["handlers"]["onBeforeShow"].call(view.el);
-		console.log("Esta es la puta vista");
-		console.log(view);
+		console.log("Target :"+view["target"]);
 		view.node
 			.addClass(view["animations"]["animationIn"])
 			.one("webkitAnimationEnd  animationend",function(){
@@ -284,7 +296,7 @@ var TemplateManager = (function(_super,$,environment){
                     $this.removeClass(view["animations"]["animationIn"]);
                     typeof(callback) == "function" && callback.call("Pedro");
             })
-            .appendTo(view["target"]);
+            .appendTo(view["target"] == "body" ? view["target"] : convertToRegion(view["target"]));
 
 	}
 
@@ -312,13 +324,13 @@ var TemplateManager = (function(_super,$,environment){
 			var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
 			//comprobamos el tipo de template a cargar.
 			var type = data["type"].toUpperCase();
-			if (!views[type] || !views[type][activity.name]) {	
+		
 				
-				if(!views[type]){
-					views[type] = {};
+				if(!viewsLoaded[type]){
+					viewsLoaded[type] = {};
 				}
 
-				var path,animations,target;
+				var path,animations,target,name;
 				//obtenemos el path.
 				switch(type){
 					case "ACTIVITY_VIEWS":
@@ -328,6 +340,8 @@ var TemplateManager = (function(_super,$,environment){
 						animations = activity["templates"]["gui"]["animations"];
 						//Donde se ubicará la interfaz.
 						target = "body";
+						name = "TEST";
+
 						break;
 					case "ACTIVITY_UPLOADPAGE_VIEWS":
 						//Ruta de la interfaz de la actividad.
@@ -336,16 +350,18 @@ var TemplateManager = (function(_super,$,environment){
 						animations = activity["templates"]["uploadPage"]["animations"];
 						//Donde se ubicará la interfaz.
 						target = "body";
+						name = "TEST";
 						break;
 					case "MODULE_VIEWS":
-						var module = environment.getService("MANAGER_MODULE").getCurrentModule();
-						var name = data["template"] ? data["template"] : Array.prototype.slice.call(Object.keys(module["templates"]),0,1);
+						var templates = environment.getService("MANAGER_MODULE").getModuleTemplates(data["module"]);
+						name = data["template"] ? data["template"] : Array.prototype.slice.call(Object.keys(templates),0,1);
+						var template = templates[name][activity.name];
 						//Ruta de la interfaz de la actividad.
-						path = environment.MODULES_TEMPLATES_BASE_PATH + module["templates"][name][activity.name]["file"];
+						path = environment.MODULES_TEMPLATES_BASE_PATH + template["file"];
 						//Animaciones para la interfaz
-						animations = module["templates"][name]["animations"];
+						animations = template["animations"];
 						//Donde se ubicará la interfaz.
-						target = activity.name + ":" + module["templates"][name][activity.name]["region"];
+						target = activity.name + ":" + template["region"];
 						break;
 				}
 				//Cargamos el recurso.
@@ -367,7 +383,11 @@ var TemplateManager = (function(_super,$,environment){
 		        		animations:animations,//animaciones.
 		        		target:target//Donde se ubicará la interfaz.
 		        	}
-		        	views[type][activity.name] = view;
+		        	if (!viewsLoaded[type][activity.name]) {
+		        		viewsLoaded[type][activity.name] = {}
+		        	};
+
+		        	viewsLoaded[type][activity.name][name] = view;
 		        	//llamamos al onCreate
 		        	typeof(data["handlers"] && data["handlers"]["onCreate"]) == "function" && data["handlers"]["onCreate"].call(view.component);
 		        	//la cargamos.
@@ -380,10 +400,15 @@ var TemplateManager = (function(_super,$,environment){
 					console.log("Fallo al descargar template");
 				})
 
-			};
 
 			return deferred.promise();
 		}
+	};
+
+	TemplateManager.prototype.getView = function(data) {
+		//Obtenemos la actividad actual.
+		var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
+		return viewsLoaded[data["type"]][activity.name][data["template"]].component;
 	};
 
 

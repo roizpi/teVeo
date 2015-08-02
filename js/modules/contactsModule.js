@@ -1,5 +1,5 @@
 /*Módulo de Contactos*/
-var Contacts = (function(_super,$){
+var Contacts = (function(_super,$,environment){
 
     __extends(Contacts, _super);
         
@@ -33,20 +33,194 @@ var Contacts = (function(_super,$){
         ***************************
     */
 
+    //Configuramos manejador para la template "contacts".
+    var onCreateViewContacts = function(){
 
-    var getMainView = function(name){
-        return self.templateManager.getView({
-            moduleName:self.constructor.name,
-            templateName:name
+        var view = this;
+        console.log("Vista de contactos");
+        console.log(view);
+        var container = view.getComponent("container");
+        //Utilizamos delegación de evento, porque la lista de contactos puede ser muy amplia.
+        container.get().delegate('a[data-action]','click',function(e){
+            e.preventDefault();
+            var $this = $(this);
+            if(!$this.hasClass("active")){
+                var action = this.dataset.action;
+                var idUser = $this.parent().data("id");
+                try{
+                        
+                    switch(action){
+                        case 'conversation':
+                            //iniciamos conversación
+                            conversationModule.startConversation(idUser);
+                            break;
+                        case 'videocall':
+                            //iniciamos videollamada
+                            callingModule.calling(idUser,true);
+                            break;
+                        case 'call':
+                            //iniciamos llamada de voz.
+                            callingModule.calling(idUser,false);
+                            break;
+                        case 'contactDetail':
+                            //Mostramos detalles del contacto.
+                            showContactDetail(idUser);
+                            break;
+                                
+                    }
+                    
+                    $("[data-actionsMenu]").find("[data-action].active").removeClass("active");
+                    $this.addClass("active");
+                    
+                }catch(e){
+
+                    //Mostramos alerta con la excepción.
+                    self.notificator.dialog.alert({
+                        title:e.getTitle(),
+                        text:e.getText(),
+                        level:e.getLevel()
+                    });
+                        
+                }
+                
+                
+            }
+                
         });
-    }
+            
+        var $searchContacts = view.getComponent("searchContacts").get();
+            
+        var $microphone = view.getComponent("microphone",true).get();
+        $microphone.on("click",function(){
+            //comienza el proceso.
+            self.webSpeech.hearSentence(function(result){
+                if(Math.round(result.confidence) == 1){
+                    // lo insertamos en el campo de búsqueda.
+                    $searchContacts.val(result.transcript);
+                    this.speak("Has Dicho " + result.transcript);
+                    //filtramos los contactos para ese valor.
+                    container.filter(result.transcript);
+                }else{
+                    this.speak("No te entiendo, inténtalo otra vez");
+                }
+            },function(error){
+                console.log(error);
+                ///el usuario ha podido negar el acceso al micrófono o ha ocurrido otro error.
+                //cambiamos el icono del micrófono.
+                switch(error){
+                    case "no-speech":
+                        this.speak("Pronuncie el nombre del usuario con el que quiere contactar");
+                        break;
+                    default:
+                        break;
+                }
+
+            });
+                
+        });
+            
+        //Si la JavaScript Web Speech API está implementada.
+        if(self.webSpeech.isEnabled()){
+            $microphone.addClass("fa fa-microphone");
+        }else{
+            $microphone.addClass("fa fa-microphone-slash");
+        }
+            
+            
+        self.webSpeech.addEventListener("SpeechEnabled",function(){
+            $microphone.removeClass("fa-microphone-slash").addClass("fa-microphone");
+        });
+            
+        self.webSpeech.addEventListener("SpeechDisabled",function(){
+            $microphone.removeClass("fa-microphone").addClass("fa-microphone-slash");
+        });
+            
+            
+        $searchContacts.on("keyup",function(e){
+            var val = this.search.value;
+            //filtramos contactos.
+            container.filter(val);
+        }).focus();
+            
+        //mostramos cada contacto.
+        userContacts.forEach(showContact);
+
+    };
+
+
+    
+    //Configuramos manejador para la template "contactDetail".
+    var onCreateViewContactDetail = function(){
+
+        var view = this;
+        var $contactActions = view.getComponent("contactActions").get();
+        $contactActions.on("click",function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            var $this = $(this);
+            var contact = getContactById($this.data("id"));
+            var $target = $(e.target);
+            var action = e.target.dataset.action;
+            if(action.toUpperCase() == "DROPCONTACT"){
+
+                self.notificator.dialog.confirm({
+                    title:"Borrar a " + contact.data.name,
+                    text:"Estás seguro de que quieres dejar de ser amigo de "+contact.data.name+" , todas la conversaciones, llamadas etc.. desaparecerán ¿Estás seguro?"
+                },function(){
+                    self.serviceLocator.dropContact(userConnected.id,contact.data.idRepresentado)
+                        .done(function(){
+                            //Mostramos alerta de confirmación.
+                            self.notificator.dialog.alert({
+                                title:"Contacto borrado correctamente",
+                                text:contact.data.name + "deja de pertenecer a tu lista de contactos.",
+                                level:"success"
+                            });
+                            //Borramos contacto.
+                            dropContact(contact);
+                        })
+                        .fail(function(error){
+
+                        });
+                });
+                
+            }else if(action.toUpperCase() == "SAVE"){
+                var desc = $this.prev().val();
+                if(desc.length >= 10){
+                    self.serviceLocator.updateContact(userConnected.id,contact.data.idRepresentado,desc)
+                        .done(function(){
+                            contact.data.descripcion = desc;
+                            //Mostramos alerta de confirmación.
+                            self.notificator.dialog.alert({
+                                title:"Operación realizada con éxito",
+                                text:"La descripción fue guardada correctamente",
+                                level:"success"
+                            });
+                        })
+                        .fail(function(error){
+
+                        })
+                }else{
+
+                    //Mostramos alerta de confirmación.
+                    self.notificator.dialog.alert({
+                        title:"La operación no se puede realizar",
+                        text:"La descripción del contacto debe tener como mínimo 10 caracteres",
+                        level:"warning"
+                    });
+    
+                }
+            }
+        });
+        
+    };
 
     var attachHandlers = function(){
 
+        var serviceLocator = environment.getService("SERVICE_LOCATOR");
         //Manejador para el evento USER_CONNECTED.
         //Un nuevo usuario que pertenece a la lista de contactos de este usuario
         // se ha conectado.
-        self.serviceLocator.addEventListener("USER_CONNECTED",function(user){
+        serviceLocator.addEventListener("USER_CONNECTED",function(user){
             //reproducimos sonido.
             $.ionSound.play("userConnected");
             //lanzamos notificación
@@ -56,13 +230,13 @@ var Contacts = (function(_super,$){
                 body:user.name + " ha iniciado sesión"
             });
             //Actualizamos contacto.
-            setStatus(user.id,"disponible");
+            setStatus(user.id,"connected");
         });
         
         //Manejador para el evento USER_DISCONNECTED.
         //Un usuario que pertenece a la lista de contactos de este usuario
         // se ha desconectado.
-        self.serviceLocator.addEventListener("USER_DISCONNECTED",function(user){
+        serviceLocator.addEventListener("USER_DISCONNECTED",function(user){
             //reproducimos sonido.
             $.ionSound.play("userDisconnected");
             //lanzamos notificación
@@ -72,20 +246,20 @@ var Contacts = (function(_super,$){
                 body:user.name + " ha cerrado sesión"
             });
             //Actualizamos contacto.
-            setStatus(user.id,"desconectado");
+            setStatus(user.id,"disconnected");
         });
         
         //Manejador para el evento NEW_USER_STATE
         //Un usuario que pertenece a la lista de contactos de este usuario
         // ha notificado su estado.
-        self.serviceLocator.addEventListener("NEW_USER_STATE",function(user){
+        serviceLocator.addEventListener("NEW_USER_STATE",function(user){
             //Actualizamos estado del contacto.
             setStatus(user.id,user.status);
         });
 
         //Manejador para el evento NEW_CONTACT.
         //Este usuario tiene un nuevo contacto.
-        self.serviceLocator.addEventListener("NEW_CONTACT",function(contact){
+        serviceLocator.addEventListener("NEW_CONTACT",function(contact){
             //añadimos el contacto
             addContact(contact);
             //Notificamos nuestra posición.
@@ -96,7 +270,7 @@ var Contacts = (function(_super,$){
 
         //Manejador para el evento DROP_CONTACT
         //Este evento se dispara cuando un usuario ha eliminado a otro de su lista de contactos.
-        self.serviceLocator.addEventListener("DROP_CONTACT",function(idUser){
+        serviceLocator.addEventListener("DROP_CONTACT",function(idUser){
             //reproducimos sonido.
             $.ionSound.play("userDisconnected");
             //Obtenemos datos del contacto.
@@ -112,14 +286,14 @@ var Contacts = (function(_super,$){
         });
         //Manejador para el evento USER_SHARE_YOUR_POSITION.
         //Un usuario ha compartido su posición contigo.
-        self.serviceLocator.addEventListener("USER_SHARE_YOUR_POSITION",function(user){
+        serviceLocator.addEventListener("USER_SHARE_YOUR_POSITION",function(user){
             //Establecemos o actualizamos la posición del usuario.
             console.log(user);
             var contact = getContactById(user.id);
             if(!contact.data.currentPosition || contact.data.currentPosition.timestamp < user.position.timestamp){
                 contact.data.currentPosition = user.position;
                 //compartimos nuestra ubicación con él
-                aelf.geoLocation.sharePosition(userConnected.currentPosition,[user.id]);
+                self.geoLocation.sharePosition(userConnected.currentPosition,[user.id]);
             } 
         });
 
@@ -137,207 +311,18 @@ var Contacts = (function(_super,$){
             //notificamos nuestro estado.
             self.serviceLocator.notifyStatus(userConnected.id,users,userConnected.status);
         });*/
-
-        //Configuramos manejador para la template "contacts".
-        self.templateManager.implementHandler({
-            moduleName:self.constructor.name,
-            templateName:"contacts",
-            handler:"onCreate"
-        },function(){
-
-            var view = this;
-            console.log("Vista de contactos");
-            console.log(view);
-            var container = view.getComponent("container");
-            //Utilizamos delegación de evento, porque la lista de contactos puede ser muy amplia.
-            container.get().delegate('a[data-action]','click',function(e){
-                e.preventDefault();
-                var $this = $(this);
-                if(!$this.hasClass("active")){
-                    var action = this.dataset.action;
-                    var idUser = $this.parent().data("id");
-                    try{
-                        
-                        switch(action){
-                            case 'conversation':
-                                //iniciamos conversación
-                                conversationModule.startConversation(idUser);
-                                break;
-                            case 'videocall':
-                                //iniciamos videollamada
-                                callingModule.calling(idUser,true);
-                                break;
-                            case 'call':
-                                //iniciamos llamada de voz.
-                                callingModule.calling(idUser,false);
-                                break;
-                            case 'contactDetail':
-                                //Mostramos detalles del contacto.
-                                showContactDetail(idUser);
-                                break;
-                                
-                        }
-                    
-                        $("[data-actionsMenu]").find("[data-action].active").removeClass("active");
-                        $this.addClass("active");
-                    
-                    }catch(e){
-
-                        //Mostramos alerta con la excepción.
-                        self.notificator.dialog.alert({
-                            title:e.getTitle(),
-                            text:e.getText(),
-                            level:e.getLevel()
-                        });
-                        
-                    }
-                
-                
-                }
-                
-            });
-            
-            var $searchContacts = view.getComponent("searchContacts").get();
-            
-            var $microphone = view.getComponent("microphone",true).get();
-            $microphone.on("click",function(){
-                //comienza el proceso.
-                self.webSpeech.hearSentence(function(result){
-                    if(Math.round(result.confidence) == 1){
-                        // lo insertamos en el campo de búsqueda.
-                        $searchContacts.val(result.transcript);
-                        this.speak("Has Dicho " + result.transcript);
-                        //filtramos los contactos para ese valor.
-                        container.filter(result.transcript);
-                    }else{
-                        this.speak("No te entiendo, inténtalo otra vez");
-                    }
-                },function(error){
-                    console.log(error);
-                    ///el usuario ha podido negar el acceso al micrófono o ha ocurrido otro error.
-                    //cambiamos el icono del micrófono.
-                    switch(error){
-                        case "no-speech":
-                            this.speak("Pronuncie el nombre del usuario con el que quiere contactar");
-                            break;
-                        default:
-                            break;
-                    }
-
-                });
-                
-            });
-            
-            //Si la JavaScript Web Speech API está implementada.
-            if(self.webSpeech.isEnabled()){
-                $microphone.addClass("fa fa-microphone");
-            }else{
-                $microphone.addClass("fa fa-microphone-slash");
-            }
-            
-            
-            self.webSpeech.addEventListener("SpeechEnabled",function(){
-                $microphone.removeClass("fa-microphone-slash").addClass("fa-microphone");
-            });
-            
-            self.webSpeech.addEventListener("SpeechDisabled",function(){
-                $microphone.removeClass("fa-microphone").addClass("fa-microphone-slash");
-            });
-            
-            
-            $searchContacts.on("keyup",function(e){
-                var val = this.search.value;
-                //filtramos contactos.
-                container.filter(val);
-            }).focus();
-            
-            //mostramos cada contacto.
-            userContacts.forEach(showContact);
-
-        });
-
-
-        //Configuramos manejador para la template "contactDetail".
-        self.templateManager.implementHandler({
-            moduleName:self.constructor.name,
-            templateName:"contactDetail",
-            handler:'onCreate'
-        },function(){
-
-            var view = this;
-            var $contactActions = view.getComponent("contactActions").get();
-            $contactActions.on("click",function(e){
-                e.preventDefault();
-                e.stopPropagation();
-                var $this = $(this);
-                var contact = getContactById($this.data("id"));
-                var $target = $(e.target);
-                var action = e.target.dataset.action;
-                if(action.toUpperCase() == "DROPCONTACT"){
-
-                    self.notificator.dialog.confirm({
-                        title:"Borrar a " + contact.data.name,
-                        text:"Estás seguro de que quieres dejar de ser amigo de "+contact.data.name+" , todas la conversaciones, llamadas etc.. desaparecerán ¿Estás seguro?"
-                    },function(){
-                        self.serviceLocator.dropContact(userConnected.id,contact.data.idRepresentado)
-                            .done(function(){
-                                //Mostramos alerta de confirmación.
-                                self.notificator.dialog.alert({
-                                    title:"Contacto borrado correctamente",
-                                    text:contact.data.name + "deja de pertenecer a tu lista de contactos.",
-                                    level:"success"
-                                });
-                                //Borramos contacto.
-                                dropContact(contact);
-                            })
-                            .fail(function(error){
-
-                            });
-                    });
-                
-                }else if(action.toUpperCase() == "SAVE"){
-                    var desc = $this.prev().val();
-                    if(desc.length >= 10){
-                        self.serviceLocator.updateContact(userConnected.id,contact.data.idRepresentado,desc)
-                            .done(function(){
-                                contact.data.descripcion = desc;
-                                //Mostramos alerta de confirmación.
-                                self.notificator.dialog.alert({
-                                    title:"Operación realizada con éxito",
-                                    text:"La descripción fue guardada correctamente",
-                                    level:"success"
-                                });
-                            })
-                            .fail(function(error){
-
-                            })
-                    }else{
-
-                        //Mostramos alerta de confirmación.
-                        self.notificator.dialog.alert({
-                            title:"La operación no se puede realizar",
-                            text:"La descripción del contacto debe tener como mínimo 10 caracteres",
-                            level:"warning"
-                        });
-    
-                    }
-                }
-            });
-        
-        });
-
     }
 
     var getData = function(){
-
+        var serviceLocator = environment.getService("SERVICE_LOCATOR");
         //Obtenemos los contactos del usuario.
-        self.serviceLocator.getAllContacts(userConnected.id)
+        serviceLocator.getAllContacts(userConnected.id)
             .done(function(contacts){
             
                 //Guardamos los contactos.
                 userContacts = contacts.map(function(contact){
                     //Por defecto todos los contactos desconectados.
-                    contact.status = "desconectado";
+                    contact.status = "disconnected";
                     return contact;
                 });
 
@@ -369,13 +354,20 @@ var Contacts = (function(_super,$){
     var showContact= function(contact){
         //solucionar
         //$viewContact.find("[data-photo]").attr({src:contact.foto,alt:"Foto de " + contact.name,title:"Ver detalles de " + contact.name});
-        var view = getMainView("contacts");
-        view.getComponent("container").createComponent("contact",{
+        var templateManager = environment.getService("TEMPLATE_MANAGER");
+        var view = templateManager.getView({
+            type:"MODULE_VIEWS",
+            template:"contacts"
+        });
+        console.log("view devuelta");
+        console.log(view);
+        view && view.getComponent("container").createComponent("contact",{
             id:contact.idRepresentado,
             photo:contact.foto,
             name:contact.name,
-            status:contact.status ? contact.status : "desconectado"
+            status:contact.status ? contact.status : "disconnected"
         },{});
+        
     
     }
 
@@ -481,9 +473,14 @@ var Contacts = (function(_super,$){
     Contacts.prototype.showListOfContact = function(callback) {
         
         if(userContacts.length){
-            this.templateManager.loadTemplate({
-                moduleName:this.constructor.name,
-                templateName:"contacts"
+            var templateManager = environment.getService("TEMPLATE_MANAGER");
+            templateManager.loadTemplate({
+                type:"MODULE_VIEWS",
+                module:self.constructor.name,
+                template:"contacts",
+                handlers:{
+                    onCreate:onCreateViewContacts
+                }
             },function(){
                 typeof(callback) == "function" && callback.call(this);
             });
@@ -497,7 +494,7 @@ var Contacts = (function(_super,$){
 
     return Contacts;
 
-})(Component,jQuery);
+})(Component,jQuery,environment);
 
     
   

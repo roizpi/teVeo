@@ -118,6 +118,16 @@ var ManagerModule = (function(_super,$,environment){
 
         return deferred.promise();
     };
+
+    ManagerModule.prototype.getModuleTemplates = function(name) {
+
+        var keyFinded = Object.keys(modules).filter(function(key){
+            return modules[key].name.toLowerCase() == name.toLowerCase();
+        });
+
+        return keyFinded.length ? modules[keyFinded]["templates"] : null;
+
+    };
    
     
 	return ManagerModule;

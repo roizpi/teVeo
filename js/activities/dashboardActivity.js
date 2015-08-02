@@ -1,4 +1,3 @@
-
 var DashboardActivity = (function(environment,$){
 
 	var visibilityState;
@@ -44,10 +43,10 @@ var DashboardActivity = (function(environment,$){
                 
         });
 
+        var $panelMenu = gui.getComponent("panelMenu").get();
         //Icono para ocultar menú de acceso rápido.
         $("#navIcon").on("click",function(){
             var $navicon = $(this).find("span.fa");
-            var $panelMenu = $("#panelMenu");
             if($navicon.hasClass("fa-navicon")){
                 $navicon.removeClass("fa-navicon").addClass("fa-close");
                 $panelMenu.removeClass("slideOutLeft").addClass("slideInLeft");
@@ -59,10 +58,11 @@ var DashboardActivity = (function(environment,$){
         });
 
         //Menú principal de tareas.
-        $("#task").delegate("[data-action]","click",function(e){
+        $("#tasks").delegate("[data-action]","click",function(e){
             
             e.preventDefault();
             e.stopPropagation();
+            console.log("Realizando acción...");
             var $this = $(this);
             if(!$this.hasClass("active")){
                 //recogemos la acción.
@@ -117,7 +117,7 @@ var DashboardActivity = (function(environment,$){
                     
                 }catch(e){
                     
-                    self.notificator.dialog.alert({
+                    modules["notificator"].dialog.alert({
                     	title:"Operación no realizada",
                     	text:e.message,
                         level:"info"
@@ -125,6 +125,49 @@ var DashboardActivity = (function(environment,$){
                 }
             }
                 
+        });
+
+        /*
+            
+            Opciones del Panel Menú
+            ================================
+        
+        */
+        
+        $("#actions").delegate("a[data-action]","click",function(e){
+            console.log("Acción pulsada..");
+            e.preventDefault();
+            e.stopPropagation();
+            var $this = $(this).parent();
+            if(!$this.hasClass("active")){ 
+
+                var action = this.dataset.action;
+                
+                try{
+                    
+                    switch(action){
+                        case 'showAllContacts':
+                            //Mostramos la lista de contactos.
+                            modules['contacts'].showListOfContact();
+                            break;
+                        case 'showCalls':
+                            //Mostramos todas la llamadas que ha realizado.
+                            self.caller.showListOfCall();
+                            break;
+                    }
+
+                    $this.addClass("active").siblings().removeClass("active");
+                    
+                }catch(e){
+
+                    modules['notificator'].dialog.alert({
+                        title:"Operación no realizada",
+                        text:e.message,
+                        level:"info"
+                    });
+                }
+            }
+            
         });
 
 
@@ -186,7 +229,10 @@ var DashboardActivity = (function(environment,$){
 
 	DashboardActivity.prototype.run = function() {
         //Aplicamos animaciones.
-        $("#userImageMain").addClass("cutEffect-visible");
+        var panelMenu = gui.getComponent("panelMenu");
+        panelMenu.get().removeClass("slideOutLeft").addClass("slideInLeft").one("Webkitanimationend animationend",function(){
+            panelMenu.getComponent("userImage").get().addClass("cutEffect-visible");
+        });
         //Iniciamos el configurador de wallpapers.
 		startWallpaperConfigurator();
 		//Comprobamos actividad del usuario, para notificar a otros 
@@ -195,6 +241,8 @@ var DashboardActivity = (function(environment,$){
 		console.log("Corriendo Actividad");
 		console.log("Esta es la vista");
 		console.log(gui);
+        console.log("Estos son los modulos");
+        console.log(modules);
 	};
 
 

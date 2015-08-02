@@ -1,11 +1,10 @@
-var GeoLocation = (function(_super,$){
+var GeoLocation = (function(_super,$,environment){
 
   __extends(GeoLocation, _super);
 
   var urlApiGoogle = "http://maps.google.com/maps/api/js?sensor=false";
   
-  function GeoLocation(serviceLocator){
-    this.serviceLocator = serviceLocator;
+  function GeoLocation(){
   }
 
   var isAvailableGeolocation = function(){
@@ -18,7 +17,8 @@ var GeoLocation = (function(_super,$){
 
   //Compartimos nuestra posición con otros usuarios.
   GeoLocation.prototype.sharePosition = function(position,users,callbackSuccess,callbackError) {
-    this.serviceLocator.sharePosition(userConnected.id,position.timestamp,position.detail.formatted_address,position.detail.address_components,users)
+    var serviceLocator = environment.getService("SERVICE_LOCATOR");
+    serviceLocator.sharePosition(userConnected.id,position.timestamp,position.detail.formatted_address,position.detail.address_components,users)
         .done(function(response){
           //Ubicación compartida.
           callbackSuccess && callbackSuccess(response);
@@ -80,4 +80,4 @@ var GeoLocation = (function(_super,$){
 
   return GeoLocation;
 
-})(Component,jQuery);
+})(Component,jQuery,environment);

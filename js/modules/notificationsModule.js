@@ -66,6 +66,9 @@ var Notificator = (function(_super,$){
             "NOT_FOUND_NOTIFICATIONS":[],
             "NEW_NOTIFICATION":[]
         }
+
+
+        Notificator.prototype.dialog = new Dialog();
         //Configuramos handlers
         //attachHandlers();
 
@@ -314,7 +317,7 @@ var Notificator = (function(_super,$){
         }
     }
 
-    
+
 
    return Notificator;
     

@@ -8,7 +8,7 @@
             <a class="logo" href="index.html"><img src="resources/img/logo.png" alt="TeVeo!"/></a>
         </div>
         <!-- Barra de Tareas -->
-        <ul data-actionsMenu class="actions" role="menu">
+        <ul data-actionsMenu class="actions" role="menu" id="tasks">
             <!-- Inicio -->
             <li class="action" role="listitem" data-action="goHome">
                 <a href="#" title="Volver a Inicio">
@@ -52,10 +52,10 @@
         
         <div class="body">
             <!-- side nav -->
-            <aside id="panelMenu" class="sidenav animateView">
+            <aside data-component="panelMenu" data-type="html" class="sidenav animateView  slideOutLeft">
                 <header class="sidenav-header">
                     <div class="user-info flex-block  flex-direction-row">
-                        <div class="large cycle">
+                        <div data-component="userImage" data-type="img" class="large cycle">
                             <img src="resources/img/wallpaper/CanisLupus.jpg" alt="imagen del usuarios">
                         </div>
                         <div>
@@ -81,51 +81,17 @@
                         <span  class="fa fa-edit"></span>
                     </a>
                 </header>
-                <ul class="sidenav-menu">
-                    <li>Contactos</li>
-                    <li>Llamadas</li>
+                <ul class="sidenav-menu" id="actions">
+                    <li>
+                        <a href="#" data-action="showAllContacts">Contactos</a>
+                    </li>
+                    <li>
+                        <a href="#" data-action="showCalls">Llamadas</a>
+                    </li>
                     <li>Grupos</li>
                 </ul>
                 <div id="viewPanelSideNav" class="sidenav-content">
-                    <form action="" class="search-form  search-form-large" data-component="searchContacts">
-                        <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..."/>
-                        <label for="search"><span class="fa fa-search"></span></label>
-                        <span data-component="microphone"></span>
-                    </form>
-                    <ul class="contact-list">
-                        <li class="contact">
-                            <!--Foto del usuario-->
-                            <a href="#" class="photo"></a>
-                            <div class="content">
-                                <div class="info flex-block flex-direction-column">
-                                    <p class="personality">aventurero</p>
-                                    <p class="name">Emilo Pérez&nbsp;<span class="fa fa-map-marker"></span></p>
-                                    <p class="sentece singleLine">Lorem ipsum consequetur Lorem ipsum consequetur</p>
-                                </div>
-                                <div class="actions">
-                                    <a class="action2" data-action="videocall" title="Iniciar Videollamada" href="#"><span class="fa fa-video-camera"></span></a>
-                                    <a class="action2" data-action="conversation" title="Iniciar Conversación" href="#"><span class="fa fa fa-weixin"></span></a>
-                                    <a class="action2" data-action="call" title="Iniciar llamada de voz" href="#"><span class="fa fa-phone"></span></a>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="contact" data-status='connected'>
-                            <!--Foto del usuario-->
-                            <a href="#" class="photo"></a>
-                            <div class="content">
-                                <div class="info flex-block flex-direction-column">
-                                    <p class="personality">aventurero</p>
-                                    <p class="name">Sara Gómez&nbsp;<span class="fa fa-map-marker"></span></p>
-                                    <p class="sentece singleLine">Lorem ipsum consequetur Lorem ipsum consequetur</p>
-                                </div>
-                                <div class="actions">
-                                    <a class="action2" data-action="videocall" title="Iniciar Videollamada" href="#"><span class="fa fa-video-camera"></span></a>
-                                    <a class="action2" data-action="conversation" title="Iniciar Conversación" href="#"><span class="fa fa fa-weixin"></span></a>
-                                    <a class="action2" data-action="call" title="Iniciar llamada de voz" href="#"><span class="fa fa-phone"></span></a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+                    
                 </div>
             </aside>
             <section id="panelAction" class="tabs-container">
