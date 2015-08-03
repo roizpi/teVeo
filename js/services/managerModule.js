@@ -128,6 +128,24 @@ var ManagerModule = (function(_super,$,environment){
         return keyFinded.length ? modules[keyFinded]["templates"] : null;
 
     };
+
+    ManagerModule.prototype.getTemplateData = function(fqn) {
+        
+        var result = null;
+        var values = fqn.split(":");
+        if (fqn) {
+           for(var module in modules){
+                var templates = modules[module]["templates"];
+                if (templates && templates.hasOwnProperty(values[1])) {
+                    result = templates[values[1]][values[0]];
+                    break;
+                };
+           }
+        };
+
+        return result;
+
+    };
    
     
 	return ManagerModule;

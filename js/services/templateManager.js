@@ -2,7 +2,7 @@ var TemplateManager = (function(_super,$,environment){
 
 	__extends(TemplateManager, _super);
 
-	var viewsLoaded = {};
+	var views = {};
 
 	var componentPrototype = {
 
@@ -251,15 +251,11 @@ var TemplateManager = (function(_super,$,environment){
 	}
 
 	var hasActiveView = function(type,target){
-		var viewsCategory = viewsLoaded[type] || [];
-		for(var view in viewsCategory){
-			if (viewsCategory[view].active && viewsCategory[view].target == target)
-				return viewsCategory[view];
+		for(var view in views){
+			var currentView = views[view];
+			if (currentView.type == type && currentView.active && currentView.target == target )
+				return currentView;
 		}
-	}
-
-	var isLoaded = function(type,activity,view){
-		return viewsLoaded[type] && viewsLoaded[type][activity] && viewsLoaded[type][activity][view];
 	}
 
 	var convertToRegion = function(target){
@@ -318,97 +314,90 @@ var TemplateManager = (function(_super,$,environment){
 	//Carga la template especificada.
 	TemplateManager.prototype.loadTemplate = function(data) {
 		//comprobamos si ha especificado el tipo de template.
-		if (data["type"]) {
-			var deferred = $.Deferred();
-			//Obtenemos la actividad actual.
-			var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
-			//comprobamos el tipo de template a cargar.
-			var type = data["type"].toUpperCase();
-		
-				
-				if(!viewsLoaded[type]){
-					viewsLoaded[type] = {};
-				}
-
-				var path,animations,target,name;
-				//obtenemos el path.
-				switch(type){
-					case "ACTIVITY_VIEWS":
-						//Ruta de la interfaz de la actividad.
-						path = environment.ACTIVITY_TEMPLATES_BASE_PATH + activity["templates"]["gui"]["file"];
-						//Animaciones para la interfaz
-						animations = activity["templates"]["gui"]["animations"];
-						//Donde se ubicará la interfaz.
-						target = "body";
-						name = "TEST";
-
-						break;
-					case "ACTIVITY_UPLOADPAGE_VIEWS":
-						//Ruta de la interfaz de la actividad.
-						path = environment.ACTIVITY_TEMPLATES_BASE_PATH + activity["templates"]["uploadPage"]["file"];
-						//Animaciones para la interfaz
-						animations = activity["templates"]["uploadPage"]["animations"];
-						//Donde se ubicará la interfaz.
-						target = "body";
-						name = "TEST";
-						break;
-					case "MODULE_VIEWS":
-						var templates = environment.getService("MANAGER_MODULE").getModuleTemplates(data["module"]);
-						name = data["template"] ? data["template"] : Array.prototype.slice.call(Object.keys(templates),0,1);
-						var template = templates[name][activity.name];
-						//Ruta de la interfaz de la actividad.
-						path = environment.MODULES_TEMPLATES_BASE_PATH + template["file"];
-						//Animaciones para la interfaz
-						animations = template["animations"];
-						//Donde se ubicará la interfaz.
-						target = activity.name + ":" + template["region"];
-						break;
-				}
-				//Cargamos el recurso.
-				environment.loadResource({
-					type:"html",
-					src:path
-				}).done(function(template){
-
-					//cacheamos la template.
-					var $template = $(template);
-					$template.addClass("animateView");
-					//creamos la vista 
-		        	var view = {
-		        		component:parseElement($template),//estructura de componentes derivada de la template
-		        		node:$template,//objeto jquery original
-		        		type:type,//tipo de vista
-		        		timestamp:new Date().getTime(),//timemstamp de creación
-		        		handlers:data["handlers"],//manejadores del ciclo de vida
-		        		animations:animations,//animaciones.
-		        		target:target//Donde se ubicará la interfaz.
-		        	}
-		        	if (!viewsLoaded[type][activity.name]) {
-		        		viewsLoaded[type][activity.name] = {}
-		        	};
-
-		        	viewsLoaded[type][activity.name][name] = view;
-		        	//llamamos al onCreate
-		        	typeof(data["handlers"] && data["handlers"]["onCreate"]) == "function" && data["handlers"]["onCreate"].call(view.component);
-		        	//la cargamos.
-		        	viewLoad(view,function(){
-		        		view.active = true;
-		        		deferred.resolve(view.component);
-		        	});
-
-				}).fail(function(){
-					console.log("Fallo al descargar template");
-				})
-
-
-			return deferred.promise();
-		}
-	};
-
-	TemplateManager.prototype.getView = function(data) {
+		var deferred = $.Deferred();
 		//Obtenemos la actividad actual.
 		var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
-		return viewsLoaded[data["type"]][activity.name][data["template"]].component;
+		//Esta es la data pasada.
+		//Obtenemos el nombre totalmente cualificado de la template.
+		var fqn = activity.name + ":" + data["name"];
+		//Comprobamos si ya existe una vista para esta template.
+		if(!views[fqn]){
+			//comprobamos el tipo de template a cargar.
+			var type = data["type"].toUpperCase();
+			var path,animations,target;
+			//obtenemos el path.
+			switch(type){
+				case "ACTIVITY_VIEWS":
+					//Ruta de la interfaz de la actividad.
+					path = environment.ACTIVITY_TEMPLATES_BASE_PATH + activity["templates"]["gui"]["file"];
+					//Animaciones para la interfaz
+					animations = activity["templates"]["gui"]["animations"];
+					//Donde se ubicará la interfaz.
+					target = "body";
+					break;
+				case "ACTIVITY_UPLOADPAGE_VIEWS":
+					//Ruta de la interfaz de la actividad.
+					path = environment.ACTIVITY_TEMPLATES_BASE_PATH + activity["templates"]["uploadPage"]["file"];
+					//Animaciones para la interfaz
+					animations = activity["templates"]["uploadPage"]["animations"];
+					//Donde se ubicará la interfaz.
+					target = "body";
+					break;
+				case "MODULE_VIEWS":
+					var template = environment.getService("MANAGER_MODULE").getTemplateData(fqn);
+					//var name = data["template"] ? data["template"] : Array.prototype.slice.call(Object.keys(templates),0,1);
+					//Ruta de la interfaz de la actividad.
+					path = environment.MODULES_TEMPLATES_BASE_PATH + template["file"];
+					//Animaciones para la interfaz
+					animations = template["animations"];
+					//Donde se ubicará la interfaz.
+					target = activity.name + ":" + template["region"];
+					break;
+			}
+			//Cargamos el recurso.
+			environment.loadResource({
+				type:"html",
+				src:path
+			}).done(function(template){
+
+				//cacheamos la template.
+				var $template = $(template);
+				$template.addClass("animateView");
+				//creamos la vista 
+		        var view = {
+		        	component:parseElement($template),//estructura de componentes derivada de la template
+		        	node:$template,//objeto jquery original
+		        	type:type,//tipo de vista
+		        	timestamp:new Date().getTime(),//timemstamp de creación
+		        	handlers:data["handlers"],//manejadores del ciclo de vida
+		        	animations:animations,//animaciones.
+		        	target:target//Donde se ubicará la interfaz.
+		        }
+
+		        views[fqn] = view;
+		        //llamamos al onCreate
+		        typeof(data["handlers"] && data["handlers"]["onCreate"]) == "function" && data["handlers"]["onCreate"].call(view.component);
+		        //la cargamos.
+		        viewLoad(view,function(){
+		        	view.active = true;
+		        	deferred.resolve(view.component);
+		        });
+
+			}).fail(function(){
+				console.log("Fallo al descargar template");
+			});
+		}
+
+		return deferred.promise();
+	}
+
+	TemplateManager.prototype.getView = function(name) {
+		//Obtenemos la actividad actual.
+		var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
+		//fully qualified name
+		var fqn = activity.name + ":" + name;
+		//retornamos el componente.
+		return views[fqn] && views[fqn].component;
 	};
 
 

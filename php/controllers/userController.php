@@ -3,39 +3,50 @@
 class userController extends baseController{
     
     /* Método para filtrar Usuarios*/
-    public function searchUsers($idUser,$field,$value){
+    public function searchUsers($idUser,$filter,$count){
+
         $fields = array('NAME','LOCATION');
-        if($field && in_array(strtoupper($field),$fields)){
-            $value = utf8_decode($value);
-            echo "Este es el valor : $value" . PHP_EOL;
-            if(strtoupper($field) == "NAME"){
-                echo "Hola estoy buscando por el nombre..." . PHP_EOL;
-                $sql = $this->conn->prepare('SELECT id,foto,name FROM USUARIOS_VIEW U
-                                            WHERE UPPER(name) LIKE UPPER(:value) AND id != :idUser AND NOT EXISTS(
-                                                   SELECT * FROM CONTACTOS C WHERE C.idRepresentado = U.id  AND C.idUsuario = :idUser
-                                                )');
-       
-            
-                $sql->execute(array("value" => "%$value%","idUser" => $idUser));
-            }else if($field == "LOCATION"){
-                $sql = $this->conn->prepare('SELECT id,foto,name FROM USUARIOS_VIEW U
-                                                WHERE UPPER(ubicacion) LIKE UPPER(:location) AND id != :idUser AND NOT EXISTS(
-                                                   SELECT * FROM CONTACTOS C WHERE C.idRepresentado = U.id  AND C.idUsuario = :idUser
-                                                )');
-    
-                $sql->execute(array("location" => "%$value%","idUser" => $idUser));
-            
+        $field = strtoupper($filter->field);
+
+        if($field && in_array($field,$fields)){
+            //Decodificamos el patrón.
+            $value = $filter->pattern;
+            //Construimos la query.
+            $query = 'SELECT id,foto,name FROM USUARIOS_VIEW U ';
+
+            if ($field === 'NAME') {
+                $query .= "WHERE UPPER(name) LIKE UPPER(:value)";
+            }elseif($field === 'LOCATION'){
+                $query .= "WHERE UPPER(location) LIKE UPPER(:value)";
             }
+            
+            $query .= " AND id != :idUser AND NOT EXISTS(
+                    SELECT * FROM CONTACTOS C WHERE C.idRepresentado = U.id  AND C.idUsuario = :idUser
+                )";
+                
+
+            if (!empty($count) && is_numeric($count)) {
+               $query .= "LIMIT 0,$count";
+            }
+
+            $sql = $this->conn->prepare($query);
+            $sql->execute(array("idUser"=> $idUser,"value" => "%$value%")); 
             $usuarios = $sql->fetchAll(PDO::FETCH_ASSOC);
             for($i = 0; $i < sizeof($usuarios); $i++)
                 $usuarios[$i] = array_map("utf8_encode",$usuarios[$i]);
+
             return array(
-                "response_message" => array("type" => "RESPONSE","name" => "RESULT_OF_SEARCH","data" => array("error" => false,"msg" => $usuarios))
+                "response_message" => array(
+                    "type" => "RESPONSE",
+                    "name" => "RESULT_OF_SEARCH",
+                    "data" => array(
+                        "error" => false,
+                        "msg" => $usuarios
+                    )
+                )
             );
         
-        
         }
-        
         
     }
 

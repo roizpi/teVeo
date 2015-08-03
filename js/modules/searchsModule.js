@@ -8,7 +8,9 @@ var Searchs = (function(_super,$,environment){
     function Searchs(webSpeech,applications,notificator){
 
         self = this;
+        //Obtenemos el template manager.
         templating = environment.getService("TEMPLATE_MANAGER");
+        //Obtenemos el localizador de servicios.
         serviceLocator = environment.getService("SERVICE_LOCATOR");
         this.webSpeech = webSpeech;
         //MANEJADOR DE SOLICITUDES.
@@ -24,7 +26,6 @@ var Searchs = (function(_super,$,environment){
     */
 
     //handlers
-
 
     //Configuramos manejador onCreate para la template "searchUsers".
     var onCreate = function(){
@@ -70,35 +71,76 @@ var Searchs = (function(_super,$,environment){
         self.webSpeech.addEventListener("SpeechDisabled",function(){
             $microphone.removeClass("fa-microphone").addClass("fa-microphone-slash");
         });
+
+        //Mínimo de resultados mostrados;
+        var minResultsShown = 10;
+
         //Configuramos el formulario de búsqueda.
         var $searchForm = view.getComponent("searchForm",true).get();
         //Formulario de búsqueda de usuarios por nombre.
-        $searchForm.on("keyup submit",function(e){
-
+        $searchForm.on("submit",function(e){
             e.stopPropagation();
             e.preventDefault();
-            //recogemos valor del campo de búsqueda
+            //obtenemos el texto.
             var val = this.search.value;
-            //Si ha escrito 4 o más caracteres.
-            if(val.length >= 4){
+            //recogemos valor del campo de búsqueda
+            var regExp = new RegExp("(" + val + ")","i");
+            //Obtenemos una referencia al contenedor de usuarios.
+            var $users = view.getComponent("users_found",true).get();
+            //Recorremos los usuarios.
+            $users.children().length && $users.children().each(function(idx,user){
+                var $user = $(user);
+                console.log("Usuario actual...");
+                console.log(user);
+                var name = $user.find("[data-mark]").text();
+                if (name.match(regExp)) {
+                    $name = $(name);
+                    $name.html($name.text().replace(regExp,"<mark>$1</mark>"))
+                }else{
+                    $user.remove();
+                }
+            });
+
+            if ($users.children().length < minResultsShown) {
+
+                var diff = minResultsShown - $users.children().length;
                 //obtenemos usuarios que contengan esos caracteres.
-                serviceLocator.searchUsers(userConnected.id,"NAME",val)
-                    .done(function(users){
-                        //Mostramos usuarios.
-                        if(users && users.length){
-                            showUsers(users);
-                            //Destacamos parte coincidente.
-                            highlightText(val);
-                        }else{
-                            hideUsers();
-                        }
-                    })
-                    .fail(function(error){
+                serviceLocator.searchUsers({
+                    value:val,
+                    field:"name",
+                    count:diff
+                })
+                .done(function(users){
+                    //Mostramos usuarios.
+                    if(users && users.length){
+                        showUsers(users);
+                        //Destacamos parte coincidente.
+                        highlightText(regExp);
+                    }else{
+
+                        $("<div>",{class:"msg  warning  animateView"})
+                            .append(
+                                //icon
+                                $("<span>",{class:"fa fa-warning fa-3x"}),
+                                //párrafo
+                                $("<p>",{text:"Ningún resultado encontrado"})
+                            )
+                            .addClass("bounceInLeft")
+                            .one("webkitAnimationEnd animationend",function(){
+                                $this = $(this);
+                                $this.addClass("bounceOutRight").one("webkitAnimationEnd animationend",function(){
+                                    $this.remove();
+                                });
+                            }).appendTo($users).end().addClass("active");
+                    }
+                })
+                .fail(function(error){
 
 
-                    });
-            }
-                
+                });     
+            };
+
+             
         });
         
         var $container = view.getComponent("container").get();
@@ -106,9 +148,10 @@ var Searchs = (function(_super,$,environment){
         $container.delegate("[data-action]","click",function(e){
             e.stopPropagation();
             e.preventDefault();
-            var $this = $(this);    
-            var action = this.dataset.action;
-            if(action == 'sugerirUsuarios'){
+            var $this = $(this);
+            //obtenemos el nombre de la acción a realizar.    
+            var action = this.dataset.action.toUpperCase();
+            if(action == 'SUGGEST_USERS'){
                 //Sugerencia de usuarios
                 if(userConnected.currentPosition){
                     console.log("Cogiendo posición actual.");
@@ -131,7 +174,7 @@ var Searchs = (function(_super,$,environment){
 
                     });
                     
-            }else if(action == 'toAskForFriendship'){
+            }else if(action == 'TO_ASK_FOR_FRIENDSHIP'){
         
                 var idUser = $this.data("id");
                 //Comprobamos si ya tenemos una solicitud de amistad de este usuario.
@@ -175,12 +218,13 @@ var Searchs = (function(_super,$,environment){
                 }
                 
                     
-            }else if(action == 'sendApplication'){
+            }else if(action == 'SEND_APPLICATION'){
                 //Enviar Solicitud de amistad
                 //obtenemos el mensaje.
                 var message = $this.parent().prev().val();
+                //Comprobamos que tiene una longitud adecuada.
                 if(message && message.length >= 10 && message.length <= 60){
-                    //id del usuario
+                    //id del usuario.
                     var idUser = $this.parent().data("id");
                     //Consultamos si ha podido entrar una solicitud de amistad del otro usuario
                     if(!self.applicationsManager.existeSolicitudDeAmistadPendiente(idUser)){
@@ -193,13 +237,12 @@ var Searchs = (function(_super,$,environment){
                         });
 
                     }else{
-
+                        //Ya existe una solicitud de amistad para este usuario.
                         self.notificator.dialog.alert({
                             title:"Operación Cancelada",
                             text:"Dispones de una solicitud de amistad de este usuario, acude a solicitudes pendientes",
                             level:"warning"
                         });
-
                         //Ocultamos form
                         hideForm(idUser);
                         //Quitamos el usuario sugerido.
@@ -207,9 +250,9 @@ var Searchs = (function(_super,$,environment){
                     }
 
                 }else{
-
+                    //El mensaje no tiene la longitud correcta.
                     self.notificator.dialog.alert({
-                        title:"Dato no válido",
+                        title:"Mensaje no válido",
                         text:"Debes introducir un mensaje de 10 a 60 caracteres",
                         level:"warning"
                     });
@@ -217,7 +260,7 @@ var Searchs = (function(_super,$,environment){
                 }
                     
                     
-            }else if(action == 'cancel'){
+            }else if(action == 'CANCEL'){
                 //obtenemos id.
                 var id = $this.parent().data("id");
                 //Ocultamos form
@@ -241,8 +284,9 @@ var Searchs = (function(_super,$,environment){
 
     //Función para mostrar usuarios.
     var showUser = function(user){
-        var view = getMainView("searchUsers");
-        view.getComponent("usuariosSugeridos",true).createComponent("user",{
+        //Obtenemos una referencia a la vista.
+        var view = templating.getView("searchUsers");
+        view.getComponent("users_found",true).createComponent("user",{
             id:user.id,
             photo:user.foto,
             name:user.name,
@@ -251,15 +295,15 @@ var Searchs = (function(_super,$,environment){
 
     //Oculta un usuario sugerido.
     var hideUser = function(id){
-        getMainView("searchUsers")
-            .getComponent("usuariosSugeridos",true)
+        templating.getView("searchUsers")
+            .getComponent("users_found",true)
                 .hideComponent(id,1000,true);
     }
 
     //Oculta todos los usuarios sugeridos.
     var hideUsers = function(){
-        getMainView("searchUsers")
-            .getComponent("usuariosSugeridos",true)
+        templating.getView("searchUsers")
+            .getComponent("users_found",true)
                 .hideAllComponents(1000,true);
     
     }
@@ -270,18 +314,18 @@ var Searchs = (function(_super,$,environment){
     // ya estuvieran visibles debido a una consulta anterior.
     var showUsers = function(users){
 
-        var view = getMainView("searchUsers");
-        var $usuariosSugeridos = view.getComponent("usuariosSugeridos",true).get();
+        var view = templating.getView("searchUsers");
+        var $users = view.getComponent("users_found",true).get();
         
-        $.each($usuariosSugeridos.children(),function(idx,usuario){
-            var $usuario = $(usuario);
+        $users.children().each(function(idx,user){
+            var $user = $(user);
             var idx = users.map(function(user){
                 return user.id;
-            }).indexOf($usuario.data("id"));
+            }).indexOf($user.data("id"));
             if(idx == -1){
                 //El usuario ya no está presente en el nuevo resultado
-                // por tanto le ocultamos.
-                $usuario.fadeOut(1000,function(){
+                //por tanto le ocultamos.
+                $user.fadeOut(1000,function(){
                     $(this).remove();
                 });
             }else{
@@ -289,27 +333,26 @@ var Searchs = (function(_super,$,environment){
                 //le eliminamos del array.
                 users.splice(idx,1);
             }
-                            
-        });
+        })
         //Mostramos los nuevos resultados.
         users.forEach(showUser);
         
     }
 
-    var highlightText = function(val){
-        var view = getMainView("searchUsers");
-        var $usuariosSugeridos = view.getComponent("usuariosSugeridos",true).get();
+    var highlightText = function(regExp){
+        var view = templating.getView("searchUsers");
+        var $users = view.getComponent("users_found",true).get();
         //Marcamos el texto coincidente.
-        $("[data-mark]",$usuariosSugeridos).each(function(idx,text){
+        $("[data-mark]",$users).each(function(idx,text){
             $text = $(text);
-            $text.html($text.text().replace(new RegExp("("+val+")","i"),"<mark>$1</mark>"))
+            $text.html($text.text().replace(regExp,"<mark>$1</mark>"));
         });
     }
 
     //Muestra un formulario para enviar una solicitud de amistad.
     var showForm = function(user){
         
-        getMainView("searchUsers")
+        templating.getView("searchUsers")
             .getComponent("container")
                 .createComponent("ToAskForFriendship",{
                     id:user.id
@@ -351,7 +394,7 @@ var Searchs = (function(_super,$,environment){
     //Oculta el formulario de envío de solicitud
     var hideForm = function(id){
 
-        getMainView("searchUsers")
+        templating.getView("searchUsers")
             .getComponent("container")
                 .hideComponent(id,1000,true);
 
@@ -365,9 +408,8 @@ var Searchs = (function(_super,$,environment){
     //Método utilizado para iniciar una búsqueda.
     Searchs.prototype.startSearch = function() {
         templating.loadTemplate({
+            name:"searchUsers",
             type:"MODULE_VIEWS",
-            module:"SEARCHS",
-            template:"searchUsers",
             handlers:{
                 onCreate:onCreate,
                 onAfterShow:onAfterShow,

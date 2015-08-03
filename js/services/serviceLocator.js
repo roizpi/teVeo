@@ -172,16 +172,19 @@ var ServiceLocator = (function(_super,environment){
             }
         });
     }
-     
+     //idUser,field,name
     //Obtener resultados de la búsqueda
-    ServiceLocator.prototype.searchUsers = function(idUser,field,name){
+    ServiceLocator.prototype.searchUsers = function(terms){
         return enqueueRequest({
             token:sessionStorage.getItem("session_token"),
             service:"SEARCH_USERS",
             params:{
-                idUser:idUser,
-                field:field,
-                name:self.utils.urlencode(name)
+                idUser:userConnected.id,
+                filter:{
+                    field:self.utils.urlencode(terms.field),
+                    pattern:self.utils.urlencode(terms.value)
+                },
+                count:terms.count
             }
         });
     }

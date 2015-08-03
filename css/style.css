@@ -2235,6 +2235,10 @@ h1,h2,h3,p,li,.logo,.btn{
   background-color:#1ACBD0;
 }
 
+.sidenav .sidenav-content > *{
+  width: 100%;
+}
+
 @media screen and (max-height: 700px){
 
   .sidenav .sidenav-header{
@@ -2459,7 +2463,7 @@ h1,h2,h3,p,li,.logo,.btn{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    max-height: 400px;
+    height: 400px;
     overflow: auto;
 }
 

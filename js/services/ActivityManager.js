@@ -59,6 +59,7 @@ var ActivityManager = (function(_super,$,environment){
 		activity.active = true;
 		//Descargar y muestra la pantalla de carga.
 		this.templating.loadTemplate({
+			name:"uploadPage",
 			type:"ACTIVITY_UPLOADPAGE_VIEWS",
 			handlers:{
 				onAfterShow:function(){
@@ -83,6 +84,7 @@ var ActivityManager = (function(_super,$,environment){
 					src:activityPath
 				}),
 				self.templating.loadTemplate({
+					name:"GUI",
 					type:"ACTIVITY_VIEWS"
 				}),
 				self.managerModule.getModules(activity["modules"])

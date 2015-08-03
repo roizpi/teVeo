@@ -338,7 +338,7 @@ var Contacts = (function(_super,$,environment){
     var addContact = function(contact){
         //Añadimos el usuario a la lista de contactos.
         userContacts.push(contact);
-        var view = self.templateManager.getView({moduleName:self.constructor.name,templateName:"contacts"});
+        var view = self.templateManager.getView("contacts");
         var container = view.getComponent("container");
         if(view && container.isVisible()){
             //Mostramos el contacto en el DOM.
@@ -355,10 +355,7 @@ var Contacts = (function(_super,$,environment){
         //solucionar
         //$viewContact.find("[data-photo]").attr({src:contact.foto,alt:"Foto de " + contact.name,title:"Ver detalles de " + contact.name});
         var templateManager = environment.getService("TEMPLATE_MANAGER");
-        var view = templateManager.getView({
-            type:"MODULE_VIEWS",
-            template:"contacts"
-        });
+        var view = templateManager.getView("contacts");
         console.log("view devuelta");
         console.log(view);
         view && view.getComponent("container").createComponent("contact",{
@@ -374,7 +371,7 @@ var Contacts = (function(_super,$,environment){
     //Borra un contacto de la lista de contactos.
     var dropContact = function(user){
 
-        var view = self.templateManager.getView({moduleName:self.constructor.name,templateName:"contacts"});
+        var view = self.templateManager.getView("contacts");
         var container = view.getComponent("container");
         //eliminamos el contacto.
         userContacts.splice(user.idx,1);
@@ -422,7 +419,7 @@ var Contacts = (function(_super,$,environment){
         //Actualizamos contacto en la lista de contactos.
         var contact = getContactById(idUser);
         contact.data.status = status;
-        var view = self.templateManager.getView({moduleName:self.constructor.name,templateName:"contacts"});
+        var view = self.templateManager.getView("contacts");
         var container = view.getComponent("container");
         var offset = $contact.offset().top  - $contact.parent().offset().top;
         var contact = container.getChild(idUser)
@@ -475,9 +472,8 @@ var Contacts = (function(_super,$,environment){
         if(userContacts.length){
             var templateManager = environment.getService("TEMPLATE_MANAGER");
             templateManager.loadTemplate({
+                name:"contacts",
                 type:"MODULE_VIEWS",
-                module:self.constructor.name,
-                template:"contacts",
                 handlers:{
                     onCreate:onCreateViewContacts
                 }
