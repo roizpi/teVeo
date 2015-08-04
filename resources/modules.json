@@ -68,7 +68,7 @@
                     "region":"action",
                     "file":"searchUsers.html",
                     "animations":{
-                        "animationIn":"fadeInLeft",
+                        "animationIn":"bounceInDown",
                         "animationOut":"fadeOutRight"
                     }
                 }

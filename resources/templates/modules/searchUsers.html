@@ -5,28 +5,37 @@
     <div class="containerSearchUsers"  data-component="container">
         <h3 class="help  y-normal" data-component="help">Utilice la opción sugerir usuarios para conocer gente de tu ciudad</h3>
         <div class="actions">
-            <form action="#" class="searchControl medium" data-component="searchForm">
-                <input type="search" role="search" name="search" id="searchUsers" placeholder="introduce nick..." autofocus/>
-                <span data-component="microphone" class="fa"></span>
+            <form action="" class="search-form x-large y-medium" data-component="searchForm">
+                <input type="search" role="search" name="search" id="searchUsers" placeholder="introduce nick..." required autofocus/>
                 <button type="submit"><span class="fa fa-search"></span></button>
+                <span data-component="microphone"></span>
             </form>
             <a href="#" data-action="suggest_users" title="Sugerir usuarios"   class="btn  btn-large  btn-action  invert">Sugerir Usuarios</a>
             <a href="#" data-action="busquedaAvanzada" title="Búsqueda Avanzada" class="btn  btn-veryLarge  btn-action  invert">Búsqueda Avanzada</a>
         </div>
 
         <!-- Lista de Usuarios Encontrados -->
-        <ul class="sugerencias" data-component="users_found">
-
-            <li class="template" data-component="user" data-type="template">
-                <figure class="user">
-                    <img data-component="photo" data-type="img" src="" alt=""/>
-                    <figcaption data-mark data-component="name" data-type="text"></figcaption>
-                    <a href="#" data-component="id" data-type="hidden" data-action="toAskForFriendship" class="enviarSolicitud">
-                        <span class="fa fa-plus-circle fa-4x"></span><br>Agregar a Contactos
-                    </a>
-                </figure>
+        <ul id="profileCardContainer" class="flex-block  flex-direction-row  flex-content-wrap" data-component="users_found">
+            <!-- Plantilla de cada perfil de usuario -->
+            <li class="template animateView" data-component="userProfile" data-type="template">
+                <div class="profileCard">
+                    <div class="profileCard-bg" data-component="profileBack" data-type="background"></div>
+                    <div class="profileCard-content">
+                        <a href="#" class="profileCard-avatar">
+                            <img  data-component='avatar' data-type="img" src="" alt=""/>
+                        </a>
+                        <div class="profileCard-actions">
+                            <a href="#" data-component="id" data-type="hidden" data-action="toAskForFriendship" class="btn btn-medium btn-action">
+                                <span class="fa fa-plus-circle fa-2x"></span>&nbsp;Agregar
+                            </a>
+                        </div>
+                        <div class="profileCard-userFields">
+                            <p class="profileCard-name singleLine" data-mark data-component="name" data-type="text"></p>
+                            <p class="profileCard-desc">Lorem ipsum consequetur Lorem ipsum consequetur Lorem ipsum consequetur Lorem ipsum consequetur </p>
+                        </div>
+                    </div>
+                </div>
             </li>
-            
         </ul>
         <div class="contentToAskForFriendship  template" data-component="ToAskForFriendship" data-type="template">
             <div class="content" data-component="content" data-type="template">

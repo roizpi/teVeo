@@ -626,6 +626,10 @@ h1,h2,h3,p,li,.logo,.btn{
   transition: all 0.5s ease 0s;
 }
 
+.btn-action > *{
+  vertical-align: middle;
+}
+
 .btn-action:hover,
 .btn-action.active{
   -webkit-transform:scale(1.1);
@@ -728,16 +732,16 @@ h1,h2,h3,p,li,.logo,.btn{
 
 /*Agrupa Botones*/
 .btn-group{
-    width: 90%;
-    margin: 0 auto;
-    text-align: center;
+  width: 90%;
+  margin: 0 auto;
+  text-align: center;
 }
 
 /*Interruptor*/
 .onoffswitch {
-    position: relative; width: 100px;
-    margin: 10px auto;
-    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+  position: relative; width: 100px;
+  margin: 10px auto;
+  -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
 }
 
 .onoffswitch-checkbox {
@@ -821,12 +825,20 @@ h1,h2,h3,p,li,.logo,.btn{
   background-color: #4353ff;
 }
 
+.search-form.x-medium{
+  width: 250px;
+}
+
+.search-form.x-large{
+  width: 500px;
+}
+
 /*Tamaños*/
-.search-form.search-form-medium{
+.search-form.y-medium{
   height: 50px;
 }
 
-.search-form.search-form-large{
+.search-form.y-large{
   height: 60px;
 }
 
@@ -846,8 +858,10 @@ h1,h2,h3,p,li,.logo,.btn{
   text-indent: 14px;
 }
 
-.search-form label{
+.search-form button{
   width: 15%;
+  background-color: inherit;
+  border:none;
   font-size: 1.3rem;
   text-align: center;
   line-height: 40px;
@@ -856,27 +870,27 @@ h1,h2,h3,p,li,.logo,.btn{
       transition: font-size .5s,text-shadow .4s ease-in-out .5s;
 }
 
-.search-form.search-form-medium label{
+.search-form.y-medium button{
   line-height: 50px;
   font-size: 1.5rem;
 }
 
-.search-form.search-form-large label{
+.search-form.y-large button{
   line-height: 60px;
   font-size: 1.7rem;
 }
 
 /*Estado focus para el control de búsqueda*/
-.search-form input[type=search]:focus + label{
+.search-form input[type=search]:focus + button{
   font-size: 1.5em;
   text-shadow:#fff 0px 0px 5px;
 }
 
-.search-form.search-form-medium input[type=search]:focus + label{
+.search-form.y-medium input[type=search]:focus + button{
   font-size: 1.7em;
 }
 
-.search-form.search-form-large input[type=search]:focus + label{
+.search-form.y-large input[type=search]:focus + button{
   font-size: 2em;
 }
 
@@ -1442,24 +1456,73 @@ h1,h2,h3,p,li,.logo,.btn{
 }
 
 
+/*
+  Profile Card
+  ======================
+*/
 
+.profileCard{
+  background-color: #fff;
+  border: 1px solid #e1e8ed;
+  border-radius: 5px;
+  width: 400px;
+}
 
+.profileCard .profileCard-bg {
+  display: block;
+  height: 95px;
+  border-bottom: 1px solid #e1e8ed;
+  border-radius: 4px 4px 0 0;
+  background-size: 100%;
+  background-position: 0 50%;
+}
 
+.profileCard .profileCard-content {
+  margin: 13px 15px;
+  position: relative;
+}
 
-
-
-/*overlay layer */
-/*#cierre:not(:checked) ~ section:before {
-  content:'';
-  width: 100%;
-  height: 100%;
+.profileCard .profileCard-avatar{
+  display: inline-block;
+  background-color: #fff;
+  border-radius: 6px;
+  margin-top: -45px;
+  padding: 3px;
+  position: relative;
+  vertical-align: bottom;
   z-index: 1;
-  opacity: 1;
-}*/
-/*positioning card*/
+}
 
+.profileCard .profileCard-avatar img {
+  border-radius: 5px;
+  display: block;
+  height: 70px;
+  width: 70px;
+}
 
+.profileCard .profileCard-actions {
+  display: inline-block;
+  height: 35px;
+  margin: 0 0 -4px 0;
+  position: absolute;
+  right: 0;
+  vertical-align: bottom;
+}
 
+.profileCard .profileCard-userFields {
+  color: #292f33;
+  margin-top: 30px;
+}
+
+.profileCard .profileCard-name {
+  line-height: 1.3;
+  margin-top: -2px;
+  color: #008abd;
+}
+
+.profileCard .profileCard-desc{
+  font-size: .9rem;
+}
 
 
 /*Mensajes de Confirmación*/
@@ -5224,6 +5287,72 @@ span.css-emoticon.nintendo-controller {
     animation-name: zoomInUp;
 }
 
+@-webkit-keyframes zoomIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.zoomIn {
+  -webkit-animation-name: zoomIn;
+  animation-name: zoomIn;
+}
+
+@-webkit-keyframes zoomOut {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes zoomOut {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.zoomOut {
+  -webkit-animation-name: zoomOut;
+  animation-name: zoomOut;
+}
+
 /*
   NOMBRE:bounceInLeft
 */
@@ -5623,6 +5752,123 @@ span.css-emoticon.nintendo-controller {
     animation-fill-mode: forwards;
 }
 
+@-webkit-keyframes bounceInDown {
+  0%, 60%, 75%, 90%, 100% {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -3000px, 0);
+    transform: translate3d(0, -3000px, 0);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 25px, 0);
+    transform: translate3d(0, 25px, 0);
+  }
+
+  75% {
+    -webkit-transform: translate3d(0, -10px, 0);
+    transform: translate3d(0, -10px, 0);
+  }
+
+  90% {
+    -webkit-transform: translate3d(0, 5px, 0);
+    transform: translate3d(0, 5px, 0);
+  }
+
+  100% {
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes bounceInDown {
+  0%, 60%, 75%, 90%, 100% {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -3000px, 0);
+    transform: translate3d(0, -3000px, 0);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 25px, 0);
+    transform: translate3d(0, 25px, 0);
+  }
+
+  75% {
+    -webkit-transform: translate3d(0, -10px, 0);
+    transform: translate3d(0, -10px, 0);
+  }
+
+  90% {
+    -webkit-transform: translate3d(0, 5px, 0);
+    transform: translate3d(0, 5px, 0);
+  }
+
+  100% {
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+.bounceInDown {
+  -webkit-animation-name: bounceInDown;
+  animation-name: bounceInDown;
+}
+
+@-webkit-keyframes bounceOutDown {
+  20% {
+    -webkit-transform: translate3d(0, 10px, 0);
+    transform: translate3d(0, 10px, 0);
+  }
+
+  40%, 45% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, -20px, 0);
+    transform: translate3d(0, -20px, 0);
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 2000px, 0);
+    transform: translate3d(0, 2000px, 0);
+  }
+}
+
+@keyframes bounceOutDown {
+  20% {
+    -webkit-transform: translate3d(0, 10px, 0);
+    transform: translate3d(0, 10px, 0);
+  }
+
+  40%, 45% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, -20px, 0);
+    transform: translate3d(0, -20px, 0);
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 2000px, 0);
+    transform: translate3d(0, 2000px, 0);
+  }
+}
+
+.bounceOutDown {
+  -webkit-animation-name: bounceOutDown;
+  animation-name: bounceOutDown;
+}
+
+
 
 @-webkit-keyframes newMessages{
     0%{
@@ -5809,19 +6055,25 @@ span.css-emoticon.nintendo-controller {
 
 
 /*
-  .section-panel-fullscreen .animated-arrow-1 {
-    animation: 3s ease-out 0s normal none infinite running arrow1;
-    opacity: 0;
-}
-
-.section-panel-fullscreen .animated-arrow-2 {
-    animation: 3s ease-in 0s normal none infinite running arrow2;
-    opacity: 1;
-}
+  
+  CUSTOM
+  ======================
 
 */
 
+#profileCardContainer{
+  margin-top: 35px;
+  border-top: 2px solid #fff;
+  height:600px;
+  overflow: auto;
+}
 
-
+#profileCardContainer .profileCard{
+  width: 350px;
+  margin: 15px 0;
+  -webkit-animation:  animacionFoto 1s 1 linear;
+    -moz-animation: animacionFoto 1s 1 linear;
+      animation:  animacionFoto 1s 1 linear;
+}
 
 

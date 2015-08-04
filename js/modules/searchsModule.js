@@ -97,7 +97,9 @@ var Searchs = (function(_super,$,environment){
                     $name = $(name);
                     $name.html($name.text().replace(regExp,"<mark>$1</mark>"))
                 }else{
-                    $user.remove();
+                    $user.addClass("zoomOut").one("webkitanimationend animationend",function(){
+                        $(this).remove();
+                    });
                 }
             });
 
@@ -286,9 +288,11 @@ var Searchs = (function(_super,$,environment){
     var showUser = function(user){
         //Obtenemos una referencia a la vista.
         var view = templating.getView("searchUsers");
-        view.getComponent("users_found",true).createComponent("user",{
+        //creamos un nuevo componente.
+        view.getComponent("users_found",true).createComponent("userProfile",{
             id:user.id,
-            photo:user.foto,
+            profileBack:"resources/img/prueba.png",
+            avatar:user.foto,
             name:user.name,
         },{})
     }
@@ -317,7 +321,7 @@ var Searchs = (function(_super,$,environment){
         var view = templating.getView("searchUsers");
         var $users = view.getComponent("users_found",true).get();
         
-        $users.children().each(function(idx,user){
+        /*$users.children().each(function(idx,user){
             var $user = $(user);
             var idx = users.map(function(user){
                 return user.id;
@@ -333,7 +337,7 @@ var Searchs = (function(_super,$,environment){
                 //le eliminamos del array.
                 users.splice(idx,1);
             }
-        })
+        })*/
         //Mostramos los nuevos resultados.
         users.forEach(showUser);
         
