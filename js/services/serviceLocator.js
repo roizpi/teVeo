@@ -172,9 +172,12 @@ var ServiceLocator = (function(_super,environment){
             }
         });
     }
-     //idUser,field,name
-    //Obtener resultados de la búsqueda
+
+    //Servicio para Obtener Usuarios.
     ServiceLocator.prototype.searchUsers = function(terms){
+        //Validamos las exclusiones.
+        var exclusions = terms.exclusions && terms.exclusions.constructor.toString().match(/array/i) ?  terms.exclusions : null;
+        //Encolamos la petición.
         return enqueueRequest({
             token:sessionStorage.getItem("session_token"),
             service:"SEARCH_USERS",
@@ -184,7 +187,12 @@ var ServiceLocator = (function(_super,environment){
                     field:self.utils.urlencode(terms.field),
                     pattern:self.utils.urlencode(terms.value)
                 },
-                count:terms.count
+                limit:{
+                    start:terms.start || 0,
+                    count:terms.count
+                },
+                exclusions:exclusions
+                
             }
         });
     }

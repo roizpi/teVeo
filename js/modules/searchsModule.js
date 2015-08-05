@@ -72,81 +72,8 @@ var Searchs = (function(_super,$,environment){
             $microphone.removeClass("fa-microphone").addClass("fa-microphone-slash");
         });
 
-        //Mínimo de resultados mostrados;
-        var minResultsShown = 10;
-
-        //Configuramos el formulario de búsqueda.
-        var $searchForm = view.getComponent("searchForm",true).get();
-        //Formulario de búsqueda de usuarios por nombre.
-        $searchForm.on("submit",function(e){
-            e.stopPropagation();
-            e.preventDefault();
-            //obtenemos el texto.
-            var val = this.search.value;
-            //recogemos valor del campo de búsqueda
-            var regExp = new RegExp("(" + val + ")","i");
-            //Obtenemos una referencia al contenedor de usuarios.
-            var $users = view.getComponent("users_found",true).get();
-            //Recorremos los usuarios.
-            $users.children().length && $users.children().each(function(idx,user){
-                var $user = $(user);
-                console.log("Usuario actual...");
-                console.log(user);
-                var name = $user.find("[data-mark]").text();
-                if (name.match(regExp)) {
-                    $name = $(name);
-                    $name.html($name.text().replace(regExp,"<mark>$1</mark>"))
-                }else{
-                    $user.addClass("zoomOut").one("webkitanimationend animationend",function(){
-                        $(this).remove();
-                    });
-                }
-            });
-
-            if ($users.children().length < minResultsShown) {
-
-                var diff = minResultsShown - $users.children().length;
-                //obtenemos usuarios que contengan esos caracteres.
-                serviceLocator.searchUsers({
-                    value:val,
-                    field:"name",
-                    count:diff
-                })
-                .done(function(users){
-                    //Mostramos usuarios.
-                    if(users && users.length){
-                        showUsers(users);
-                        //Destacamos parte coincidente.
-                        highlightText(regExp);
-                    }else{
-
-                        $("<div>",{class:"msg  warning  animateView"})
-                            .append(
-                                //icon
-                                $("<span>",{class:"fa fa-warning fa-3x"}),
-                                //párrafo
-                                $("<p>",{text:"Ningún resultado encontrado"})
-                            )
-                            .addClass("bounceInLeft")
-                            .one("webkitAnimationEnd animationend",function(){
-                                $this = $(this);
-                                $this.addClass("bounceOutRight").one("webkitAnimationEnd animationend",function(){
-                                    $this.remove();
-                                });
-                            }).appendTo($users).end().addClass("active");
-                    }
-                })
-                .fail(function(error){
-
-
-                });     
-            };
-
-             
-        });
-        
         var $container = view.getComponent("container").get();
-        //Delegamos el evento click producido en los hijo en el padre.
+        //Delegamos la resolución de todas las acciones en el contenedor.
         $container.delegate("[data-action]","click",function(e){
             e.stopPropagation();
             e.preventDefault();
@@ -167,7 +94,8 @@ var Searchs = (function(_super,$,environment){
                     .done(function(users){
                         //Mostramos usuarios.
                         if(users && users.length){
-                            showUsers(users);
+                            //Mostramos los nuevos resultados.
+                            users.forEach(showUser);
                         }else{
                             hideUsers();
                         }
@@ -177,7 +105,7 @@ var Searchs = (function(_super,$,environment){
                     });
                     
             }else if(action == 'TO_ASK_FOR_FRIENDSHIP'){
-        
+                //Solicitar amistad.
                 var idUser = $this.data("id");
                 //Comprobamos si ya tenemos una solicitud de amistad de este usuario.
                 if(!self.applicationsManager.existeSolicitudDeAmistadPendiente(idUser)){
@@ -271,6 +199,111 @@ var Searchs = (function(_super,$,environment){
             }
         });
 
+
+        //Buscador de Usuarios.
+
+        //Mínimo de resultados mostrados;
+        var MIN_RESULT_SHOWN = 5;
+        var STEPTS = 5;
+
+        var currentFilter;//Filtro actual.
+        var currentField = "name";//Campo actual.
+        var exclusions = [];//Exclusiones.
+        var regExp;//Expresión regular actual.
+
+        //Configuramos el formulario de búsqueda.
+        var $searchForm = view.getComponent("searchForm",true).get();
+        //Obtenemos una referencia al contenedor de usuarios.
+        var $users = view.getComponent("users_found",true).get();
+        //Formulario de búsqueda de usuarios por nombre.
+        $searchForm.on("submit",function(e){
+            e.stopPropagation();
+            e.preventDefault();
+            //recogemos valor del campo de búsqueda
+            currentFilter = this.search.value.toLowerCase().trim().replace(/\s+/,"i");
+            //Creamos la expresión regular especificando el valor como una captura.
+            regExp = new RegExp("(" + currentFilter + ")","i");
+            //Recorremos los usuarios actuales en el DOM si existen.
+            $users.children().length && $users.children().each(function(idx,user){
+                var $user = $(user);
+                if ($user.find("[data-mark]").text().match(regExp)) {
+                    $name = $user.find("[data-mark]");
+                    $name.html($name.text().replace(regExp,"<mark>$1</mark>"));
+                    //Guardamos el identificador del usuario en la lista de exclusiones.
+                    exclusions.push($user.data("id"));
+                }else{
+                    $user.remove();
+                }
+            });
+
+            if ($users.children().length < MIN_RESULT_SHOWN) {
+                //Obtenemos la diferencia.
+                var diff = MIN_RESULT_SHOWN - $users.children().length;
+                console.log("Exclusiones : " + exclusions);
+                //Utilizamos el servicio "searchUsers" para obtener más resultados.
+                serviceLocator.searchUsers({
+                    value:currentFilter,
+                    field:currentField,
+                    start:0,
+                    count:diff,
+                    exclusions:exclusions
+                })
+                .done(function(users){
+                    
+                    if(users && users.length){
+                        //Mostramos usuarios.
+                        users.forEach(showUser);
+                        //Destacamos parte coincidente.
+                        highlightText(regExp);
+                    }else{
+                        //Ningún resultado encontrado.
+                        !$users.children().length && $("<div>",{class:"msg  warning  animateView"})
+                            .append(
+                                //icon
+                                $("<span>",{class:"fa fa-warning fa-3x"}),
+                                //párrafo
+                                $("<p>",{text:"Ningún resultado encontrado"})
+                            )
+                            .addClass("bounceInLeft")
+                            .one("webkitAnimationEnd animationend",function(){
+                                $this = $(this);
+                                $this.addClass("bounceOutRight").one("webkitAnimationEnd animationend",function(){
+                                    $this.remove();
+                                });
+                            }).appendTo($users).end().addClass("active");
+                    }
+                })
+                .fail(function(error){
+                    //El servicio falló.
+
+                });     
+            };
+
+             
+        });
+        //Manejador para el evento Scroll sobre la lista de usuarios encontrados.
+        $users.on("scroll",function(){
+            var $this = $(this);
+            if($this.scrollTop() + $this.innerHeight() >= $this.get(0).scrollHeight){
+                var start = $users.children().length - exclusions.length;
+                //Utilizamos el servicio "searchUsers" para obtener más resultados.
+                serviceLocator.searchUsers({
+                    value:currentFilter,
+                    field:currentField,
+                    start:start,
+                    count:STEPTS,
+                    exclusions:exclusions
+                }).done(function(users){
+                    if(users && users.length){
+                        //Mostramos usuarios.
+                        users.forEach(showUser);
+                        //Destacamos parte coincidente.
+                        highlightText(regExp);
+                    }
+                });
+            }
+        });
+        
     }
     //Manejador onAfterShow para la template searchUser.
     var onAfterShow = function(){
@@ -284,7 +317,7 @@ var Searchs = (function(_super,$,environment){
     }
 
 
-    //Función para mostrar usuarios.
+    //Crea un nuevo componente usuario.
     var showUser = function(user){
         //Obtenemos una referencia a la vista.
         var view = templating.getView("searchUsers");
@@ -312,37 +345,6 @@ var Searchs = (function(_super,$,environment){
     
     }
 
-    //Muestra todos los usuarios recibidos de una consulta,
-    //comprueba que usuario no está presente y lo inserta,
-    // y los no presentes en el resultado los elimina si estos 
-    // ya estuvieran visibles debido a una consulta anterior.
-    var showUsers = function(users){
-
-        var view = templating.getView("searchUsers");
-        var $users = view.getComponent("users_found",true).get();
-        
-        /*$users.children().each(function(idx,user){
-            var $user = $(user);
-            var idx = users.map(function(user){
-                return user.id;
-            }).indexOf($user.data("id"));
-            if(idx == -1){
-                //El usuario ya no está presente en el nuevo resultado
-                //por tanto le ocultamos.
-                $user.fadeOut(1000,function(){
-                    $(this).remove();
-                });
-            }else{
-                //El usuario sigue estando presente en el resultado
-                //le eliminamos del array.
-                users.splice(idx,1);
-            }
-        })*/
-        //Mostramos los nuevos resultados.
-        users.forEach(showUser);
-        
-    }
-
     var highlightText = function(regExp){
         var view = templating.getView("searchUsers");
         var $users = view.getComponent("users_found",true).get();
@@ -353,47 +355,51 @@ var Searchs = (function(_super,$,environment){
         });
     }
 
-    //Muestra un formulario para enviar una solicitud de amistad.
+    //Crea el formulario para el envío de solicitudes.
     var showForm = function(user){
         
-        templating.getView("searchUsers")
-            .getComponent("container")
-                .createComponent("ToAskForFriendship",{
-                    id:user.id
-                },
-                {
-                    onCreate:function(component){
 
-                        component.get().hide().slideDown(1000,function(){
+        var container = templating.getView("searchUsers").getComponent("container");
+        var form = container.getComponent(user.id);
+        if (!form) {
 
-                            component.createComponent("content",{
-                                id:user.id,
-                                photo:user.foto,
-                                name:user.name,
-                                age:user.edad + " años",
-                                location:user.ubicacion,
-                                help:"Escribe un mensaje a " + user.name,
-                                textarea:"Hola " + user.name + ", agregame por favor"
-                            },{
+            container.createComponent("ToAskForFriendship",{
+                id:user.id
+            },
+            {
+                onCreate:function(component){
 
-                                animate:"fadeInDown",
-                                onCreate:function(component){
+                    component.get().hide().slideDown(1000,function(){
 
-                                    setTimeout(function(){
-                                        //Activamos la ayuda.
-                                        component.getComponent("help").get().addClass("active");
-                                        //Ponemos el foco en el TextArea.
-                                        component.getComponent("textarea").focus();
-                                    },1000)
+                        component.createComponent("content",{
+                            id:user.id,
+                            photo:user.foto,
+                            name:user.name,
+                            age:user.edad + " años",
+                            location:user.ubicacion,
+                            help:"Escribe un mensaje a " + user.name,
+                            textarea:"Hola " + user.name + ", agregame por favor"
+                        },{
+
+                            animate:"fadeInDown",
+                            onCreate:function(component){
+
+                                setTimeout(function(){
+                                    //Activamos la ayuda.
+                                    component.getComponent("help").get().addClass("active");
+                                    //Ponemos el foco en el TextArea.
+                                    component.getComponent("textarea").focus();
+                                },1000);
                                     
-                                }
+                            }
 
-                            });
                         });
+                    });
             
-                    }
-                });
-       
+                }
+
+            });
+        };
     }
     //Oculta el formulario de envío de solicitud
     var hideForm = function(id){

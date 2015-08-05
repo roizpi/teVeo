@@ -3,7 +3,7 @@
 class userController extends baseController{
     
     /* Método para filtrar Usuarios*/
-    public function searchUsers($idUser,$filter,$count){
+    public function searchUsers($idUser,$filter,$limit,$exclusions){
 
         $fields = array('NAME','LOCATION');
         $field = strtoupper($filter->field);
@@ -19,18 +19,29 @@ class userController extends baseController{
             }elseif($field === 'LOCATION'){
                 $query .= "WHERE UPPER(location) LIKE UPPER(:value)";
             }
-            
-            $query .= " AND id != :idUser AND NOT EXISTS(
+
+            $query .= " AND id != :idUser";
+            //Validamos las exclusiones.
+            if (is_array($exclusions) && sizeof($exclusions)) {
+                $query .= " AND id NOT IN (".join(",",$exclusions).")";
+            }
+            //Condición común.
+            $query .= "  AND NOT EXISTS(
                     SELECT * FROM CONTACTOS C WHERE C.idRepresentado = U.id  AND C.idUsuario = :idUser
                 )";
-                
 
-            if (!empty($count) && is_numeric($count)) {
-               $query .= "LIMIT 0,$count";
+            //Validamos el Limit
+            if (is_int($limit->start) && is_int($limit->count)) {
+                echo "El parámetro limit es válido";
+               $query .= " LIMIT {$limit->start},{$limit->count}";
             }
-
+            
+            
+            
             $sql = $this->conn->prepare($query);
+            //Ejecutamos la sentencia.
             $sql->execute(array("idUser"=> $idUser,"value" => "%$value%")); 
+            //Extraemos los usuarios.
             $usuarios = $sql->fetchAll(PDO::FETCH_ASSOC);
             for($i = 0; $i < sizeof($usuarios); $i++)
                 $usuarios[$i] = array_map("utf8_encode",$usuarios[$i]);

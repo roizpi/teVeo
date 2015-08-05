@@ -244,41 +244,41 @@ body{
 }
 
 mark{
-    background-color: yellow;
-    color: #000 !important;
-    font-weight: bold;
+  background-color: yellow;
+  color: #000 !important;
+  font-weight: bold;
 }
 
 .singleLine{
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .link:hover,
 .link.active{
-    text-decoration: underline;
-    text-transform: capitalize;
-    outline: none;
-    text-shadow: #fff 3px 3px 10px;
+  text-decoration: underline;
+  text-transform: capitalize;
+  outline: none;
+  text-shadow: #fff 3px 3px 10px;
 }
 
 figure.inline{
-    margin: 0 15px;
+  margin: 0 15px;
 }
 
 figure.inline > *{
-    display: inline-block;
-    vertical-align: middle;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .template{
-    display: none;
+  display: none;
 }
 
 .overlay{
-    background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0,0,0,0.6);
 }
 
 .container{
@@ -300,53 +300,93 @@ h1,h2,h3,p,li,.logo,.btn{
  /*font-family: 'Fontdiner Swanky', cursive;*/
 }
 
+
+/* Componentes */
+
 /*
 
-    Estilo Iconos
-    ====================================
+Layout
+=====================
+DESC: Distribuidores de contenidos.
+
+*/
+
+/*
+  Flex Block Layout
+  =======================
+*/
+
+.flex-block{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.flex-block.flex-liquid-content > *{
+  flex:1 1 auto;
+}
+
+.flex-block.flex-x-content-start{
+  justify-content:flex-start;
+}
+
+.flex-block.flex-x-content-center{
+  justify-content:center;
+}
+
+.flex-block.flex-x-content-end{
+  justify-content:flex-end;
+}
     
-*/
-
-/*.action{
-    outline: none;
-    display: inline-block;
-    text-align: center;
-    line-height: 35px;
-    width: 35px;
-    height: 35px;
-    color: #fff;
-    border-radius: 100%;
+.flex-block.flex-direction-column{
+  flex-direction: column;
+}
+    
+.flex-block.flex-direction-row{
+  flex-direction: row;
 }
 
-.action,
-.action span{
-    -webkit-transition:all .5s;
-        -moz-transition:all .5s;
-                transition:all .5s;
+.flex-block.flex-content-wrap{
+  flex-wrap: wrap;
 }
 
 
-.action.active,
-.action:hover{
-    background-color:#fff;
+@media screen and (max-width: 767px) {
+    
+  .flex-block.tb-flex-direction-column{
+    flex-direction: column;
+  }
+    
+  .flex-block.tb-flex-direction-row{
+    flex-direction: row;
+  }
+
+  .flex-block.tb-flex-content-wrap{
+    flex-wrap: wrap;
+  }
 }
 
-.action span{
-    pointer-events: none;
-}*/
+@media screen and (max-width: 520px) {
+    
+  .flex-block.mb-flex-direction-column{
+    flex-direction: column;
+  }
+    
+  .flex-block.mb-flex-direction-row{
+    flex-direction: row;
+  }
 
-/*
-
-    Componentes
-    =================
-
-*/
+  .flex-block.mb-flex-content-wrap{
+    flex-wrap: wrap;
+  }
+}
 
 
 /* 
     
-    Preloaders
-    =====================
+  Preloaders
+  =====================
 
 */
 
@@ -398,8 +438,8 @@ h1,h2,h3,p,li,.logo,.btn{
 
 /*
   
-    Cuadros de Ayuda
-    =============================
+  Cuadros de Ayuda y Mensajes de Confirmación
+  ===========================================
 
 */
 
@@ -438,6 +478,49 @@ h1,h2,h3,p,li,.logo,.btn{
 .help.active{
     width: 98%;
     text-shadow: #fff 0px 0px 10px;
+}
+
+/*Mensajes de Confirmación*/
+.msg{
+  position: absolute;
+  width: 500px;
+  height: 110px;
+  top: 0;left: 0;bottom: 0;right: 0;
+  margin: auto;
+  text-align: center;
+  color: #fff;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  -webkit-transition:box-shadow .5s linear 1s;
+  transition:box-shadow .5s linear 1s;
+}
+
+.msg > p{
+  width: 70%;
+}
+
+.msg.success{
+  background-color: #00AFF0;
+}
+
+.msg.warning{
+  background-color: #EDBD16;
+}
+
+.msg.error{
+  background-color: #B22222;
+}
+
+.msg.success.active{
+  box-shadow: #00AFF0 0px 0px 10px 5px;
+}
+.msg.warning.active{
+  box-shadow: #EDBD16 0px 0px 10px 5px;
+}
+.msg.error.active{
+  box-shadow: #B22222 0px 0px 10px 5px;
 }
 
 /*
@@ -520,21 +603,21 @@ h1,h2,h3,p,li,.logo,.btn{
 */
 
 .btn{
-    display: inline-block;
-    font-weight: bold;
-    font-size: .8rem;
-    line-height: 50px;
-    height: 50px;
-    border: none;
-    padding: 0;
-    margin-left: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    outline: none;
-    text-align: center;
-    -webkit-transition:all .3s;
-        -moz-transition:all .3s;
-                transition:all .3s;
+  display: inline-block;
+  font-weight: bold;
+  font-size: .8rem;
+  line-height: 50px;
+  height: 50px;
+  border: none;
+  padding: 0;
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  outline: none;
+  text-align: center;
+  -webkit-transition:all .3s;
+    -moz-transition:all .3s;
+      transition:all .3s;
 }
 
 .btn:hover:after,
@@ -800,8 +883,8 @@ h1,h2,h3,p,li,.logo,.btn{
 
 /*
 
-    Controles de Búsqueda
-    ========================
+  Controles de Búsqueda
+  ========================
 
 
 */
@@ -809,7 +892,7 @@ h1,h2,h3,p,li,.logo,.btn{
 /*
   Control de Búsqueda Tipo 1
 
-  Anchura: 350px
+  Anchura: 100% (defecto), 250px,500px (alternativas)
   Alturas: 40px (defecto), 50px y 60px
 
   Válido para incluir Micrófono para reconocimiento de voz.
@@ -825,6 +908,8 @@ h1,h2,h3,p,li,.logo,.btn{
   background-color: #4353ff;
 }
 
+/*Tamaños*/
+
 .search-form.x-medium{
   width: 250px;
 }
@@ -833,7 +918,6 @@ h1,h2,h3,p,li,.logo,.btn{
   width: 500px;
 }
 
-/*Tamaños*/
 .search-form.y-medium{
   height: 50px;
 }
@@ -842,26 +926,13 @@ h1,h2,h3,p,li,.logo,.btn{
   height: 60px;
 }
 
-.search-form input[type=search],
-.search-form label{
-  float: right;
-  height:100%;
-}
-
 .search-form input[type=search]{
-  -webkit-box-sizing:border-box;
-    -moz-box-sizing:border-box;
-      box-sizing: border-box;
-  background-color: inherit;
-  border: none;
   width: 85%;
   text-indent: 14px;
 }
 
 .search-form button{
   width: 15%;
-  background-color: inherit;
-  border:none;
   font-size: 1.3rem;
   text-align: center;
   line-height: 40px;
@@ -869,6 +940,16 @@ h1,h2,h3,p,li,.logo,.btn{
     -moz-transition:font-size .5s,text-shadow .4s ease-in-out .5s;
       transition: font-size .5s,text-shadow .4s ease-in-out .5s;
 }
+
+.search-form input[type=search],
+.search-form button{
+  float: right;
+  height:100%;
+  background-color: inherit;
+  border: none;
+  padding: 0;
+}
+
 
 .search-form.y-medium button{
   line-height: 50px;
@@ -912,67 +993,67 @@ h1,h2,h3,p,li,.logo,.btn{
 }
 
 .search-form-type2 .input-group{
-    height: 50px;
-    border-radius: 100%;
-    line-height: 1;
+  height: 50px;
+  border-radius: 100%;
+  line-height: 1;
 }
 
 .search-form-type2 .input-group > *{
-    display: inline-block;
-    vertical-align: middle;
-    height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
 }
 
 .search-form-type2 .input-group,
 .search-form-type2 .input-group > *{
-    -webkit-transition:all .5s;
-            transition:all .5s;
+  -webkit-transition:all .5s;
+    transition:all .5s;
 }
 
 .search-form-type2 .input-group .form-control {
-    border: 0;
-    padding: 0;
-    outline: none;
-    font-size: 13px;
-    font-weight: 300;
-    text-indent: 15px;
-    background-color: transparent;
-    width:0;
+  border: 0;
+  padding: 0;
+  outline: none;
+  font-size: 13px;
+  font-weight: 300;
+  text-indent: 15px;
+  background-color: transparent;
+  width:0;
 }
 
 .search-form-type2 .input-group:hover{
-    border-radius: 15px;
+  border-radius: 15px;
 }
 
 .search-form-type2 .input-group:hover .form-control{
-    width: 176px;
+  width: 176px;
 }
 
 .search-form-type2 .input-group:hover .input-group-btn .submit > .fa{
-    font-size: 1.2em;
-    text-shadow: #fff 0px 0px 4px;
+  font-size: 1.2em;
+  text-shadow: #fff 0px 0px 4px;
 }
 
 .search-form-type2 .input-group .input-group-btn{
-    width: 50px;
+  width: 50px;
 }
 
 .search-form-type2 .input-group-btn .submit {
-    display: block;
-    background-color: transparent;
-    border: none;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    outline: none;
-    padding: 0;
+  display: block;
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  outline: none;
+  padding: 0;
 }
 
 .search-form-type2 .input-group .form-control,
 .search-form-type2 .input-group-btn .submit > .fa{
-    color: #fff;
-    line-height: 50px;
-    font-size: 0.7em;
+  color: #fff;
+  line-height: 50px;
+  font-size: 0.7em;
 }
 
 /*
@@ -983,40 +1064,40 @@ h1,h2,h3,p,li,.logo,.btn{
 
 .fa-microphone,
 .fa-microphone-slash{
-    position: absolute;
-    top: calc(50% - (25px / 2));right: 10px;
-    width: 25px;
-    height: 25px !important;
-    text-align: center;
-    line-height: 25px;
-    border-radius: 15px;
+  position: absolute;
+  top: calc(50% - (25px / 2));right: 10px;
+  width: 25px;
+  height: 25px !important;
+  text-align: center;
+  line-height: 25px;
+  border-radius: 15px;
     
 }
 
 .fa-microphone.invert,
 .fa-microphone-slash.invert{
-    color:#008ABD;
+  color:#008ABD;
 }
 
 /*Micrófono tachado no recibe eventos*/
 .fa-microphone-slash{
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .fa-microphone{
-    cursor: pointer;
-    -webkit-transition:background-color .5s;
-            transition:background-color .5s;
+  cursor: pointer;
+  -webkit-transition:background-color .5s;
+    transition:background-color .5s;
 }
 
 .fa-microphone:hover{
-    color:#008ABD;
-    background-color: #fff;
+  color:#008ABD;
+  background-color: #fff;
 }
 
 .fa-microphone.invert:hover{
-    color:#fff;
-    background-color:#008ABD;
+  color:#fff;
+  background-color:#008ABD;
 }
 
 /* 
@@ -1073,6 +1154,8 @@ h1,h2,h3,p,li,.logo,.btn{
   width: 8px;
 }
 
+/*Los estados se codifican mediante colores*/
+
 .contact-list .contact .status,
 .contact-list .contact .status[data-status='unknow']{
   background-color: #8B008B;
@@ -1089,8 +1172,6 @@ h1,h2,h3,p,li,.logo,.btn{
 .contact-list .contact .status[data-status='absent']{
   background-color: #B22222;
 }
-
-
 
 .contact-list .contact .content .info{
   width: 80%;
@@ -1121,11 +1202,7 @@ h1,h2,h3,p,li,.logo,.btn{
 .contact-list .contact .content .info .personality{
   font-size: .9rem;
 }
-
-
-
-
-
+/*Acciones*/
 .contact-list .contact .content .actions .action2{
   display: block;
   height: 33.33%;
@@ -1458,7 +1535,10 @@ h1,h2,h3,p,li,.logo,.btn{
 
 /*
   Profile Card
-  ======================
+  ==============
+
+  DESC:Ficha para representar perfil de un usuarios.
+
 */
 
 .profileCard{
@@ -1468,6 +1548,7 @@ h1,h2,h3,p,li,.logo,.btn{
   width: 400px;
 }
 
+/*Foto de Fondo*/
 .profileCard .profileCard-bg {
   display: block;
   height: 95px;
@@ -1525,114 +1606,7 @@ h1,h2,h3,p,li,.logo,.btn{
 }
 
 
-/*Mensajes de Confirmación*/
- 
 
-.msg{
-    position: absolute;
-    width: 500px;
-    height: 110px;
-    top: 0;left: 0;bottom: 0;right: 0;
-    margin: auto;
-    text-align: center;
-    color: #fff;
-    border-radius: 15px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    -webkit-transition:box-shadow .5s linear 1s;
-        transition:box-shadow .5s linear 1s;
-}
-
-.msg > p{
-    width: 70%;
-}
-
-.success{
-    background-color: #00AFF0;
-}
-
-.warning{
-    background-color: #EDBD16;
-}
-
-.error{
-    background-color: #B22222;
-}
-
-.success.active{
-    box-shadow: #00AFF0 0px 0px 10px 5px;
-}
-.warning.active{
-    box-shadow: #EDBD16 0px 0px 10px 5px;
-}
-.error.active{
-    box-shadow: #B22222 0px 0px 10px 5px;
-}
-
-
-/*
-    Layout de Contenido
-    =============================
-*/
-
-.flex-block{
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
-.flex-block.flex-x-content-center{
-  justify-content:center;
-}
-
-.flex-block.flex-x-content-end{
-  justify-content:flex-end;
-}
-    
-.flex-block.flex-direction-column{
-  flex-direction: column;
-}
-    
-.flex-block.flex-direction-row{
-  flex-direction: row;
-}
-
-.flex-block.flex-content-wrap{
-  flex-wrap: wrap;
-}
-
-
-@media screen and (max-width: 767px) {
-    
-    .flex-block.tb-flex-direction-column{
-        flex-direction: column;
-    }
-    
-    .flex-block.tb-flex-direction-row{
-        flex-direction: row;
-    }
-
-    .flex-block.tb-flex-content-wrap{
-        flex-wrap: wrap;
-    }
-}
-
-@media screen and (max-width: 520px) {
-    
-    .flex-block.mb-flex-direction-column{
-        flex-direction: column;
-    }
-    
-    .flex-block.mb-flex-direction-row{
-        flex-direction: row;
-    }
-
-    .flex-block.mb-flex-content-wrap{
-        flex-wrap: wrap;
-    }
-}
 
 /*
     Datagrid
@@ -1925,7 +1899,6 @@ h1,h2,h3,p,li,.logo,.btn{
   margin-right: 20px;
 }
 
-
 .actionbar .actions .action > a{
   display: block;
   color: #fff;
@@ -1939,6 +1912,20 @@ h1,h2,h3,p,li,.logo,.btn{
   font-size: 1.6rem;
 }
 
+.actionbar .actions .action > a .badge:not(:empty){
+  position: absolute;
+  display: inline-block;
+  top: -2px;right: -14px;
+  width: 20px;height: 20px;
+  font-size: .9rem;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 20px;
+  background-color: red;
+  color: #fff;
+  letter-spacing: normal;
+}
+
 
 /*
   Tabs Container
@@ -1948,8 +1935,6 @@ h1,h2,h3,p,li,.logo,.btn{
 .tabs-container{
   width: 100%;
 }
-
-
 
 
 /*#header .logo,
@@ -1994,18 +1979,16 @@ h1,h2,h3,p,li,.logo,.btn{
     line-height: 70px
 }*/
 
-
-
 #nav{
-    width: 70%;
+  width: 70%;
 }
 
 #nav .menubar{
-    text-align: center;
+  text-align: center;
 }
 
 #nav .menubar > li{
-    display: inline-block;
+  display: inline-block;
 }
 
 #nav .menubar > li a{
@@ -2142,6 +2125,7 @@ h1,h2,h3,p,li,.logo,.btn{
 .body .sidenav,
 .body .tabs-container{
   height: 100%;
+  overflow: hidden;
   flex:1 1 auto;
 }
 
@@ -2484,91 +2468,21 @@ h1,h2,h3,p,li,.logo,.btn{
     overflow: hidden;
 }
 
-#main .panel-action .viewContainer{
-    height: 100%;
-    position: relative;
+.viewContainer{
+  height: 100%;
+  position: relative;
 }
 
 .viewContainer .view-tittle{
-    color: #fff;
-    margin: 0;
-    height: 35px;
-    line-height: 35px;
-    text-align: center;
+  color: #fff;
+  margin: 0;
+  height: 45px;
+  line-height: 45px;
+  text-align: center;
+  background-color: #4353ff;
 }
 
-/* Parcial para Buscar usuarios*/
 
-.containerSearchUsers{
-    width: 85%;
-    margin: 35px auto;
-    height: calc(100% - 36px);
-    position: static;
-}
-
-.containerSearchUsers .actions{
-    height: 50px;
-    display: flex;
-    display: -webkit-flex;
-    justify-content: center;
-    align-items: center;
-    flex-flow: row nowrap;
-}
-
-.containerSearchUsers .actions > *{
-    margin: 0;
-    margin-right: 10px;
-}
-
-.containerSearchUsers .sugerencias{
-    margin-top: 35px;
-    border-top: 2px solid #fff;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    height: 400px;
-    overflow: auto;
-}
-
-.containerSearchUsers .sugerencias .user{
-    width: 250px;
-    height: 150px;
-    padding: 10px;
-    border-radius: 10px;
-    position: relative;
-    -webkit-animation:  animacionFoto 1s 1 linear;
-        -moz-animation: animacionFoto 1s 1 linear;
-            animation:  animacionFoto 1s 1 linear;
-}
-
-.containerSearchUsers .sugerencias .user img{
-    max-height: 80%;
-    width: 100%;
-}
-
-.containerSearchUsers .sugerencias .user figcaption{
-    font-weight: 600;
-}
-
-.containerSearchUsers .sugerencias .user figcaption mark{
-    color: #fff;
-}
-
-.containerSearchUsers .sugerencias .user .enviarSolicitud{
-    position: absolute;
-    top: 0;bottom: 0;
-    left: 0;right: 0;
-    color:  #fff;
-    text-align: center;
-    font-weight: 600;
-    padding-top: 45px;
-    border-radius: 10px;
-    visibility: hidden;
-}
-
-.containerSearchUsers .sugerencias .user:hover .enviarSolicitud{
-    visibility: visible;
-}
 
 /*
 
@@ -6031,13 +5945,11 @@ span.css-emoticon.nintendo-controller {
 }
 
 .animateCard{
-
   animation-duration:1s;
   animation-timing-function:linear;
   animation-iteration-count: 1;
   animation-direction: even;
   animation-fill-mode: forwards;
-
 }
 
 
@@ -6060,6 +5972,21 @@ span.css-emoticon.nintendo-controller {
   ======================
 
 */
+
+#containerSearchUsers{
+  width: 85%;
+  margin: 35px auto;
+  height: calc(100% - 45px);
+  position: relative;
+}
+
+#containerSearchUsers .actions{
+  height: 50px;  
+}
+
+.containerSearchUsers .actions > *{
+  margin: 0 10px 0 0;
+}
 
 #profileCardContainer{
   margin-top: 35px;

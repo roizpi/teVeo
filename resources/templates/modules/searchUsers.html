@@ -2,18 +2,17 @@
     <!-- Parcial para Buscar Usuarios -->
     <h2 class="view-tittle">Buscar Usuarios</h2>
     
-    <div class="containerSearchUsers"  data-component="container">
+    <div id="containerSearchUsers"  class="flex-block flex-direction-column flex-liquid-content" data-component="container">
         <h3 class="help  y-normal" data-component="help">Utilice la opción sugerir usuarios para conocer gente de tu ciudad</h3>
-        <div class="actions">
+        <div class="actions  flex-block  flex-direction-row">
             <form action="" class="search-form x-large y-medium" data-component="searchForm">
                 <input type="search" role="search" name="search" id="searchUsers" placeholder="introduce nick..." required autofocus/>
                 <button type="submit"><span class="fa fa-search"></span></button>
-                <span data-component="microphone"></span>
+                <span data-component="microphone" class="fa"></span>
             </form>
             <a href="#" data-action="suggest_users" title="Sugerir usuarios"   class="btn  btn-large  btn-action  invert">Sugerir Usuarios</a>
             <a href="#" data-action="busquedaAvanzada" title="Búsqueda Avanzada" class="btn  btn-veryLarge  btn-action  invert">Búsqueda Avanzada</a>
         </div>
-
         <!-- Lista de Usuarios Encontrados -->
         <ul id="profileCardContainer" class="flex-block  flex-direction-row  flex-content-wrap" data-component="users_found">
             <!-- Plantilla de cada perfil de usuario -->
@@ -22,10 +21,10 @@
                     <div class="profileCard-bg" data-component="profileBack" data-type="background"></div>
                     <div class="profileCard-content">
                         <a href="#" class="profileCard-avatar">
-                            <img  data-component='avatar' data-type="img" src="" alt=""/>
+                            <img data-component='avatar' data-type="img" src="" alt=""/>
                         </a>
                         <div class="profileCard-actions">
-                            <a href="#" data-component="id" data-type="hidden" data-action="toAskForFriendship" class="btn btn-medium btn-action">
+                            <a href="#" data-component="id" data-type="hidden" data-action="to_ask_for_friendship" class="btn btn-medium btn-action">
                                 <span class="fa fa-plus-circle fa-2x"></span>&nbsp;Agregar
                             </a>
                         </div>
