@@ -5976,7 +5976,7 @@ span.css-emoticon.nintendo-controller {
 #containerSearchUsers{
   width: 85%;
   margin: 35px auto;
-  height: calc(100% - 45px);
+  height: calc(100% - 100px);
   position: relative;
 }
 

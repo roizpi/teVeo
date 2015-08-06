@@ -1,15 +1,18 @@
 /*Applications Manager Module*/
-var ApplicationsManager = (function(_super,$){
+var ApplicationsManager = (function(_super,$,environment){
 
     __extends(ApplicationsManager, _super);
 
     //Solicitudes de amistad pendientes.
-    var applicationsOfFriendship = [];
-    var self;
+    var applicationsOfFriendship = [],self,serviceLocator,templating;
 
     function ApplicationsManager(notificator){
         self = this;
         this.notificator = notificator;
+        //Obtenemos el service locator.
+        serviceLocator = environment.getService("SERVICE_LOCATOR");
+        //Obtenemos el template manager.
+        templating = environment.getService("TEMPLATE_MANAGER");
         //Eventos del Módulo
         this.events = {
             "APPLICATIONS_AVALIABLE":[],
@@ -17,12 +20,13 @@ var ApplicationsManager = (function(_super,$){
             "REJECT_APPLICATION":[],
             "NO_APPLICATION_FOUND":[]
         }
+
+
+
         //Configuramos manejadores.
         //attachHandlers();
         //Obtenemos la solicitudes de amistad pendientes.
-        //getData();
-        
-        
+        //getData();   
     }
 
     /*
@@ -30,124 +34,71 @@ var ApplicationsManager = (function(_super,$){
         ******************************
     */
 
-    var getMainView = function(){
-        return self.templateManager.getView({
-            moduleName:self.constructor.name,
-            templateName:"applications"
-        });
-    }
+    var onCreateViewApplications = function(){
 
-    var attachHandlers = function(){
+        var view = this;
+        //Mostramos en el DOM cada solicitud.
+        applicationsOfFriendship.forEach(showApplication);
+        //Mostramos número de solicitudes de amistad.
+        updateNumApplications();
+        //obtenemos el contenedor de solicitudes.
+        var $applications = view.getComponent("container").get();
+        //Aceptar solicitud de amistad
+        $applications.delegate("a[data-action]","click",function(e){
 
-    
-        //Manejador para el evento NEW_APPLICATION_OF_FRIENDSHIP
-        //Este usuario ha recibido una nueva solicitud de amistad.
-        self.serviceLocator.addEventListener("NEW_APPLICATION_OF_FRIENDSHIP",function(application){
-            //reproducimos sonido.
-            $.ionSound.play("nuevaSolicitudAmistad");
-            //lanzamos norificación
-            self.notificator.throwNotification({
-                title:"Nueva Solicitud de Amistad",
-                body:"Tienes una nueva solicitud de amistad de " + application.userName
-            });
-            //guardamos solicitud.    
-            addAplication(application);
-        });
-        //Manejador para el evento ACCEPT_YOUR_APPLICATION.
-        //Un usuario ha aceptado la solicitud de amistad de este usuario.
-        self.serviceLocator.addEventListener("ACCEPT_YOUR_APPLICATION",function(data){
-            //Reproducimos sonido
-            $.ionSound.play("acceptYourApplication");
-            //lanzamos notificación
-            self.notificator.throwNotification({
-                title:"Solicitud de Amistad Aceptada",
-                body:data
-            });
-            
-        });
-
-        //Manejador para el evento REJECT_YOUR_APPLICATION.
-        //Un usuario ha rechazado tu solicitud de amistad.
-        self.serviceLocator.addEventListener("REJECT_YOUR_APPLICATION",function(data){
-            //Reproducimos sonido
-            $.ionSound.play("acceptYourApplication");
-            //lanzamos notificación
-            self.notificator.throwNotification({
-                title:"Solicitud de Amistad Rechazada",
-                body:data
-            });
-           
-        });
-
-        //Configuramos manejador para la template "applications".
-        self.templateManager.implementHandler({
-            moduleName:self.constructor.name,
-            templateName:"applications",
-            handler:"onCreate"
-        },function(){
-            var view = this;
-            //Mostramos en el DOM cada solicitud.
-            applicationsOfFriendship.forEach(showApplication);
-            //Mostramos número de solicitudes de amistad.
-            updateNumApplications();
-            //obtenemos el contenedor de solicitudes.
-            var $applications = view.getComponent("container").get();
-            //Aceptar solicitud de amistad
-            $applications.delegate("a[data-action]","click",function(e){
-                e.preventDefault();
-                e.stopPropagation();
-                var action = this.dataset.action;
-                var $this = $(this);
-                var idSolicitado = userConnected.id;
-                var idSolicitador = $this.parent().data("idSolicitador");
+            e.preventDefault();
+            e.stopPropagation();
+            var action = this.dataset.action;
+            var $this = $(this);
+            var idSolicitado = userConnected.id;
+            var idSolicitador = $this.parent().data("idSolicitador");
                 
-                var dropApplicationHelper = function(msg,action){
+            var dropApplicationHelper = function(msg,action){
                     
-                    //Mostramos succes
-                    this.notificator.dialog.alert({
-                        title:"Resultado Operación",
-                        text:msg,
-                        level:"success"
-                    });
-                    //Borramos del DOM la solicitud.
-                    $this.parents("[data-application]").fadeOut(3000,function(){
-                        $(this).remove();
-                        //notificamos esta suceso, por si otros módulos están interasados en hacer algo
-                        self.triggerEvent(action);
-                        //Si no hay más solicitudes de amistad, notificamos este evento
-                        if(!applicationsOfFriendship.length)
-                            self.triggerEvent("NO_APPLICATION_FOUND");
-                    });
-                    //la eliminamos del Array.
-                    removeApplication(idSolicitador);
-                }
+                //Mostramos succes
+                this.notificator.dialog.alert({
+                    title:"Resultado Operación",
+                    text:msg,
+                    level:"success"
+                });
+                //Borramos del DOM la solicitud.
+                $this.parents("[data-application]").fadeOut(3000,function(){
+                    $(this).remove();
+                    //notificamos esta suceso, por si otros módulos están interasados en hacer algo
+                    self.triggerEvent(action);
+                    //Si no hay más solicitudes de amistad, notificamos este evento
+                    if(!applicationsOfFriendship.length)
+                        self.triggerEvent("NO_APPLICATION_FOUND");
+                });
+                //la eliminamos del Array.
+                removeApplication(idSolicitador);
+            }
                     
-                if(action == "addContact"){
-                    //Solicitud de amistad aceptada.
-                    //Promise 1
-                    var acceptApplication = self.serviceLocator.acceptApplication(idSolicitado,idSolicitador);
-                    //Promise 2
-                    var addContact = self.serviceLocator.addContact(idSolicitado,idSolicitador);
-                    $.when(acceptApplication,addContact)
-                        .done(function(response){
-                            dropApplicationHelper(response,"acceptApplication");
-                        }).fail(function(response){
-                            //Promise reject
-                            console.log("Las dos promise deben ser resueltas");
-                        });
+            if(action == "addContact"){
+                //Solicitud de amistad aceptada.
+                //Promise 1
+                var acceptApplication = serviceLocator.acceptApplication(idSolicitado,idSolicitador);
+                //Promise 2
+                var addContact = serviceLocator.addContact(idSolicitado,idSolicitador);
+                $.when(acceptApplication,addContact)
+                    .done(function(response){
+                        dropApplicationHelper(response,"acceptApplication");
+                    }).fail(function(response){
+                        //Promise reject
+                        console.log("Las dos promise deben ser resueltas");
+                    });
 
-                }else if(action == "rejectApplication"){
-                    //Solicitud de amistad rechazada.
-                    self.serviceLocator.rejectApplication(idSolicitado,idSolicitador)
+            }else if(action == "rejectApplication"){
+                //Solicitud de amistad rechazada.
+                serviceLocator.rejectApplication(idSolicitado,idSolicitador)
                     .done(function(response){
                         dropApplicationHelper(response,"rejectApplication");
                     })
                     .fail(function(error){
 
                     });
-                }
-                    
-            });
+            }
+
             //Inicializamos plugin mixItUp
             $applications.mixItUp({
                 animation: {
@@ -218,13 +169,58 @@ var ApplicationsManager = (function(_super,$){
                     }
                 }
             });
-
+                    
         });
+
+    }
+
+
+    var attachHandlers = function(){
+
+        //Manejador para el evento NEW_APPLICATION_OF_FRIENDSHIP
+        //Este usuario ha recibido una nueva solicitud de amistad.
+        serviceLocator.addEventListener("NEW_APPLICATION_OF_FRIENDSHIP",function(application){
+            //reproducimos sonido.
+            $.ionSound.play("nuevaSolicitudAmistad");
+            //lanzamos norificación
+            self.notificator.throwNotification({
+                title:"Nueva Solicitud de Amistad",
+                body:"Tienes una nueva solicitud de amistad de " + application.userName
+            });
+            //guardamos solicitud.    
+            addAplication(application);
+        });
+        //Manejador para el evento ACCEPT_YOUR_APPLICATION.
+        //Un usuario ha aceptado la solicitud de amistad de este usuario.
+        serviceLocator.addEventListener("ACCEPT_YOUR_APPLICATION",function(data){
+            //Reproducimos sonido
+            $.ionSound.play("acceptYourApplication");
+            //lanzamos notificación
+            self.notificator.throwNotification({
+                title:"Solicitud de Amistad Aceptada",
+                body:data
+            });
+            
+        });
+
+        //Manejador para el evento REJECT_YOUR_APPLICATION.
+        //Un usuario ha rechazado tu solicitud de amistad.
+        serviceLocator.addEventListener("REJECT_YOUR_APPLICATION",function(data){
+            //Reproducimos sonido
+            $.ionSound.play("acceptYourApplication");
+            //lanzamos notificación
+            self.notificator.throwNotification({
+                title:"Solicitud de Amistad Rechazada",
+                body:data
+            });
+           
+        });
+
     }
 
     var getData = function(){
         //Llamamos a un servicio para obtener las solicitudes de amistad pendientes.
-        self.serviceLocator.getApplicationsOfFriendship(userConnected.id)
+        serviceLocator.getApplicationsOfFriendship(userConnected.id)
             .done(function(applications){
                 //Guardamos las solicitudes de amistad pendientes.
                 applicationsOfFriendship = applications;
@@ -291,17 +287,26 @@ var ApplicationsManager = (function(_super,$){
         return applicationsOfFriendship.length;
     };
 
-    //Muestra todas las solicitudes de amistad.
+    //Muestra la vista de todas las solicitudes de amistad.
     ApplicationsManager.prototype.showApplications = function() {
         if(applicationsOfFriendship.length){
-            this.templateManager.loadTemplate({moduleName:this.constructor.name,templateName:"applications"});
+            templating.loadTemplate({
+                name:"applications",
+                type:"MODULE_VIEWS",
+                handlers:{
+                    onCreate:onCreateViewApplications
+                }
+            }).done(function(){
+                console.log("La vista cargada");
+                console.log(this);
+            });
         }else{
             throw new Error("No tienes ninguna solicitud de amistad pendiente");
         }
     };
 
     ApplicationsManager.prototype.sendApplication = function(addressee,message,callback) {
-        this.serviceLocator.sendApplication(userConnected.id,addressee,message)
+        serviceLocator.sendApplication(userConnected.id,addressee,message)
             .done(function(response){
                 //Promise resolver
                 self.notificator.dialog.alert({
@@ -316,10 +321,8 @@ var ApplicationsManager = (function(_super,$){
             });
     };
 
-    ApplicationsManager.prototype.getApplicationForUser = function(usuSolicitador,usuSolicitado,callback) {
-        this.serviceLocator.getApplicationForUser(usuSolicitador,usuSolicitado)
-            .done(callback)
-            .fail();
+    ApplicationsManager.prototype.getApplicationForUser = function(usuSolicitador,usuSolicitado) {
+        return serviceLocator.getApplicationForUser(usuSolicitador,usuSolicitado);
     };
 
     ApplicationsManager.prototype.existeSolicitudDeAmistadPendiente = function(usuSolicitador) {
@@ -331,4 +334,4 @@ var ApplicationsManager = (function(_super,$){
    
     return ApplicationsManager;
 
-})(Component,jQuery);
+})(Component,jQuery,environment);

@@ -47,12 +47,14 @@
         "dependences":["NOTIFICATOR"],
         "templates":{
             "applications":{
-                "file":"applications.html",
-                "animations":{
-                    "animationIn":"zoomInUp",
-                    "animationOut":"zoomOutDown"
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"applications.html",
+                    "animations":{
+                        "animationIn":"bounceInDown",
+                        "animationOut":"fadeOutRight"
+                    }
                 }
-                
             }
         }
     },

@@ -1,3 +1,186 @@
+var Component = (function(){
+
+	var el,type,name,components,templates,animations,handlers;
+
+	function Component($element){
+		var el = $element;
+		//Obtenemos el tipo de componente.
+		var type = $element.get(0).dataset.type || 'html';
+		//Obtenemos nombre del componente.
+		var name = $element.get(0).dataset.component;
+
+		//las animaciones para los componentes se expresan en el marcado.
+		//data-animationin
+		//data-animationout
+		//los handlers se configuran mediante la API.
+		//mediante método setOnCreate
+		var components = {};
+		var templates = {};
+
+		//Procesamos todos los componentes que contiene el elemento
+		$element.find("[data-component]").each(function(idx,child){
+
+			var $child = $(child);
+			var $componentParent = $child.parents("[data-component]");
+			if($componentParent.length && $componentParent.get(0).isEqualNode($element.get(0))){
+
+				if ($child.is("[data-type='template']")) {
+					//Obtenemos el nombre de la template.
+					var name = child.dataset.component;
+					//Guardamos la template.
+					templates[name] = $child.removeAttr("data-type").remove();
+				}else{
+					//parseamos el componente de forma recursiva.
+					var component = new Component($child);
+					components[component.name] = component;
+				}
+			}
+			
+		});
+		//Eliminamos el data-atributo.
+		$element.removeAttr("data-component");
+	
+	}
+
+	//Rellenar el componente con los datos especificados.
+	var hydrate = function(data){
+		
+		var components = component._components;
+
+		for(var componentName in components){
+			//recogemos el valor.
+			var value = data[componentName];
+			//recogemos el tipo.
+			var type = components[componentName].type &&  components[componentName].type.toUpperCase();
+			//Si se ha encontrado valor.
+			if (value && type) {
+
+				switch(type){
+
+					case 'IMG':
+						components[componentName].el.attr("src",value);
+						break;
+					case 'TEXT':
+						components[componentName].el.text(value);
+						break;
+					case 'HTML':
+						components[componentName].el.html(value);
+						break;
+					case 'BACKGROUND':
+						components[componentName].el.css("background-image","url("+value+")");
+						break;
+					case 'HIDDEN':
+						components[componentName].el.data(componentName,value);
+						break;
+					case 'DATA':
+						components[componentName].el.attr("data-"+componentName,value);
+					default:
+						console.log("Valor no conocido");
+				}
+					
+			};
+		}
+
+		return component;
+	}
+
+	//Devuelve Objeto jQuery original.
+	Component.prototype.get = function() {
+		return this.el;
+	};
+	//Oculta y opcionalmente elimina un elemento.
+	Component.prototype.hide = function(remove) {
+		if(this.animations && this.animations.animationout){
+			var animation = this.animations.animationout
+			this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
+				remove && $(this).remove();
+			});
+		}
+	};
+	//Comprueba si un elemento es visible.
+	Component.prototype.isVisible = function() {
+		return this.el.is(":visible");
+	};
+
+	Component.prototype.scrollToLast = function() {
+		this.el.scrollTop(this.el.children(":last").offset().top);
+	};
+
+	Component.prototype.scrollAt = function(pos) {
+		if (pos && !isNaN(parseInt(pos))) {
+			this.el.scrollTop(pos);
+		};
+	};
+
+	Component.prototype.detach = function() {
+		this.el.detach();
+	};
+
+	Component.prototype.filter = function(patter) {
+		
+		var pattern = new RegExp("("+pattern+")","i");
+		$.each(this.el.children(),function(indx,element){
+			var $element = $(element);
+			var text = $element.find("[data-mark]").html().replace(/<mark>|<\/mark>/ig,"");
+			if(text.search(pattern) == -1){
+				$element.fadeOut(1000);
+				}else{
+					//El texto encaja con el patrón, señalamos en que parte.
+					//Con $1 hacemos referencia a la captura anterior.
+					$element.find("[data-mark]").html(text.replace(pattern,"<mark>$1</mark>"));
+					if($element.is(":hidden")){
+					    $element.fadeIn(1000).effect("highlight",1000);
+					}
+				}
+			});
+	};
+
+
+	Component.prototype.removeChild = function(id) {
+		
+		var component = this.components && this.components[id];
+		if(component instanceof Component){
+			//Eliminamos el Nodo DOM.
+			component.el.remove();
+			//Lo eliminamos del array de componentes.
+			delete this.components[id];
+		}
+	};
+
+	Component.prototype.hideChild = function(id,remove) {
+		var component = this.components && this.components[id];
+		if(component instanceof Component){
+			var self = this;
+			component.onBeforeHide();
+			//Ocultará elemento mediante animación configurada en animationout.
+			//si queremos eliminar el componente
+			component.hide(remove);
+			if (remove) {
+				delete this.components[id];
+			};
+			component.onAfterHide();
+		}
+	};
+
+	Component.prototype.hideAllChild = function(remove) {
+		// body...
+	};
+
+	Component.prototype.showChild = function(id) {
+		// body...
+	};
+
+	Component.prototype.showAllChild = function() {
+		// body...
+	};
+
+	
+	
+	return Component;
+
+})();
+
+
 var TemplateManager = (function(_super,$,environment){
 
 	__extends(TemplateManager, _super);
@@ -32,6 +215,10 @@ var TemplateManager = (function(_super,$,environment){
 				component.el.remove();
 				delete this._components[id];
 			}
+		},
+		showComponent:function(id){
+			var component = this._components && this._components[id];
+			if(component){}
 		},
 		hideComponent:function(id,time,remove){
 			
@@ -117,9 +304,9 @@ var TemplateManager = (function(_super,$,environment){
 
     var componentWithTemplatePrototype = {
 
-		createComponent:function(templateName,data,options){
-
-			var template = this._templates && this._templates[templateName];
+		createComponent:function(name,data,options){
+			//Obtenemos la template.
+			var template = this._templates && this._templates[name];
 			//Comprobamos si hay una template con ese nombre.
 			if(template){
 				//Configuramos el nombre del componente.
@@ -132,7 +319,11 @@ var TemplateManager = (function(_super,$,environment){
 				if(data) 
 					component = hydrate(component,data);
 
-				this._components[name] = component;
+				this._components[name] = {
+					component:component,
+					animations:options.animations || null,
+					handlers:options.handlers || null
+				}
 
 				if(this.el.mixItUp && this.el.mixItUp('isLoaded')){
 					if(options.position == "prepend")
@@ -144,10 +335,6 @@ var TemplateManager = (function(_super,$,environment){
 				}else{
 					this.el.append(component.el);
 				}
-
-				options && options.animate && component.el.addClass(options.animate);
-
-				typeof(options.onCreate) == "function" && options.onCreate(component);
 					            
 			}
 		
@@ -156,53 +343,11 @@ var TemplateManager = (function(_super,$,environment){
 														
 	}
 
-	function TemplateManager(){
+	function TemplateManager(){}
 
-
-	}
-
-	var hydrate = function(component,data){
-		
-		var components = component._components;
-
-		for(var componentName in components){
-			//recogemos el valor.
-			var value = data[componentName];
-			//recogemos el tipo.
-			var type = components[componentName].type &&  components[componentName].type.toUpperCase();
-			//Si se ha encontrado valor.
-			if (value && type) {
-
-				switch(type){
-
-					case 'IMG':
-						components[componentName].el.attr("src",value);
-						break;
-					case 'TEXT':
-						components[componentName].el.text(value);
-						break;
-					case 'HTML':
-						components[componentName].el.html(value);
-						break;
-					case 'BACKGROUND':
-						components[componentName].el.css("background-image","url("+value+")");
-						break;
-					case 'HIDDEN':
-						components[componentName].el.data(componentName,value);
-						break;
-					case 'DATA':
-						components[componentName].el.attr("data-"+componentName,value);
-					default:
-						console.log("Valor no conocido");
-				}
-					
-			};
-		}
-
-		return component;
-	}
-
+	//Parsea un elemento para crear un componente equivalente.
 	var parseElement = function($element){
+		
 		//Obtenemos el tipo de componente.
 		var type = $element.get(0).dataset.type || 'html';
 		//Obtenemos nombre del componente.
@@ -249,6 +394,10 @@ var TemplateManager = (function(_super,$,environment){
 		return component;
 
 	}
+
+	
+
+	
 
 	var hasActiveView = function(type,target){
 		for(var view in views){
@@ -365,7 +514,7 @@ var TemplateManager = (function(_super,$,environment){
 				$template.addClass("animateView");
 				//creamos la vista 
 		        var view = {
-		        	component:parseElement($template),//estructura de componentes derivada de la template
+		        	component:new Component($template),//estructura de componentes derivada de la template
 		        	node:$template,//objeto jquery original
 		        	type:type,//tipo de vista
 		        	timestamp:new Date().getTime(),//timemstamp de creación

@@ -14,7 +14,7 @@ var Searchs = (function(_super,$,environment){
         serviceLocator = environment.getService("SERVICE_LOCATOR");
         this.webSpeech = webSpeech;
         //MANEJADOR DE SOLICITUDES.
-        //this.applicationsManager = applicationsManager;
+        this.applications = applications;
         this.notificator = notificator;
 
             
@@ -108,34 +108,40 @@ var Searchs = (function(_super,$,environment){
                 //Solicitar amistad.
                 var idUser = $this.data("id");
                 //Comprobamos si ya tenemos una solicitud de amistad de este usuario.
-                if(!self.applicationsManager.existeSolicitudDeAmistadPendiente(idUser)){
-                    //Comprobamos si existe alguna solicitud PENDIENTES O RECHAZADAS con este usuario.
-                    self.applicationsManager.getApplicationForUser(userConnected.id,idUser,function(application){
-                        console.log(application);
-                        if(!application){
-                            //Obtenemos todos los detalles del usuario.
-                            serviceLocator.getDetailsOfUser(idUser)
-                                .done(function(user){
-                                    showForm(user);
-                                })
-                                .fail(function(error){
+                if(!self.applications.existeSolicitudDeAmistadPendiente(idUser)){
 
+                    var form = templating.getView("searchUsers").getComponent("container").getComponent(idUser);
+                    //Comprobamos si ya existe un formulario para este usuario.
+                    if (!form) {
+                        //Comprobamos si existe alguna solicitud PENDIENTES O RECHAZADAS con este usuario.
+                        self.applications.getApplicationForUser(userConnected.id,idUser).done(function(application){
+                            
+                            if(!application){
+                                //Obtenemos todos los detalles del usuario.
+                                serviceLocator.getDetailsOfUser(idUser)
+                                    .done(createForm)
+                                    .fail(function(error){
+
+                                    });
+                            }else{
+
+                                if(application.status == "PENDIENTE"){
+                                    var msg = "Ya has enviado una solicitud de amistad a este usuario el " + application.fecha;
+                                }else if(application.status == "RECHAZADA"){
+                                    var msg = "Este usuario ha rechazado tu solicitud, puedes enviarle otra cuando haya pasado 24 horas";
+                                }
+                                //Mostramos alerta
+                                self.notificator.dialog.alert({
+                                    title:"No se puede enviar solicitud",
+                                    text:msg,
+                                    level:"warning"
                                 });
-                        }else{
-
-                            if(application.status == "PENDIENTE"){
-                                var msg = "Ya has enviado una solicitud de amistad a este usuario el " + application.fecha;
-                            }else if(application.status == "RECHAZADA"){
-                                var msg = "Este usuario ha rechazado tu solicitud, puedes enviarle otra cuando haya pasado 24 horas";
                             }
-                            //Mostramos alerta
-                            self.notificator.dialog.alert({
-                                title:"No se puede enviar solicitud",
-                                text:msg,
-                                level:"warning"
-                            });
-                        }
-                    });
+                        });
+                    }else{
+                        console.log("Ya existe Formulario");
+                    }
+                    
 
                 }else{
 
@@ -157,9 +163,9 @@ var Searchs = (function(_super,$,environment){
                     //id del usuario.
                     var idUser = $this.parent().data("id");
                     //Consultamos si ha podido entrar una solicitud de amistad del otro usuario
-                    if(!self.applicationsManager.existeSolicitudDeAmistadPendiente(idUser)){
+                    if(!self.applications.existeSolicitudDeAmistadPendiente(idUser)){
                         //Mandamos la solicitud
-                        self.applicationsManager.sendApplication(idUser,message,function(){
+                        self.applications.sendApplication(idUser,message,function(){
                             //Ocultamos form
                             hideForm(idUser);
                             //Quitamos el usuario sugerido.
@@ -356,14 +362,12 @@ var Searchs = (function(_super,$,environment){
     }
 
     //Crea el formulario para el envío de solicitudes.
-    var showForm = function(user){
+    var createForm = function(user){
         
-
-        var container = templating.getView("searchUsers").getComponent("container");
-        var form = container.getComponent(user.id);
-        if (!form) {
-
-            container.createComponent("ToAskForFriendship",{
+        templating
+            .getView("searchUsers")
+            .getComponent("container");
+            .createComponent("ToAskForFriendship",{
                 id:user.id
             },
             {
@@ -380,17 +384,21 @@ var Searchs = (function(_super,$,environment){
                             help:"Escribe un mensaje a " + user.name,
                             textarea:"Hola " + user.name + ", agregame por favor"
                         },{
+                            animations:{
+                                animationIn:"bounceInLeft",
+                                animationOut:"bounceOutRight"
+                            }
+                            handlers:{
+                                onAfterShow:function(component){
 
-                            animate:"fadeInDown",
-                            onCreate:function(component){
-
-                                setTimeout(function(){
-                                    //Activamos la ayuda.
-                                    component.getComponent("help").get().addClass("active");
-                                    //Ponemos el foco en el TextArea.
-                                    component.getComponent("textarea").focus();
-                                },1000);
+                                    setTimeout(function(){
+                                        //Activamos la ayuda.
+                                        component.getComponent("help").get().addClass("active");
+                                        //Ponemos el foco en el TextArea.
+                                        component.getComponent("textarea").focus();
+                                    },1000);
                                     
+                                }
                             }
 
                         });
@@ -399,14 +407,14 @@ var Searchs = (function(_super,$,environment){
                 }
 
             });
-        };
+ 
     }
     //Oculta el formulario de envío de solicitud
     var hideForm = function(id){
 
         templating.getView("searchUsers")
             .getComponent("container")
-                .hideComponent(id,1000,true);
+                .hideComponent(id,1000,false);
 
     }
 
