@@ -1,182 +1,258 @@
-var Component = (function(){
+var View = (function(){
 
-	var el,type,name,components,templates,animations,handlers;
 
-	function Component($element){
-		var el = $element;
+	function View(el,type,name){
+
+		this.el = el;
+		this.type = type;
+		this.name = name;
+		this.views = {};
+		this.templates={};
+		this.animations = {};
+		this.handlers = {};
+	}
+
+		
+
+	var create = function($element,data) {
+
 		//Obtenemos el tipo de componente.
 		var type = $element.get(0).dataset.type || 'html';
-		//Obtenemos nombre del componente.
-		var name = $element.get(0).dataset.component;
+		//Obtenemos nombre de la vista.
+		var name = $element.get(0).dataset.view;
+
+		var view = new View($element,type,name);
 
 		//las animaciones para los componentes se expresan en el marcado.
 		//data-animationin
 		//data-animationout
 		//los handlers se configuran mediante la API.
 		//mediante método setOnCreate
-		var components = {};
-		var templates = {};
-
 		//Procesamos todos los componentes que contiene el elemento
-		$element.find("[data-component]").each(function(idx,child){
+		$("[data-view]",$element).each(function(idx,child){
 
 			var $child = $(child);
-			var $componentParent = $child.parents("[data-component]");
-			if($componentParent.length && $componentParent.get(0).isEqualNode($element.get(0))){
+			var $viewParent = $child.parents("[data-view]");
+			if($viewParent.length && $viewParent.get(0).isEqualNode($element.get(0))){
 
 				if ($child.is("[data-type='template']")) {
 					//Obtenemos el nombre de la template.
-					var name = child.dataset.component;
+					var name = child.dataset.view;
 					//Guardamos la template.
-					templates[name] = $child.removeAttr("data-type").remove();
+					view.templates[name] = $child.removeAttr("data-type").remove();
 				}else{
-					//parseamos el componente de forma recursiva.
-					var component = new Component($child);
-					components[component.name] = component;
+					//creamos la vista.
+					var subView = create($child);
+					view.views[subView.getName()] = subView;
 				}
 			}
 			
 		});
-		//Eliminamos el data-atributo.
-		$element.removeAttr("data-component");
-	
-	}
+		//Eliminamos las meta-información del elementos
+		view.get().removeAttr("data-view").removeAttr("data-type");
+		//hidratamos la vista con los datos especificados.
+		view._hydrate(data);
+		
+		return view;
+	};
 
 	//Rellenar el componente con los datos especificados.
-	var hydrate = function(data){
+	View.prototype._hydrate = function(data){
+
 		
-		var components = component._components;
+		if(data){
+			console.log(this);
+			console.log("ESTAS SON LAS VISTAS");
+			console.log(this.views);
+			for(var viewName in this.views){
+				//recogemos el valor.
+				var value = data[viewName];
+				//recogemos el tipo.
+				var type = this.views[viewName].type &&  this.views[viewName].type.toUpperCase();
+				//Si se ha encontrado valor.
+				if (value && type) {
 
-		for(var componentName in components){
-			//recogemos el valor.
-			var value = data[componentName];
-			//recogemos el tipo.
-			var type = components[componentName].type &&  components[componentName].type.toUpperCase();
-			//Si se ha encontrado valor.
-			if (value && type) {
+					switch(type){
 
-				switch(type){
+						case 'IMG':
+							this.views[viewName].el.attr("src",value);
+							break;
+						case 'TEXT':
+							this.views[viewName].el.text(value);
+							break;
+						case 'HTML':
+							this.views[viewName].el.html(value);
+							break;
+						case 'BACKGROUND':
+							this.views[viewName].el.css("background-image","url("+value+")");
+							break;
+						case 'HIDDEN':
+							this.views[viewName].el.data(viewName,value);
+							break;
+						case 'DATA':
+							this.views[viewName].el.attr("data-"+viewName,value);
+						default:
+							console.log("Valor no conocido");
+					}
+						
+				};
+			}
 
-					case 'IMG':
-						components[componentName].el.attr("src",value);
-						break;
-					case 'TEXT':
-						components[componentName].el.text(value);
-						break;
-					case 'HTML':
-						components[componentName].el.html(value);
-						break;
-					case 'BACKGROUND':
-						components[componentName].el.css("background-image","url("+value+")");
-						break;
-					case 'HIDDEN':
-						components[componentName].el.data(componentName,value);
-						break;
-					case 'DATA':
-						components[componentName].el.attr("data-"+componentName,value);
-					default:
-						console.log("Valor no conocido");
-				}
-					
-			};
 		}
 
-		return component;
+
 	}
 
 	//Devuelve Objeto jQuery original.
-	Component.prototype.get = function() {
+	View.prototype.get = function() {
 		return this.el;
 	};
+
+	View.prototype.getName = function() {
+		return this.name;
+	};
+
+	View.prototype.getViews = function() {
+		return this.views;
+	};
 	//Oculta y opcionalmente elimina un elemento.
-	Component.prototype.hide = function(remove) {
-		if(this.animations && this.animations.animationout){
-			var animation = this.animations.animationout
+	View.prototype.hide = function(remove) {
+		if(animations && animations.animationout){
+			var animation = animations.animationout
 			this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
 				remove && $(this).remove();
 			});
 		}
 	};
-	//Comprueba si un elemento es visible.
-	Component.prototype.isVisible = function() {
+	//Comprueba si la vista es visible.
+	View.prototype.isVisible = function() {
 		return this.el.is(":visible");
 	};
-
-	Component.prototype.scrollToLast = function() {
-		this.el.scrollTop(this.el.children(":last").offset().top);
+	//Coloca el scroll la vista al final.
+	View.prototype.scrollToLast = function() {
+		this.el.scrollTop(el.children(":last").offset().top);
 	};
 
-	Component.prototype.scrollAt = function(pos) {
+	View.prototype.scrollAt = function(pos) {
 		if (pos && !isNaN(parseInt(pos))) {
 			this.el.scrollTop(pos);
 		};
 	};
 
-	Component.prototype.detach = function() {
+	View.prototype.detach = function() {
 		this.el.detach();
 	};
 
-	Component.prototype.filter = function(patter) {
+	View.prototype.filter = function(patter) {
 		
 		var pattern = new RegExp("("+pattern+")","i");
-		$.each(this.el.children(),function(indx,element){
+		$.each(el.children(),function(indx,element){
 			var $element = $(element);
 			var text = $element.find("[data-mark]").html().replace(/<mark>|<\/mark>/ig,"");
 			if(text.search(pattern) == -1){
 				$element.fadeOut(1000);
-				}else{
-					//El texto encaja con el patrón, señalamos en que parte.
-					//Con $1 hacemos referencia a la captura anterior.
-					$element.find("[data-mark]").html(text.replace(pattern,"<mark>$1</mark>"));
-					if($element.is(":hidden")){
-					    $element.fadeIn(1000).effect("highlight",1000);
-					}
+			}else{
+				//El texto encaja con el patrón, señalamos en que parte.
+				//Con $1 hacemos referencia a la captura anterior.
+				$element.find("[data-mark]").html(text.replace(pattern,"<mark>$1</mark>"));
+				if($element.is(":hidden")){
+					$element.fadeIn(1000).effect("highlight",1000);
 				}
-			});
+			}
+		});
 	};
 
+	View.prototype.getView = function(name){
 
-	Component.prototype.removeChild = function(id) {
+		var result = null;
+
+		if(this.views && this.views.constructor.toString().match(/object/i)){
+			for(var view in this.views){
+				var currentView = this.views[view];
+				if(view === name){
+					result = currentView;
+					break;
+				}else{
+					var view = currentView.getView(name);
+					if (view)
+						result = view;
+				}
+			}
+		}
+
+		return result;
+			
+	}
+
+	View.prototype.removeChild = function(id) {
 		
-		var component = this.components && this.components[id];
-		if(component instanceof Component){
+		var view = views && views[id];
+		if(view instanceof View){
 			//Eliminamos el Nodo DOM.
-			component.el.remove();
-			//Lo eliminamos del array de componentes.
-			delete this.components[id];
+			view.get().remove();
+			//Lo eliminamos del array de vistas.
+			delete views[id];
 		}
 	};
 
-	Component.prototype.hideChild = function(id,remove) {
-		var component = this.components && this.components[id];
-		if(component instanceof Component){
+	View.prototype.hideChild = function(id,remove) {
+		var view = views && views[id];
+		if(view instanceof View){
 			var self = this;
-			component.onBeforeHide();
+			view.onBeforeHide();
 			//Ocultará elemento mediante animación configurada en animationout.
 			//si queremos eliminar el componente
-			component.hide(remove);
+			view.hide(remove);
 			if (remove) {
-				delete this.components[id];
+				delete views[id];
 			};
-			component.onAfterHide();
+			view.onAfterHide();
 		}
 	};
 
-	Component.prototype.hideAllChild = function(remove) {
+	View.prototype.hideAllChild = function(remove) {
 		// body...
 	};
 
-	Component.prototype.showChild = function(id) {
+	View.prototype.showChild = function(id) {
 		// body...
 	};
 
-	Component.prototype.showAllChild = function() {
+	View.prototype.showAllChild = function() {
 		// body...
+	};
+
+	View.prototype.createView = function(name,data,options) {
+		//Obtenemos la template.
+		var template = this.templates && this.templates[name];
+		//Comprobamos si hay una template con ese nombre.
+		if(template){
+			//Configuramos el nombre de la vista.
+			var name = options.name || (data && data.id) || Math.round(Math.random() * 100000 + 5000);
+			//Clonamos la template.
+			var $template = template.clone(true).removeClass("template").data("id",name);
+			//Creamos la vista a partir de la template.
+			var view = create($template,data);
+
+			this.views[name] = view;
+
+			if(this.el.mixItUp && this.el.mixItUp('isLoaded')){
+				if(options.position == "prepend")
+					this.el.mixItUp('prepend',view.get());
+				else if(options.position == "append")
+					this.el.mixItUp('append',view.get());
+				else
+					console.log("Posición no conocida");
+			}else{
+				this.el.append(view.get());
+			}			            
+		}
 	};
 
 	
-	
-	return Component;
+	return {
+		create:create
+	};
 
 })();
 
@@ -187,217 +263,8 @@ var TemplateManager = (function(_super,$,environment){
 
 	var views = {};
 
-	var componentPrototype = {
-
-    	filter:function(pattern){
-
-			var pattern = new RegExp("("+pattern+")","i");
-			$.each(this.el.children(),function(indx,element){
-				var $element = $(element);
-				var text = $element.find("[data-mark]").html().replace(/<mark>|<\/mark>/ig,"");
-				if(text.search(pattern) == -1){
-					$element.fadeOut(1000);
-				}else{
-					//El texto encaja con el patrón, señalamos en que parte.
-					//Con $1 hacemos referencia a la captura anterior.
-					$element.find("[data-mark]").html(text.replace(pattern,"<mark>$1</mark>"));
-					if($element.is(":hidden")){
-					    $element.fadeIn(1000).effect("highlight",1000);
-					}
-				}
-			});
-
-		},
-		removeComponent:function(id){
-			
-			var component = this._components && this._components[id];
-			if(component){
-				component.el.remove();
-				delete this._components[id];
-			}
-		},
-		showComponent:function(id){
-			var component = this._components && this._components[id];
-			if(component){}
-		},
-		hideComponent:function(id,time,remove){
-			
-			var component = this._components && this._components[id];
-			if(component){
-				var self = this;
-				component.el.fadeOut(time,function(){
-					if (remove) self.removeComponent(id);
-				});
-			}
-	
-		},
-		hideAllComponents:function(time,remove){
-			for(var component in components) 
-				hideComponent(component,time,remove);
-		},
-		get:function(){
-			return this.el;
-		},
-		focus:function(){
-			this.focus();
-		},
-		getComponent:function(name,recursively){
-			if(!recursively)
-				return this._components && this._components[name];
-			else
-				return this._searchComponent(name);
-			
-		},
-		getComponentByClass:function(className){
-			if (typeof className == "string") {
-
-				for(var componentName in this._components){
-
-					var component = this._components[componentName];
-					if (component.el.hasClass(className)) {
-						return component;
-					};
-				}
-			};
-		},
-		applyClassToChildrens:function(classNames){
-			for(var component in this._components){
-				this._components[component].el.addClass(classNames);
-			}
-		},
-		_searchComponent:function(name){
-
-			var componentFinded = null;
-
-			if(this._components && this._components.constructor.toString().match(/object/i)){
-				var components = this._components;
-				for(var componentName in components){
-					if(componentName == name){
-						componentFinded = components[componentName];
-						break;
-					}else if(components[componentName]._components){
-						componentFinded = components[componentName]._searchComponent(name);
-						if(componentFinded){
-							break;
-						}
-					}
-				}
-
-			}
-
-			return componentFinded;
-			
-		},
-		isVisible:function(){
-			return this.el.is(":visible");
-		},
-		scrollToLast:function(){
-			this.el.scrollTop(this.el.children(":last").offset().top);
-		},
-		scrollAt:function(pos){
-			this.el.scrollTop(pos);
-		},
-		detach:function(){
-			this.el.detach();
-		}
-    }
-
-    var componentWithTemplatePrototype = {
-
-		createComponent:function(name,data,options){
-			//Obtenemos la template.
-			var template = this._templates && this._templates[name];
-			//Comprobamos si hay una template con ese nombre.
-			if(template){
-				//Configuramos el nombre del componente.
-				var name = options.componentName || (data && data.id) || Math.round(Math.random() * 100000 + 5000);
-				//Clonamos la template.
-				var $template = template.clone(true).removeClass("template").data("id",name);
-				//Creamos el componente a partir de la template.
-				var component = parseElement($template);
-				//hidratamos el componente con los datos.
-				if(data) 
-					component = hydrate(component,data);
-
-				this._components[name] = {
-					component:component,
-					animations:options.animations || null,
-					handlers:options.handlers || null
-				}
-
-				if(this.el.mixItUp && this.el.mixItUp('isLoaded')){
-					if(options.position == "prepend")
-					    this.el.mixItUp('prepend',component.el);
-					else if(options.position == "append")
-					    this.el.mixItUp('append',component.el);
-					else
-					    console.log("Posición no conocida");
-				}else{
-					this.el.append(component.el);
-				}
-					            
-			}
-		
-		}
-						
-														
-	}
-
 	function TemplateManager(){}
 
-	//Parsea un elemento para crear un componente equivalente.
-	var parseElement = function($element){
-		
-		//Obtenemos el tipo de componente.
-		var type = $element.get(0).dataset.type || 'html';
-		//Obtenemos nombre del componente.
-		var name = $element.get(0).dataset.component;
-		
-		var components = {};
-		var templates = {};
-		//Procesamos todos los componentes que contiene el elemento
-		$element.find("[data-component]").each(function(idx,child){
-
-			var $child = $(child);
-			var $componentParent = $child.parents("[data-component]");
-			if($componentParent.length && $componentParent.get(0).isEqualNode($element.get(0))){
-
-				if ($child.is("[data-type='template']")) {
-					//Obtenemos el nombre de la template.
-					var name = child.dataset.component;
-					//Guardamos la template.
-					templates[name] = $child.removeAttr("data-type").remove();
-				}else{
-					//parseamos el componente de forma recursiva.
-					var component = parseElement($child);
-					components[component.name] = component;
-
-				}
-			}
-			
-		});
-		//Eliminamos el data-atributo.
-		$element.removeAttr("data-component");
-		//Obtenemos el prototipo del componente.
-		var proto = templates ? $.extend(componentPrototype,componentWithTemplatePrototype) : componentPrototype;
-
-		var component = {
-			el:$element,
-			type:type,
-			name:name,
-			_components:components ? components : [],
-			_templates:templates ? templates : null
-		};
-
-		component.__proto__ = proto;
-
-		return component;
-
-	}
-
-	
-
-	
 
 	var hasActiveView = function(type,target){
 		for(var view in views){
@@ -514,7 +381,7 @@ var TemplateManager = (function(_super,$,environment){
 				$template.addClass("animateView");
 				//creamos la vista 
 		        var view = {
-		        	component:new Component($template),//estructura de componentes derivada de la template
+		        	component:View.create($template),//estructura de vistas derivada de la template
 		        	node:$template,//objeto jquery original
 		        	type:type,//tipo de vista
 		        	timestamp:new Date().getTime(),//timemstamp de creación

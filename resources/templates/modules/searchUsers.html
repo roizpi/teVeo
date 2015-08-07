@@ -1,56 +1,56 @@
-<div class="viewContainer" data-component="searchs" data-type='main'>
+<div class="viewContainer" data-view="searchs" data-type='main'>
     <!-- Parcial para Buscar Usuarios -->
     <h2 class="view-tittle">Buscar Usuarios</h2>
     
-    <div id="containerSearchUsers"  class="flex-block flex-direction-column flex-liquid-content" data-component="container">
-        <h3 class="help  y-normal" data-component="help">Utilice la opción sugerir usuarios para conocer gente de tu ciudad</h3>
+    <div id="containerSearchUsers"  class="flex-block flex-direction-column flex-liquid-content" data-view="container">
+        <h3 class="help  y-normal" data-view="help" data-type="text">Utilice la opción sugerir usuarios para conocer gente de tu ciudad</h3>
         <div class="actions  flex-block  flex-direction-row">
-            <form action="" class="search-form x-large y-medium" data-component="searchForm">
+            <form action="" class="search-form x-large y-medium" data-view="searchForm">
                 <input type="search" role="search" name="search" id="searchUsers" placeholder="introduce nick..." required autofocus/>
                 <button type="submit"><span class="fa fa-search"></span></button>
-                <span data-component="microphone" class="fa"></span>
+                <span data-view="microphone" class="fa"></span>
             </form>
             <a href="#" data-action="suggest_users" title="Sugerir usuarios"   class="btn  btn-large  btn-action  invert">Sugerir Usuarios</a>
             <a href="#" data-action="busquedaAvanzada" title="Búsqueda Avanzada" class="btn  btn-veryLarge  btn-action  invert">Búsqueda Avanzada</a>
         </div>
         <!-- Lista de Usuarios Encontrados -->
-        <ul id="profileCardContainer" class="flex-block  flex-direction-row  flex-content-wrap" data-component="users_found">
+        <ul id="profileCardContainer" class="flex-block  flex-direction-row  flex-content-wrap" data-view="users_found">
             <!-- Plantilla de cada perfil de usuario -->
-            <li class="template animateView" data-component="userProfile" data-type="template">
+            <li class="template animateView" data-view="userProfile" data-type="template">
                 <div class="profileCard">
-                    <div class="profileCard-bg" data-component="profileBack" data-type="background"></div>
+                    <div class="profileCard-bg" data-view="profileBack" data-type="background"></div>
                     <div class="profileCard-content">
                         <a href="#" class="profileCard-avatar">
-                            <img data-component='avatar' data-type="img" src="" alt=""/>
+                            <img src="" alt="" data-view='avatar' data-type="img" />
                         </a>
                         <div class="profileCard-actions">
-                            <a href="#" data-component="id" data-type="hidden" data-action="to_ask_for_friendship" class="btn btn-medium btn-action">
+                            <a href="#" data-view="id" data-type="hidden" data-action="to_ask_for_friendship" class="btn btn-medium btn-action">
                                 <span class="fa fa-plus-circle fa-2x"></span>&nbsp;Agregar
                             </a>
                         </div>
                         <div class="profileCard-userFields">
-                            <p class="profileCard-name singleLine" data-mark data-component="name" data-type="text"></p>
+                            <p class="profileCard-name singleLine" data-mark data-view="name" data-type="text"></p>
                             <p class="profileCard-desc">Lorem ipsum consequetur Lorem ipsum consequetur Lorem ipsum consequetur Lorem ipsum consequetur </p>
                         </div>
                     </div>
                 </div>
             </li>
         </ul>
-        <div class="contentToAskForFriendship  template" data-component="ToAskForFriendship" data-type="template">
-            <div class="content" data-component="content" data-type="template">
+        <div class="contentToAskForFriendship  template" data-view="ToAskForFriendship" data-type="template">
+            <div class="content" data-view="content" data-type="template">
                 <div class="column">
-                    <img src="" alt="" data-component="photo" data-type="img" src="" />
+                    <img src="" alt="" data-view="photo" data-type="img" src="" />
                 </div>
                 <div class="column">
                     <ul class="dataList">
-                        <li><span class="fa fa-user"></span><span data-component="name" data-type="text"></span></li>
-                        <li><span class="fa fa-user"></span><span data-component="age" data-type="text"></span></li>
-                        <li><span class="fa fa-map-marker"></span><span data-component="location" data-type="text"></span></li>
+                        <li><span class="fa fa-user"></span><span data-view="name" data-type="text"></span></li>
+                        <li><span class="fa fa-user"></span><span data-view="age" data-type="text"></span></li>
+                        <li><span class="fa fa-map-marker"></span><span data-view="location" data-type="text"></span></li>
                     </ul>
-                    <h3 class="help y-normal" data-component="help" data-type="text"></h3>
+                    <h3 class="help y-normal" data-view="help" data-type="text"></h3>
                     <form action="#" method="post">
-                        <textarea rows="3" class="message" data-component="textarea" data-type="text"></textarea>
-                        <div class="actions" data-component="id" data-type="hidden" >
+                        <textarea rows="3" class="message" data-view="textarea" data-type="text"></textarea>
+                        <div class="actions" data-view="id" data-type="hidden" >
                             <button class="btn btn-normal  btn-action" data-action='sendApplication'>Enviar</button>
                             <button class="btn btn-normal  btn-action" data-action='cancel'>Cancelar</button>
                         </div>

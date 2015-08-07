@@ -63,9 +63,10 @@ var ActivityManager = (function(_super,$,environment){
 			type:"ACTIVITY_UPLOADPAGE_VIEWS",
 			handlers:{
 				onAfterShow:function(){
-					//aplicamos animaciones a la página de carga.
+
 					var uploadpage = this;
-					uploadpage.getComponent('title').get().addClass("fadeInDown").on("webkitAnimationEnd  animationend",function(e){
+					//aplicamos animaciones a la página de carga.
+					uploadpage.getView("title").get().addClass("fadeInDown").on("webkitAnimationEnd  animationend",function(e){
 			            $("<img>",{
 			                src:"resources/img/mainLoader.gif",
 			                alt:""

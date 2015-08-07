@@ -43,7 +43,7 @@ var DashboardActivity = (function(environment,$){
                 
         });
 
-        var $panelMenu = gui.getComponent("panelMenu").get();
+        var $panelMenu = gui.getView("panelMenu").get();
         //Icono para ocultar menú de acceso rápido.
         $("#navIcon").on("click",function(){
             var $navicon = $(this).find("span.fa");
@@ -229,9 +229,9 @@ var DashboardActivity = (function(environment,$){
 
 	DashboardActivity.prototype.run = function() {
         //Aplicamos animaciones.
-        var panelMenu = gui.getComponent("panelMenu");
+        var panelMenu = gui.getView("panelMenu");
         panelMenu.get().removeClass("slideOutLeft").addClass("slideInLeft").one("Webkitanimationend animationend",function(){
-            panelMenu.getComponent("userImage").get().addClass("cutEffect-visible");
+            panelMenu.getView("userImage").get().addClass("cutEffect-visible");
         });
         //Iniciamos el configurador de wallpapers.
 		startWallpaperConfigurator();

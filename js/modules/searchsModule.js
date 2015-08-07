@@ -31,8 +31,12 @@ var Searchs = (function(_super,$,environment){
     var onCreate = function(){
 
         var view = this;
+        console.log("Esta es la vista");
+        console.log(view);
+        console.log("Micrófono....");
+        console.log(view.getView("microphone"));
         //Configuramos el micrófono.
-        var $microphone = view.getComponent("microphone",true).get();
+        var $microphone = view.getView("microphone").get();
         //Micrófono.
         $microphone.on("click",function(){
             var $self = $(this);
@@ -72,7 +76,7 @@ var Searchs = (function(_super,$,environment){
             $microphone.removeClass("fa-microphone").addClass("fa-microphone-slash");
         });
 
-        var $container = view.getComponent("container").get();
+        var $container = view.getView("container").get();
         //Delegamos la resolución de todas las acciones en el contenedor.
         $container.delegate("[data-action]","click",function(e){
             e.stopPropagation();
@@ -109,8 +113,7 @@ var Searchs = (function(_super,$,environment){
                 var idUser = $this.data("id");
                 //Comprobamos si ya tenemos una solicitud de amistad de este usuario.
                 if(!self.applications.existeSolicitudDeAmistadPendiente(idUser)){
-
-                    var form = templating.getView("searchUsers").getComponent("container").getComponent(idUser);
+                    var form = templating.getView("searchUsers").getView("formFor"+idUser);
                     //Comprobamos si ya existe un formulario para este usuario.
                     if (!form) {
                         //Comprobamos si existe alguna solicitud PENDIENTES O RECHAZADAS con este usuario.
@@ -218,9 +221,9 @@ var Searchs = (function(_super,$,environment){
         var regExp;//Expresión regular actual.
 
         //Configuramos el formulario de búsqueda.
-        var $searchForm = view.getComponent("searchForm",true).get();
+        var $searchForm = view.getView("searchForm").get();
         //Obtenemos una referencia al contenedor de usuarios.
-        var $users = view.getComponent("users_found",true).get();
+        var $users = view.getView("users_found").get();
         //Formulario de búsqueda de usuarios por nombre.
         $searchForm.on("submit",function(e){
             e.stopPropagation();
@@ -314,12 +317,12 @@ var Searchs = (function(_super,$,environment){
     //Manejador onAfterShow para la template searchUser.
     var onAfterShow = function(){
         var view = this;
-        view.getComponent("help",true).get().addClass("active");
+        view.getView("help").get().addClass("active");
     }
     //Manejador onAfterHide para la template searchUser.
     var onAfterHide = function(){
         var view = this;
-        view.getComponent("help",true).get().removeClass("active");
+        view.getView("help").get().removeClass("active");
     }
 
 
@@ -328,7 +331,7 @@ var Searchs = (function(_super,$,environment){
         //Obtenemos una referencia a la vista.
         var view = templating.getView("searchUsers");
         //creamos un nuevo componente.
-        view.getComponent("users_found",true).createComponent("userProfile",{
+        view.getView("users_found").createView("userProfile",{
             id:user.id,
             profileBack:"resources/img/prueba.png",
             avatar:user.foto,
@@ -339,21 +342,21 @@ var Searchs = (function(_super,$,environment){
     //Oculta un usuario sugerido.
     var hideUser = function(id){
         templating.getView("searchUsers")
-            .getComponent("users_found",true)
-                .hideComponent(id,1000,true);
+            .getView("users_found")
+                .hideChild(id,true);
     }
 
     //Oculta todos los usuarios sugeridos.
     var hideUsers = function(){
         templating.getView("searchUsers")
-            .getComponent("users_found",true)
-                .hideAllComponents(1000,true);
+            .getView("users_found")
+                .hideAllComponents(true);
     
     }
 
     var highlightText = function(regExp){
         var view = templating.getView("searchUsers");
-        var $users = view.getComponent("users_found",true).get();
+        var $users = view.getView("users_found").get();
         //Marcamos el texto coincidente.
         $("[data-mark]",$users).each(function(idx,text){
             $text = $(text);
@@ -366,8 +369,8 @@ var Searchs = (function(_super,$,environment){
         
         templating
             .getView("searchUsers")
-            .getComponent("container");
-            .createComponent("ToAskForFriendship",{
+            .getView("container")
+            .createView("ToAskForFriendship",{
                 id:user.id
             },
             {
@@ -387,7 +390,7 @@ var Searchs = (function(_super,$,environment){
                             animations:{
                                 animationIn:"bounceInLeft",
                                 animationOut:"bounceOutRight"
-                            }
+                            },
                             handlers:{
                                 onAfterShow:function(component){
 
@@ -413,8 +416,8 @@ var Searchs = (function(_super,$,environment){
     var hideForm = function(id){
 
         templating.getView("searchUsers")
-            .getComponent("container")
-                .hideComponent(id,1000,false);
+            .getView("container")
+                .hideChild(id,false);
 
     }
 
