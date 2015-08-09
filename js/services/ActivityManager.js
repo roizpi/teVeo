@@ -3,7 +3,8 @@ var ActivityManager = (function(_super,$,environment){
 	__extends(ActivityManager, _super);
 
 	//Actividades de la aplicación
-	var self,activities;
+	var self,activities,exceptions;
+
 	
 
 	function ActivityManager(templateManager,managerModule,sessionManager){
@@ -12,6 +13,12 @@ var ActivityManager = (function(_super,$,environment){
 		this.templating = templateManager;
 		this.managerModule = managerModule;
 		this.session = sessionManager;
+		exceptions = {
+			ACTIVIDAD_NO_PERMITIDAD:{
+				name:"ACCESO NO AUTORIZADO A ESTA ACTIVIDAD",
+				desc:"sadasdsad"
+			}
+		}
 	
 	}
 
@@ -26,44 +33,15 @@ var ActivityManager = (function(_super,$,environment){
 
 	}
 
-	ActivityManager.prototype.loadActivities = function() {
-		//Obtenemos las actividades configuradas.
-		return $.getJSON(environment.RESOURCES_BASE_PATH+"activities.json").done(function(activitiesLoaded){
-			activities = activitiesLoaded;
-		});
-	};
-
-	//Devuelve la actividad actual.
-	ActivityManager.prototype.getCurrentActivity = function() {
-		for (activity in activities) {
-			if (activities[activity].active)
-				return activities[activity];
-		};
-	};
-
-	//Informa sobre el tiempo de sesión permitido para una actividad.
-	ActivityManager.prototype.getSessionTimeAllowed = function(activity) {
-		// body...
-	};
-
-	//Informa si una actividad es protegida.
-	ActivityManager.prototype.isProtectedActivity = function(activity) {
-		// body...
-	};
-	//Inicia una nueva actividad
-	ActivityManager.prototype.startActivity = function(name) {
-		//Comprobamos si existe actividad con ese nombre, en caso contrario lanzamos
-		// actividad principal.
-		var activity = name ? activities[name] : getPitcherActivity();
+	var createActivity = function(activity){
 		//marcamos la actividad como activa.
 		activity.active = true;
 		//Descargar y muestra la pantalla de carga.
-		this.templating.loadTemplate({
+		self.templating.loadTemplate({
 			name:"uploadPage",
 			type:"ACTIVITY_UPLOADPAGE_VIEWS",
 			handlers:{
 				onAfterShow:function(){
-
 					var uploadpage = this;
 					//aplicamos animaciones a la página de carga.
 					uploadpage.getView("title").get().addClass("fadeInDown").on("webkitAnimationEnd  animationend",function(e){
@@ -104,6 +82,54 @@ var ActivityManager = (function(_super,$,environment){
 			});
 
 		});
+	}
+
+	ActivityManager.prototype.loadActivities = function() {
+		//Obtenemos las actividades configuradas.
+		return $.getJSON(environment.RESOURCES_BASE_PATH+"activities.json").done(function(activitiesLoaded){
+			activities = activitiesLoaded;
+		});
+	};
+
+	//Devuelve la actividad actual.
+	ActivityManager.prototype.getCurrentActivity = function() {
+		for (activity in activities) {
+			if (activities[activity].active)
+				return activities[activity];
+		};
+	};
+
+	//Informa sobre el tiempo de sesión permitido para una actividad.
+	ActivityManager.prototype.getSessionTimeAllowed = function(activity) {
+		// body...
+	};
+
+	//Informa si una actividad es protegida.
+	ActivityManager.prototype.isProtectedActivity = function(activity) {
+		// body...
+	};
+	//Inicia una nueva actividad
+	ActivityManager.prototype.startActivity = function(name) {
+		//Comprobamos si existe actividad con ese nombre, en caso contrario lanzamos
+		// actividad principal.
+		var activity = name ? activities[name] : getPitcherActivity();
+		//Comprobamos si la actividad requiere autenticación.
+		if (this.isProtectedActivity(activity)){
+			//Comprobamos si hay una sessión activa y si el token no ha expirado.
+			if (this.session.hasSessionAlive() && this.session.getSessionLife() < this.getSessionTimeAllowed(activity)) {
+				//La actividad requiere autenticación y hay una sesión activa.
+				createActivity(activity);
+			}else{
+				//No hay sesión activa, o sí la hay pero el token ha expirado para esta activadad.
+				//No es posible iniciarla.
+				throw new exceptions["ACTIVIDAD_NO_PERMITIDAD"];
+			}
+		}else{
+			//La actividad no requiere autenticación.
+			createActivity(activity);
+		
+		} 
+		
 		
 	};
 

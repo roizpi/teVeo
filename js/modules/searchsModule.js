@@ -113,7 +113,9 @@ var Searchs = (function(_super,$,environment){
                 var idUser = $this.data("id");
                 //Comprobamos si ya tenemos una solicitud de amistad de este usuario.
                 if(!self.applications.existeSolicitudDeAmistadPendiente(idUser)){
-                    var form = templating.getView("searchUsers").getView("formFor"+idUser);
+                    var form = templating.getView("searchUsers").getView("form"+idUser);
+                    console.log("HOLA ESTE ES EL FORM");
+                    console.log(form);
                     //Comprobamos si ya existe un formulario para este usuario.
                     if (!form) {
                         //Comprobamos si existe alguna solicitud PENDIENTES O RECHAZADAS con este usuario.
@@ -142,7 +144,7 @@ var Searchs = (function(_super,$,environment){
                             }
                         });
                     }else{
-                        console.log("Ya existe Formulario");
+                        form.show();
                     }
                     
 
@@ -203,7 +205,7 @@ var Searchs = (function(_super,$,environment){
                 //obtenemos id.
                 var id = $this.parent().data("id");
                 //Ocultamos form
-                hideForm(id);
+                hideForm("form"+id);
 
             }
         });
@@ -228,6 +230,7 @@ var Searchs = (function(_super,$,environment){
         $searchForm.on("submit",function(e){
             e.stopPropagation();
             e.preventDefault();
+            exclusions = [];
             //recogemos valor del campo de búsqueda
             currentFilter = this.search.value.toLowerCase().trim().replace(/\s+/,"i");
             //Creamos la expresión regular especificando el valor como una captura.
@@ -366,19 +369,25 @@ var Searchs = (function(_super,$,environment){
 
     //Crea el formulario para el envío de solicitudes.
     var createForm = function(user){
-        
+
         templating
             .getView("searchUsers")
             .getView("container")
             .createView("ToAskForFriendship",{
-                id:user.id
+                id:"form"+user.id
             },
             {
-                onCreate:function(component){
 
-                    component.get().hide().slideDown(1000,function(){
+                animations:{
+                    animationIn:"bounceInLeft",
+                    animationOut:"bounceOutRight"
+                },
+                handlers:{
 
-                        component.createComponent("content",{
+                    onAfterShow:function(view){
+                        console.log("Esta es la vista creada ....");
+                        console.log(view);
+                        view.createView("content",{
                             id:user.id,
                             photo:user.foto,
                             name:user.name,
@@ -387,31 +396,32 @@ var Searchs = (function(_super,$,environment){
                             help:"Escribe un mensaje a " + user.name,
                             textarea:"Hola " + user.name + ", agregame por favor"
                         },{
+                            
                             animations:{
                                 animationIn:"bounceInLeft",
                                 animationOut:"bounceOutRight"
                             },
                             handlers:{
-                                onAfterShow:function(component){
+                                onAfterShow:function(view){
 
                                     setTimeout(function(){
                                         //Activamos la ayuda.
-                                        component.getComponent("help").get().addClass("active");
+                                        view.getView("help").get().addClass("active");
                                         //Ponemos el foco en el TextArea.
-                                        component.getComponent("textarea").focus();
+                                        view.getView("textarea").get().focus();
                                     },1000);
-                                    
+                                        
                                 }
                             }
 
                         });
-                    });
-            
-                }
 
+                    }
+                }
+                
             });
- 
-    }
+
+        }
     //Oculta el formulario de envío de solicitud
     var hideForm = function(id){
 

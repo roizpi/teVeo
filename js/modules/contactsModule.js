@@ -37,9 +37,8 @@ var Contacts = (function(_super,$,environment){
     var onCreateViewContacts = function(){
 
         var view = this;
-        console.log("Vista de contactos");
-        console.log(view);
-        var container = view.getComponent("container");
+
+        var container = view.getView("container");
         //Utilizamos delegación de evento, porque la lista de contactos puede ser muy amplia.
         container.get().delegate('a[data-action]','click',function(e){
             e.preventDefault();
@@ -88,9 +87,9 @@ var Contacts = (function(_super,$,environment){
                 
         });
             
-        var $searchContacts = view.getComponent("searchContacts").get();
+        var $searchContacts = view.getView("searchContacts").get();
             
-        var $microphone = view.getComponent("microphone",true).get();
+        var $microphone = view.getView("microphone").get();
         $microphone.on("click",function(){
             //comienza el proceso.
             self.webSpeech.hearSentence(function(result){
@@ -153,7 +152,7 @@ var Contacts = (function(_super,$,environment){
     var onCreateViewContactDetail = function(){
 
         var view = this;
-        var $contactActions = view.getComponent("contactActions").get();
+        var $contactActions = view.getView("contactActions").get();
         $contactActions.on("click",function(e){
             e.preventDefault();
             e.stopPropagation();
@@ -339,7 +338,7 @@ var Contacts = (function(_super,$,environment){
         //Añadimos el usuario a la lista de contactos.
         userContacts.push(contact);
         var view = self.templateManager.getView("contacts");
-        var container = view.getComponent("container");
+        var container = view.getView("container");
         if(view && container.isVisible()){
             //Mostramos el contacto en el DOM.
             showContact(contact);
@@ -356,9 +355,7 @@ var Contacts = (function(_super,$,environment){
         //$viewContact.find("[data-photo]").attr({src:contact.foto,alt:"Foto de " + contact.name,title:"Ver detalles de " + contact.name});
         var templateManager = environment.getService("TEMPLATE_MANAGER");
         var view = templateManager.getView("contacts");
-        console.log("view devuelta");
-        console.log(view);
-        view && view.getComponent("container").createComponent("contact",{
+        view && view.getView("container").createView("contact",{
             id:contact.idRepresentado,
             photo:contact.foto,
             name:contact.name,
@@ -372,7 +369,7 @@ var Contacts = (function(_super,$,environment){
     var dropContact = function(user){
 
         var view = self.templateManager.getView("contacts");
-        var container = view.getComponent("container");
+        var container = view.getView("container");
         //eliminamos el contacto.
         userContacts.splice(user.idx,1);
         //eliminamos el contacto del DOM.
@@ -420,7 +417,7 @@ var Contacts = (function(_super,$,environment){
         var contact = getContactById(idUser);
         contact.data.status = status;
         var view = self.templateManager.getView("contacts");
-        var container = view.getComponent("container");
+        var container = view.getView("container");
         var offset = $contact.offset().top  - $contact.parent().offset().top;
         var contact = container.getChild(idUser)
             if($contactsContainer && $contactsContainer.children().length){

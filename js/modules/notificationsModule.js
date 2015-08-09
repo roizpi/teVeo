@@ -1,12 +1,13 @@
-var Notificator = (function(_super,$){
+var Notificator = (function(_super,$,environment){
 
     __extends(Notificator, _super);
 
     var pendingNotifications = [];
-
-    var defaultImg = "resources/img/logo.png";
+    const DEFAULT_IMAGE = "resources/img/logo.png";
     var state;
     var self;
+    var templating;
+
     //Muestra cuadros de diálogo.
     var Dialog = (function(){
 
@@ -55,18 +56,25 @@ var Notificator = (function(_super,$){
         
     })();
 
+
     function Notificator(webSpeech){
 
         self = this;
         this.webSpeech = webSpeech;
+        //Obtenemos el template manager.
+        templating = environment.getService("TEMPLATE_MANAGER");
         //Instanciamos un dialogador.
-        //this.prototype.dialog = new Dialog();
         //Eventos del Módulo
         this.events = {
             "NOT_FOUND_NOTIFICATIONS":[],
             "NEW_NOTIFICATION":[]
         }
 
+        pendingNotifications.push({
+            title:"Notificación de Prueba",
+            body:"Esto es una notificación de prueba",
+            timestamp:new Date().getTime()
+        });
 
         Notificator.prototype.dialog = new Dialog();
         //Configuramos handlers
@@ -79,90 +87,66 @@ var Notificator = (function(_super,$){
         *******************************
     */
 
-    var getMainView = function(){
-        return self.templateManager.getView({
-            moduleName:self.constructor.name,
-            templateName:"notifications"
+    //Manejador onCreate para la template "notifications".
+    var onCreate = function(){
+        //cacheamos contenedor de notificaciones
+        var view = this;
+        //obtenemos una referencia al contenedor.
+        var container = view.getView("container");
+        //Delegamos evento click sobre las notificaciones en el contenedor.
+        container.get().delegate("[data-notification]","click",function(){
+            var $this = $(this);
+            var id = $this.data("id");
+            container.hideChild(id,true);
+            //Borramos la notificación.
+            removeNotification(id);
+            if(!pendingNotifications.length){
+                self.triggerEvent("NOT_FOUND_NOTIFICATIONS");
+            }
         });
+        //Inicializamos plugin mixItUp
+        /*$container.mixItUp({
+            animation: {
+                duration: 730,
+                effects: 'scale(1.26) rotateY(86deg) fade translateZ(880px)',
+                easing: 'cubic-bezier(0.47, 0, 0.745, 0.715)'
+            },
+            load:{
+                sort: 'timestamp:desc'
+            },
+            callbacks: {
+                onMixLoad: function(){
+                    var $toOrderNotifications = view.getView("toOrderNotifications").get();
+                    //Ordenar solicitudes.
+                    $toOrderNotifications.delegate("a[data-action]","click",function(e){
+                        e.preventDefault();
+                        var $this = $(this);
+                        var action = this.dataset.action;
+                        if(!$this.hasClass("active")){
+                            $this.addClass("active").siblings().removeClass("active");
+                            if(action == 'shortDesc'){
+                                //Orden Descendente por el Timestamp
+                                $container.mixItUp('sort', 'timestamp:desc');
+                            }else if(action == 'shortAsc'){
+                                //Orden Ascendente por el timestamp
+                                $container.mixItUp('sort', 'timestamp:asc');
+                            }
+                            
+                        }
+                    });
+                }
+            }
+        });*/
     }
 
-    var attachHandlers = function(){
+    //Manejador onBeforeShow para la template "notifications".
+    var onBeforeShow = function(){
 
-        //Configuramos manejador para la template "notifications".
-        self.templateManager.implementHandler({
-            moduleName:self.constructor.name,
-            templateName:"notifications",
-            handler:"onCreate"
-        },function(){
-            //cacheamos contenedor de notificaciones
-            var view = this;
-            var $container = view.getComponent("container").get();
-            //Delegamos evento click sobre las notificaciones en el contenedor.
-            $container.delegate("[data-notification]","click",function(){
-                var $this = $(this);
-                var id = $this.data("id");
-                $this.fadeOut(1000,function(){
-                    //Borramos la notificación.
-                    removeNotification(id);
-                    //refrescamos contador de notificaciones pendientes.
-                    updateCountNotifications();
-                    if(!pendingNotifications.length){
-                        self.triggerEvent("notFoundNotifications");
-                    }
-                    //Eliminamos la notificación.
-                    $this.remove();
-                });
-            });
-            //Inicializamos plugin mixItUp
-            $container.mixItUp({
-                animation: {
-                    duration: 730,
-                    effects: 'scale(1.26) rotateY(86deg) fade translateZ(880px)',
-                    easing: 'cubic-bezier(0.47, 0, 0.745, 0.715)'
-                },
-                load:{
-                    sort: 'timestamp:desc'
-                },
-                callbacks: {
-                    onMixLoad: function(){
-                        var $toOrderNotifications = view.getComponent("toOrderNotifications",true).get();
-                        //Ordenar solicitudes.
-                        $toOrderNotifications.delegate("a[data-action]","click",function(e){
-                            e.preventDefault();
-                            var $this = $(this);
-                            var action = this.dataset.action;
-                            if(!$this.hasClass("active")){
-                                $this.addClass("active").siblings().removeClass("active");
-                                if(action == 'shortDesc'){
-                                    //Orden Descendente por el Timestamp
-                                    $container.mixItUp('sort', 'timestamp:desc');
-                                }else if(action == 'shortAsc'){
-                                    //Orden Ascendente por el timestamp
-                                    $container.mixItUp('sort', 'timestamp:asc');
-                                }
-                            
-                            }
-                        });
-                    }
-                }
-            });
-        });
-
-        //Configuramos manejador para la template "notifications".
-        self.templateManager.implementHandler({
-            moduleName:self.constructor.name,
-            templateName:"notifications",
-            handler:"onBeforeShow"
-        },function(){
-            
-            //Mostramos cada notificación pendiente.
-            pendingNotifications.forEach(showNotification);
-            //refrescamos contador de notificaciones pendientes.
-            updateCountNotifications();
-            pendingNotifications = [];
-
-        });
-
+        //Mostramos cada notificación pendiente.
+        pendingNotifications.forEach(showNotification);
+        //refrescamos contador de notificaciones pendientes.
+        updateCountNotifications();
+        pendingNotifications = [];
     }
 
     //Añade la notificación a la lista de notificaciones pendientes.
@@ -170,9 +154,8 @@ var Notificator = (function(_super,$){
 
         data.id = Math.round((Math.random() * 100000) + 1);
         data.timestamp = new Date().toLocaleString();
-        var view = getMainView();
         
-        if(view.getComponent("container").isVisible()){
+        if(templating.getView("notifications").getView("container").isVisible()){
             //La insertamos en el DOM
             showNotification(data);
             //refrescamos contador de notificaciones pendientes.
@@ -183,7 +166,7 @@ var Notificator = (function(_super,$){
         }
 
         //Notificamos que existe una nueva notificación.
-        self.triggerEvent("newNotification");
+        self.triggerEvent("NEW_NOTIFICATION");
     }
 
     var removeNotification = function(id){
@@ -195,19 +178,21 @@ var Notificator = (function(_super,$){
     
     //Inserta Notificación en el DOM.
     var showNotification = function(data){
-        var view = getMainView();
-        view.getComponent("container").createComponent('notification',{
-            icon:data.icon,
-            title:data.title,
-            body:data.body,
-            timestamp:data.timestamp
-        },{});
-    }
-
-    var updateCountNotifications = function(){
-        var view = getMainView();
-        var $countNotifications = view.getComponent("countNotifications",true).get();
-        $countNotifications.text(pendingNotifications.length);   
+    
+        templating
+            .getView("notifications")
+            .getView("container")
+            .createView('notification',{
+                icon:data.icon,
+                title:data.title,
+                body:data.body,
+                timestamp:data.timestamp
+            },{
+                animations:{
+                    animationIn:"zoomIn",
+                    animationOut:"zoomOut"
+                }
+            });
     }
 
     /*
@@ -226,7 +211,7 @@ var Notificator = (function(_super,$){
             this.webSpeech.speak(data.title);
         }
         //Si no se proporciona imagen, utilizamos la img por defecto.
-        data.icon = data.icon ? data.icon : defaultImg;
+        data.icon = data.icon ? data.icon : DEFAULT_IMAGE;
         //Comprobamos si ha permitido lanzar notificaciones.
         if(window.Notification && Notification.permission == "granted"){
             //lanzamos notificación
@@ -291,7 +276,14 @@ var Notificator = (function(_super,$){
     //Muestra las notificaciones pendientes.
     Notificator.prototype.showNotifications = function(){
         if(pendingNotifications.length){
-            this.templateManager.loadTemplate({moduleName:this.constructor.name,templateName:"notifications"},function(){
+            templating.loadTemplate({
+                name:"notifications",
+                type:"MODULE_VIEWS",
+                handlers:{
+                    onCreate:onCreate,
+                    onBeforeShow:onBeforeShow
+                }
+            },function(){
                 console.log("La vista de notificaciones cargada");
                 console.log(this);
             });
@@ -321,4 +313,4 @@ var Notificator = (function(_super,$){
 
    return Notificator;
     
-})(Component,jQuery);
+})(Component,jQuery,environment);

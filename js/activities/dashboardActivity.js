@@ -95,7 +95,7 @@ var DashboardActivity = (function(environment,$){
                             break;
                         case 'showNotifications':
                             //Mostramos la notificaciones pendientes.
-                            self.notificator.showNotifications();
+                            modules['notificator'].showNotifications();
                             break;
                         case 'logout':
                             self.serviceLocator.logout()

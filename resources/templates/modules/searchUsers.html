@@ -5,7 +5,7 @@
     <div id="containerSearchUsers"  class="flex-block flex-direction-column flex-liquid-content" data-view="container">
         <h3 class="help  y-normal" data-view="help" data-type="text">Utilice la opción sugerir usuarios para conocer gente de tu ciudad</h3>
         <div class="actions  flex-block  flex-direction-row">
-            <form action="" class="search-form x-large y-medium" data-view="searchForm">
+            <form action="" class="search-form x-large y-medium" data-view="searchForm" autocomplete="off">
                 <input type="search" role="search" name="search" id="searchUsers" placeholder="introduce nick..." required autofocus/>
                 <button type="submit"><span class="fa fa-search"></span></button>
                 <span data-view="microphone" class="fa"></span>
@@ -36,18 +36,20 @@
                 </div>
             </li>
         </ul>
-        <div class="contentToAskForFriendship  template" data-view="ToAskForFriendship" data-type="template">
+        <div class="contentToAskForFriendship  template  animateView" data-view="ToAskForFriendship" data-type="template">
             <div class="content" data-view="content" data-type="template">
                 <div class="column">
                     <img src="" alt="" data-view="photo" data-type="img" src="" />
                 </div>
                 <div class="column">
-                    <ul class="dataList">
+                    <!--Info List para mostrar datos del usuario -->
+                    <ul class="infoList">
                         <li><span class="fa fa-user"></span><span data-view="name" data-type="text"></span></li>
                         <li><span class="fa fa-user"></span><span data-view="age" data-type="text"></span></li>
                         <li><span class="fa fa-map-marker"></span><span data-view="location" data-type="text"></span></li>
                     </ul>
-                    <h3 class="help y-normal" data-view="help" data-type="text"></h3>
+                    <!-- Cuadro de ayuda -->
+                    <h3 class="help y-normal singleLine" data-view="help" data-type="text"></h3>
                     <form action="#" method="post">
                         <textarea rows="3" class="message" data-view="textarea" data-type="text"></textarea>
                         <div class="actions" data-view="id" data-type="hidden" >

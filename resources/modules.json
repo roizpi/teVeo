@@ -29,12 +29,13 @@
         "dependences":["WEB_SPEECH"],
         "templates":{
             "notifications":{
-                "activity":"",
-                "region":"",
-                "file":"notifications.html",
-                "animations":{
-                    "animationIn":"zoomInUp",
-                    "animationOut":"zoomOutDown"
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"notifications.html",
+                    "animations":{
+                        "animationIn":"bounceInDown",
+                        "animationOut":"fadeOutRight"
+                    }
                 }
             }
         }

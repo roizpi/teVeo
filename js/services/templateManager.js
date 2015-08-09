@@ -1,27 +1,34 @@
 var View = (function(){
 
 
-	function View(el,type,name){
+	function View(el,id,type,name,animations,handlers){
 
 		this.el = el;
+		this.id = id;
 		this.type = type;
 		this.name = name;
 		this.views = {};
 		this.templates={};
-		this.animations = {};
-		this.handlers = {};
+		this.animations = animations;
+		this.handlers = handlers;
+		this.timestamp = new Date().getTime();
 	}
 
 		
 
-	var create = function($element,data) {
-
+	var create = function($element,data,options) {
+		//Obtenemos el id de la vista.
+		var id = (data && data.id) || Math.round(Math.random() * 100000 + 5000);
 		//Obtenemos el tipo de componente.
 		var type = $element.get(0).dataset.type || 'html';
 		//Obtenemos nombre de la vista.
-		var name = $element.get(0).dataset.view;
-
-		var view = new View($element,type,name);
+		var name = (data && data.name) || $element.get(0).dataset.view;
+		//Obtenemos las animaciones de la vista.
+		var animations = options && (options.animations || {});
+		//Obtenemos los manejadores del ciclo de vida de la vista.
+		var handlers = options && (options.handlers || {});
+		$element.data("id",id);
+		var view = new View($element,id,type,name,animations,handlers);
 
 		//las animaciones para los componentes se expresan en el marcado.
 		//data-animationin
@@ -42,8 +49,8 @@ var View = (function(){
 					view.templates[name] = $child.removeAttr("data-type").remove();
 				}else{
 					//creamos la vista.
-					var subView = create($child);
-					view.views[subView.getName()] = subView;
+					var subView = create($child,{},{});
+					view.views[subView.getId()] = subView;
 				}
 			}
 			
@@ -59,38 +66,36 @@ var View = (function(){
 	//Rellenar el componente con los datos especificados.
 	View.prototype._hydrate = function(data){
 
-		
 		if(data){
-			console.log(this);
-			console.log("ESTAS SON LAS VISTAS");
-			console.log(this.views);
-			for(var viewName in this.views){
+			
+			for(var key in this.views){
+				var view = this.views[key];
 				//recogemos el valor.
-				var value = data[viewName];
+				var value = data[view.name];
 				//recogemos el tipo.
-				var type = this.views[viewName].type &&  this.views[viewName].type.toUpperCase();
+				var type = view.type &&  view.type.toUpperCase();
 				//Si se ha encontrado valor.
 				if (value && type) {
 
 					switch(type){
 
 						case 'IMG':
-							this.views[viewName].el.attr("src",value);
+							view.el.attr("src",value);
 							break;
 						case 'TEXT':
-							this.views[viewName].el.text(value);
+							view.el.text(value);
 							break;
 						case 'HTML':
-							this.views[viewName].el.html(value);
+							view.el.html(value);
 							break;
 						case 'BACKGROUND':
-							this.views[viewName].el.css("background-image","url("+value+")");
+							view.el.css("background-image","url("+value+")");
 							break;
 						case 'HIDDEN':
-							this.views[viewName].el.data(viewName,value);
+							view.el.data("id",value);
 							break;
 						case 'DATA':
-							this.views[viewName].el.attr("data-"+viewName,value);
+							view.el.attr("data-"+view.name,value);
 						default:
 							console.log("Valor no conocido");
 					}
@@ -103,6 +108,25 @@ var View = (function(){
 
 	}
 
+	View.prototype.onCreate = function() {
+		this.handlers && typeof(this.handlers.onCreate) === "function" && this.handlers.onCreate(this);
+	};
+
+	View.prototype.onBeforeShow = function() {
+		this.handlers && typeof(this.handlers.onBeforeShow) == "function" && this.handlers.onBeforeShow(this);
+	};
+
+	View.prototype.onAfterShow = function() {
+		this.handlers && typeof(this.handlers.onAfterShow) == "function" && this.handlers.onAfterShow(this);
+	};
+
+	View.prototype.onBeforeHide = function() {
+		this.handlers && typeof(this.handlers.onBeforeHide) == "function" && this.handlers.onBeforeHide(this);
+	};
+	View.prototype.onAfterHide = function() {
+		this.handlers && typeof(this.handlers.onAfterHide) == "function" && this.handlers.onAfterHide(this);
+	};
+
 	//Devuelve Objeto jQuery original.
 	View.prototype.get = function() {
 		return this.el;
@@ -112,15 +136,31 @@ var View = (function(){
 		return this.name;
 	};
 
+	View.prototype.getId = function() {
+		return this.id;
+	};
+
 	View.prototype.getViews = function() {
 		return this.views;
 	};
 	//Oculta y opcionalmente elimina un elemento.
 	View.prototype.hide = function(remove) {
-		if(animations && animations.animationout){
-			var animation = animations.animationout
+		if(this.animations && this.animations.animationOut){
+			var animation = this.animations.animationOut;
 			this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
-				remove && $(this).remove();
+				var $this = $(this);
+				$this.removeClass(animation);
+				remove ? $this.remove() : $this.hide();
+			});
+		}
+	};
+
+	View.prototype.show = function() {
+		if(this.animations && this.animations.animationIn){
+			var animation = this.animations.animationIn;
+			this.el.show().addClass(animation).one("webkitAnimationEnd animationend",function(){
+				var $this = $(this);
+				$this.removeClass(animation);
 			});
 		}
 	};
@@ -143,10 +183,10 @@ var View = (function(){
 		this.el.detach();
 	};
 
-	View.prototype.filter = function(patter) {
+	View.prototype.filter = function(pattern) {
 		
 		var pattern = new RegExp("("+pattern+")","i");
-		$.each(el.children(),function(indx,element){
+		$.each(this.el.children(),function(indx,element){
 			var $element = $(element);
 			var text = $element.find("[data-mark]").html().replace(/<mark>|<\/mark>/ig,"");
 			if(text.search(pattern) == -1){
@@ -162,18 +202,18 @@ var View = (function(){
 		});
 	};
 
-	View.prototype.getView = function(name){
+	View.prototype.getView = function(key){
 
 		var result = null;
 
 		if(this.views && this.views.constructor.toString().match(/object/i)){
 			for(var view in this.views){
 				var currentView = this.views[view];
-				if(view === name){
+				if(currentView.getId() === key || currentView.getName() === key){
 					result = currentView;
 					break;
 				}else{
-					var view = currentView.getView(name);
+					var view = currentView.getView(key);
 					if (view)
 						result = view;
 				}
@@ -196,15 +236,15 @@ var View = (function(){
 	};
 
 	View.prototype.hideChild = function(id,remove) {
-		var view = views && views[id];
-		if(view instanceof View){
+		var view = this.views && this.views[id];
+		if(view){
 			var self = this;
 			view.onBeforeHide();
 			//Ocultará elemento mediante animación configurada en animationout.
 			//si queremos eliminar el componente
 			view.hide(remove);
 			if (remove) {
-				delete views[id];
+				delete this.views[id];
 			};
 			view.onAfterHide();
 		}
@@ -227,15 +267,15 @@ var View = (function(){
 		var template = this.templates && this.templates[name];
 		//Comprobamos si hay una template con ese nombre.
 		if(template){
-			//Configuramos el nombre de la vista.
-			var name = options.name || (data && data.id) || Math.round(Math.random() * 100000 + 5000);
 			//Clonamos la template.
 			var $template = template.clone(true).removeClass("template").data("id",name);
 			//Creamos la vista a partir de la template.
-			var view = create($template,data);
-
-			this.views[name] = view;
-
+			var view = create($template,data,options);
+			//Notificamos que la vista fue creada.
+			view.onCreate();
+			//Guardamos la vista creada.
+			this.views[view.getId()] = view;
+			view.onBeforeShow();
 			if(this.el.mixItUp && this.el.mixItUp('isLoaded')){
 				if(options.position == "prepend")
 					this.el.mixItUp('prepend',view.get());
@@ -245,6 +285,7 @@ var View = (function(){
 					console.log("Posición no conocida");
 			}else{
 				this.el.append(view.get());
+				view.onAfterShow();
 			}			            
 		}
 	};
@@ -299,7 +340,6 @@ var TemplateManager = (function(_super,$,environment){
 	var showView = function(view,callback){
 		//llamamos al beforeShow
 		typeof(view["handlers"] && view["handlers"]["onBeforeShow"]) == "function" && view["handlers"]["onBeforeShow"].call(view.el);
-		console.log("Target :"+view["target"]);
 		view.node
 			.addClass(view["animations"]["animationIn"])
 			.one("webkitAnimationEnd  animationend",function(){
@@ -381,7 +421,7 @@ var TemplateManager = (function(_super,$,environment){
 				$template.addClass("animateView");
 				//creamos la vista 
 		        var view = {
-		        	component:View.create($template),//estructura de vistas derivada de la template
+		        	component:View.create($template,animations,data["handlers"]),//estructura de vistas derivada de la template
 		        	node:$template,//objeto jquery original
 		        	type:type,//tipo de vista
 		        	timestamp:new Date().getTime(),//timemstamp de creación

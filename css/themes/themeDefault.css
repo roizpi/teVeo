@@ -3,7 +3,7 @@
 
 .help{
     background-color: rgba(0, 138, 189, 0.46);
-    border-left-color: #008abd;
+    border-left-color: #4353FF;
 }
 
 /*
@@ -71,11 +71,46 @@
     ==============================
 */
 
-.dataList li:nth-child(even){
-    background-color: #008abd;
+/*
+  Nombre: Contact List.
+  DESC:Estilos para mostrar una lista de usuarios, incluye foto estado y breve información.
+*/
+
+.contact-list .contact .content .info p{
+    color: #4353FF;
 }
 
-.dataList li:nth-child(odd){
+.contact-list .contact .content .actions .action2:nth-child(even){
+  background-color: #00aff0;
+}
+
+.contact-list .contact .content .actions .action2:nth-child(odd){
+  background-color: #4353FF;
+}
+/*
+  Profile Card
+  ==============
+
+  DESC:Ficha para representar perfil de un usuarios.
+
+*/
+
+.profileCard .profileCard-name{
+    color: #4353FF;
+}
+
+/*
+
+  NOMBRE:Info List
+  DESC:Lista de Datos Simple,ideal para mostrar una simple lista de datos con iconos.
+
+*/
+
+.infoList li:nth-child(even){
+    background-color:  #4353FF;
+}
+
+.infoList li:nth-child(odd){
     background-color: #00aff0;
 }
 
@@ -155,17 +190,17 @@
 */
 
 .btn-action{
-    background-color: #00AFF0;
+    background-color: #4353FF;
 }
 
 .btn-action:hover,
 .btn-action.active{
     background-color: #fff;
-    border-color:#00AFF0;
-    color: #00AFF0;
+    border-color:#4353FF;
+    color: #4353FF;
 }
 
-.btn-action.invert{
+/*.btn-action.invert{
     background-color: #008abd;
 }
 
@@ -174,7 +209,7 @@
     background-color: #fff;
     border-color:#008abd;
     color: #008abd;
-}
+}*/
 
 
 
