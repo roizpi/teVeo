@@ -1,13 +1,14 @@
 
-var SessionManager = (function(_super,environment){
+var SessionManager = (function(_super,$,environment){
 
 	__extends(SessionManager, _super);
 
 	var token;
 	
-	function SessionManager(debug){
+	function SessionManager(debug,utils){
 
 		this.debug = debug;
+		this.utils = utils;
 		//recuperamos el token del almacenamiento local.
 		var item = sessionStorage.getItem("session_token");
 		token = item ? JSON.parse(item) : false;
@@ -17,13 +18,19 @@ var SessionManager = (function(_super,environment){
 
 	}
 
+	SessionManager.prototype.createSession = function(token) {
+		//decodificamos el token.
+		var token = this.utils.b64_to_utf8(token);
+		//Obtenemos información del usuario.
+	};
+
 	//Comprueba si hay una sesión activa.
 	SessionManager.prototype.hasSessionAlive = function() {
 		return token ? true : false;
 	};
 	//Devuelve el tiempo de vida del token de sesión.
 	SessionManager.prototype.getSessionLife = function() {
-		return fase;
+		return false;
 	};
 
 	SessionManager.prototype.destroy = function() {
@@ -32,4 +39,4 @@ var SessionManager = (function(_super,environment){
 	
 	return SessionManager;
 	
-})(Component,environment);
+})(Component,jQuery,environment);
