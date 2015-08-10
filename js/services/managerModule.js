@@ -7,9 +7,7 @@ var ManagerModule = (function(_super,$,environment){
 	function ManagerModule(utils,debug){
         self = this;
         utilitis = utils;
-        this.debug = debug;
-
-        
+        this.debug = debug;  
 	}
 
     /*
@@ -145,6 +143,32 @@ var ManagerModule = (function(_super,$,environment){
 
         return result;
 
+    };
+    //Comprueba si el nombre pasado se corresponde con un módulo.
+    ManagerModule.prototype.isExists = function(name) {
+        return name && modules[name];
+    };
+    //Comprueba si el nombre pasado se corresponde con un módulo diferido.
+    ManagerModule.prototype.isDeferred = function(name) {
+        return name && modules[name].deferred;
+    };
+    //Comprueba si el nombre pasado se corresponde con un módulo instanciado.
+    ManagerModule.prototype.isInstantiated = function(name) {
+        return name && modules[name].instance;
+    };
+
+    ManagerModule.prototype.getDefferedModule = function(name) {
+        
+        var deferred = $.Deferred();
+
+        downloadModule(modules[name]).done(function(){
+            var module = modules[name];
+            module.instance = new window[module.className];
+            delete window[module.className];
+            deferred.resolve(module.instance);
+        });
+
+        return deferred.promise();
     };
    
     

@@ -106,5 +106,22 @@
                 }
             }
         }
+    },
+    "AUTHENTICATOR_FACTORY":{
+        "name":"authenticatorFactory",
+        "className":"AuthenticatorFactory",
+        "file":"authenticatorFactory.js",
+        "order":9,
+        "dependences":null,
+        "templates":{}
+    },
+    "FACEBOOK_AUTHENTICATOR":{
+        "name":"facebookAuthenticator",
+        "className":"FacebookAuthenticator",
+        "file":"facebookAuthenticator.js",
+        "order":10,
+        "deferred":true,
+        "dependences":null,
+        "templates":{}
     }
 }

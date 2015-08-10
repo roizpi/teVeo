@@ -1,4 +1,38 @@
 {
+	"LOGIN_ACTIVITY":{
+		"name":"LOGIN",
+		"className":"LoginActivity",
+		"file":"loginActivity.js",
+		"status":"",
+		"auth":"none",
+		"tokenExpiration":null,
+		"pitcher":true,
+		"modules":[
+			"AUTHENTICATOR_FACTORY"
+		],
+		"templates":{
+			"gui":{
+				"file":"login/login.html",
+				"animations":{
+					"animationIn":"zoomInUp",
+					"animationOut":"zoomOutDown"
+				},
+				"regions":{
+					"menu":"#viewPanelSideNav",
+					"action":"#panelAction"
+				}
+			},
+			"uploadPage":{
+				"file":"dashboard/uploadpage.html",
+				"animations":{
+					"animationIn":"zoomInUp",
+					"animationOut":"zoomOutDown"
+				}
+			},
+			"errorPage":{}
+		}
+
+	},
 	"DASHBOARD_ACTIVITY" : {
 		"name":"DASHBOARD",
 		"className":"DashboardActivity",
@@ -6,7 +40,7 @@
 		"status":"",
 		"auth":"required",
 		"tokenExpiration":null,
-		"pitcher":true,
+		"pitcher":false,
 		"modules":[
 			"WEB_SPEECH",
 			"APPLICATIONS",
