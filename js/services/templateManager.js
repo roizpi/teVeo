@@ -323,12 +323,13 @@ var TemplateManager = (function(_super,$,environment){
 	}
 
 	var hideView = function(view,callback){
-
+		console.log("Eliminando VISTA");
 		typeof(view["handlers"]["onBeforeHide"]) == "function" && view["handlers"]["onBeforeHide"].call(view.component);
 		//Aplicamos animación de salida.
 		view.node
 			.addClass(view["animations"]["animationOut"])
 			.one("webkitAnimationEnd  animationend",function(){
+				console.log("VISTA ELIMINADA");
                 var $this = $(this);
                 $this.removeClass(view["animations"]["animationOut"]).detach();
                 typeof(view["handlers"]["onAfterHide"]) == "function" && view["handlers"]["onAfterHide"].call(view.component);
@@ -353,10 +354,12 @@ var TemplateManager = (function(_super,$,environment){
 	}
 
 	var viewLoad = function(view,callback){
-
+		console.log("Cargando la vista...");
+		console.log(view);
 		var activeView = hasActiveView(view.type,view.target);
 		//Si hay una vista activa la ocultamos
 		if(activeView){
+			console.log("HAY VISTA ACTIVA");
 			hideView(activeView,function(){
 				showView(view,callback);
 			})

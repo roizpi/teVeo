@@ -8,7 +8,9 @@
 		"tokenExpiration":null,
 		"pitcher":true,
 		"modules":[
-			"AUTHENTICATOR_FACTORY"
+			"AUTHENTICATOR_FACTORY",
+			"FACEBOOK_AUTHENTICATOR",
+			"LOCAL_AUTHENTICATOR"
 		],
 		"templates":{
 			"gui":{

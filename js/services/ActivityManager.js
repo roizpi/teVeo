@@ -17,6 +17,10 @@ var ActivityManager = (function(_super,$,environment){
 			ACTIVIDAD_NO_PERMITIDAD:{
 				name:"ACCESO NO AUTORIZADO A ESTA ACTIVIDAD",
 				desc:"sadasdsad"
+			},
+			ACTIVIDAD_NO_ENCONTRADA:{
+				name:"ACCESO NO AUTORIZADO A ESTA ACTIVIDAD",
+				desc:"sadasdsad"
 			}
 		}
 	
@@ -34,7 +38,12 @@ var ActivityManager = (function(_super,$,environment){
 	}
 
 	var createActivity = function(activity){
-		//marcamos la actividad como activa.
+		//Comprobamos si hay otra actividad activa.
+		var currentActivity = self.getCurrentActivity();
+		if (currentActivity) {
+			currentActivity.active = false;
+		}
+		//marcamos la actividad a crear como activa.
 		activity.active = true;
 		//Descargar y muestra la pantalla de carga.
 		self.templating.loadTemplate({
@@ -110,9 +119,21 @@ var ActivityManager = (function(_super,$,environment){
 	};
 	//Inicia una nueva actividad
 	ActivityManager.prototype.startActivity = function(name) {
-		//Comprobamos si existe actividad con ese nombre, en caso contrario lanzamos
-		// actividad principal.
-		var activity = name ? activities[name] : getPitcherActivity();
+		//Comprobamos si existe la actividad solicitada.
+		var activity;
+
+		if (name) {
+
+			if(activities[name]){
+				activity = activities[name];
+			}else{
+				throw new exceptions["ACTIVIDAD_NO_ENCONTRADA"];
+			}
+			
+		}else{
+			activity = getPitcherActivity();
+		}
+
 		//Comprobamos si la actividad requiere autenticación.
 		if (this.isProtectedActivity(activity)){
 			//Comprobamos si hay una sessión activa y si el token no ha expirado.

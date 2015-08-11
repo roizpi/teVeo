@@ -3,10 +3,12 @@ var SessionManager = (function(_super,$,environment){
 
 	__extends(SessionManager, _super);
 
-	var token;
+	var session = {};
+	var self = this;
 	
 	function SessionManager(debug,utils){
 
+		self = this;
 		this.debug = debug;
 		this.utils = utils;
 		//recuperamos el token del almacenamiento local.
@@ -18,10 +20,41 @@ var SessionManager = (function(_super,$,environment){
 
 	}
 
-	SessionManager.prototype.createSession = function(token) {
-		//decodificamos el token.
-		var token = this.utils.b64_to_utf8(token);
-		//Obtenemos información del usuario.
+	var encodeToken = function(token){
+		return self.utils.utf8_to_b64(JSON.stringify(token));
+	}
+
+	var storageToken = function(token){
+		sessionStorage.setItem("session_token",encodeToken(token));
+	}
+
+	SessionManager.prototype.createSession = function(idUser) {
+
+		var time = new Date().getTime();
+		//Creamos el token
+		session.token = {
+			idUser:idUser,
+			data:time,
+			exp:time +30
+		};
+		//Persistimos el token en el almacenamiento local HTML5
+		storageToken(session.token);
+       
+		//Obtenemos el servicio de localización de servicios remotos.
+		var serviceLocator = environment.getService("SERVICE_LOCATOR");
+		//Obtenemos la información del usuario.
+		return serviceLocator.getUserConnectedData().done(function(data){
+			if (data) session.user = data;
+		});
+		
+	};
+
+	SessionManager.prototype.getToken = function() {
+		return encodeToken(session.token);
+	};
+
+	SessionManager.prototype.getUser = function() {
+		return session.user;
 	};
 
 	//Comprueba si hay una sesión activa.

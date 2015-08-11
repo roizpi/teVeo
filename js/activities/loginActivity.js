@@ -9,16 +9,19 @@ var LoginActivity = (function(environment,$){
 
 	LoginActivity.prototype.run = function() {
 		console.log("Corriendo la Actividad...");
-		this.modules["authenticatorFactory"].getAuthenticator("FACEBOOK_AUTHENTICATOR").done(function(authenticator){
+
+		this.modules["authenticatorFactory"].getAuthenticator("LOCAL_AUTHENTICATOR",function(authenticator){
+			var credentials = {nick:"sergio15",password:"FDBBGCDJDJ"}
 			//Nos autenticamos con el autenticador obtenido.
-			authenticator.login(function(idUser){
+			authenticator.login(credentials,function(idUser){
 				//En este punto debes obtener el id del usuario
 				//y crear la sesión. 
 				var sessionManager = environment.getService("SESSION_MANAGER");
-				//Creamos la sesión.
-				//
-				sessionManager.createSession({
-
+				//Creamos la sesión para este usuario.
+				sessionManager.createSession(idUser).done(function(){
+					//Iniciamos la actividad DASHBOARD.
+					var activityManager = environment.getService("ACTIVITY_MANAGER");
+					activityManager.startActivity("DASHBOARD_ACTIVITY");
 				});
 
 			},function(error){
@@ -26,9 +29,6 @@ var LoginActivity = (function(environment,$){
 				console.log(error);
 			});
 
-		}).fail(function(error){
-			console.log("ERROR 2!!!!");
-			console.log(error);
 		});
 	};
 

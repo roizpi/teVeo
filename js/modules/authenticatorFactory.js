@@ -4,14 +4,14 @@ var AuthenticatorFactory = (function(_super,$,environment){
 
 	function AuthenticatorFactory(){}
 
-	AuthenticatorFactory.prototype.getAuthenticator = function(name) {
+	AuthenticatorFactory.prototype.getAuthenticator = function(name,callback) {
 		//Obtenemos el servicio de administración de módulos
 		var managerModule = environment.getService("MANAGER_MODULE");
 
 		if(managerModule.isExists(name) && managerModule.isDeferred(name)){
 
 			//Solicitamos el módulo diferido indicado como parámetro.
-			return managerModule.getDefferedModule(name);
+			managerModule.getDefferedModule(name,callback);
 
 		}else{
 			console.log("El módulo no existe o no está activado");

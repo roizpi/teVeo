@@ -123,5 +123,14 @@
         "deferred":true,
         "dependences":null,
         "templates":{}
+    },
+    "LOCAL_AUTHENTICATOR":{
+        "name":"localAuthenticator",
+        "className":"LocalAuthenticator",
+        "file":"localAuthenticator.js",
+        "order":11,
+        "deferred":true,
+        "dependences":null,
+        "templates":{}
     }
 }

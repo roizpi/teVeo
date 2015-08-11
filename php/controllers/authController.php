@@ -24,7 +24,7 @@ class authController extends baseController{
         //Saneamos y Filtramos los datos.
         $nick = filter_var($nick,FILTER_SANITIZE_STRING,FILTER_NULL_ON_FAILURE);
         $password = filter_var($password,FILTER_SANITIZE_STRING,FILTER_NULL_ON_FAILURE);
-        
+
         try {
 
         	if($nick && $password){
@@ -75,9 +75,7 @@ class authController extends baseController{
 
         }
 
-
         return $response;
-
       
     }
 

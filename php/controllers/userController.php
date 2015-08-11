@@ -81,10 +81,20 @@ class userController extends baseController{
         $sql->execute(array(":idUsuario" => $idUser));
         $user = $sql->fetch(PDO::FETCH_ASSOC);
         $user = array_map("utf8_encode",$user);
-        return array(
-            "response_message" => array("type" => "RESPONSE","name" => "USER_CONNECTED_DATA_FINDED","data" => array("error" => false,"msg" =>$user)),
+        $response = array(
+            "response_message" => array(
+                "type" => "RESPONSE",
+                "name" => "USER_CONNECTED_DATA_FINDED",
+                "data" => array(
+                    "error" => false,
+                    "msg" =>$user
+                )
+            ),
             "task_before_send_data" => $user
         );
+        echo "ESTA ES LA RESPUESTA OBTENIDA";
+        print_r($response["response_message"]["name"]);
+        return $response;
     
     }
     

@@ -32,8 +32,7 @@ var DashboardActivity = (function(environment,$){
     }
 
 	var attachHandlers = function(){
-        console.log("CONFIGURANDO MANEJADORES");
-        console.log("========================");
+
         //Controlamos si la pestaña cambia a estado no visible.
 		$(document).on("visibilitychange webkitvisibilitychange",function(){
             if(document[visibilityState] == "hidden")
@@ -228,10 +227,14 @@ var DashboardActivity = (function(environment,$){
 
 
 	DashboardActivity.prototype.run = function() {
+
+        var sessionManager = environment.getService("SESSION_MANAGER");
+
+        var user = sessionManager.getUser();
         //Aplicamos animaciones.
         var panelMenu = gui.getView("panelMenu");
         panelMenu.get().removeClass("slideOutLeft").addClass("slideInLeft").one("Webkitanimationend animationend",function(){
-            panelMenu.getView("userImage").get().addClass("cutEffect-visible");
+            panelMenu.getView("userImage").get().attr("src",URL.createObjectURL(user.foto)).addClass("cutEffect-visible");
         });
         //Iniciamos el configurador de wallpapers.
 		startWallpaperConfigurator();

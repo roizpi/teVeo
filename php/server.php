@@ -20,6 +20,7 @@ class ServerSocket extends WebSocketServer {
                     "controller_name" => "userController",
                     "action_name" => "getUserConnectedData"
                 ),
+                "token_required" => true,
                 "require_user_id" => true,
                 "task_before_send" => "attachUser",
                 "throw_event" => false
@@ -30,6 +31,13 @@ class ServerSocket extends WebSocketServer {
                     "action_name" => "notifyInitSession"
                 ),
                 "throw_event" => true
+            ),
+            "USER_AUTHENTICATOR" => array(
+                "controller" => array(
+                    "controller_name" => "authController",
+                    "action_name" => "login"
+                ),
+                "throw_event" => false
             ),
             "LOGOUT" => array(
                 "controller" => array(
@@ -251,8 +259,10 @@ class ServerSocket extends WebSocketServer {
     private function resolveService($service,$params,$conn){
         
         try{
+
             //Ejecutamos la acción del controlador
             $response = baseController::execute($service["controller"],$params);
+
             //Comprobamos si es necesario ejecutar una tarea posterior 
             if(isset($service["task_before_send"])){
                 //recogemos el nombre de la tarea.
@@ -279,6 +289,7 @@ class ServerSocket extends WebSocketServer {
                 }
                 
             }
+
             //Enviamos la respuesta al emisor.
             $this->send($conn,json_encode($response["response_message"]));
             //Si el servicio debe notificar a otros clientes
@@ -316,32 +327,38 @@ class ServerSocket extends WebSocketServer {
     }
     
     protected function process ($conn, $message) {
-        //echo $message;
-        
-        /*$text = base64_encode(json_encode(array("name" => "Sergio","ape" => "Sánchez")));
-        echo $text . PHP_EOL;
-        echo htmlspecialchars_decode(base64_decode($text)) . PHP_EOL;*/
+        //Decodificamos el mensaje.
         $msg = json_decode(urldecode($message));
         echo var_dump($msg) . PHP_EOL;
-        //Comprobamos si hay token de sessión en la petición
-        if(array_key_exists("token",get_object_vars($msg))){
-            //decodificamos el token de sesión.
-            $token = json_decode(base64_decode($msg->token));
-            $serviceName = $msg->service;
-            $params = $msg->params;
-            if(array_key_exists($serviceName,$this->serviceMap)){
-                $service = $this->serviceMap[$serviceName];
-                if(isset($service["require_user_id"]))
-                    $this->resolveService($service,[$token->idUser],$conn);
-                else
-                    $this->resolveService($service,$params,$conn);
+        $serviceName = $msg->service;
+        $params = $msg->params;
+        //Comprobamos si existe el servicio solicitado.
+        if(array_key_exists($serviceName,$this->serviceMap)){
+            //Obtenemos el servicio.
+            $service = $this->serviceMap[$serviceName];
+            //Comprobamos si el servicio requiere token de acceso.
+            if (isset($service["token_required"])) {
+                //Comprobamos si hay token de sessión en la petición
+                if(array_key_exists("token",get_object_vars($msg))){
+                    //decodificamos el token de sesión.
+                    $token = json_decode(base64_decode($msg->token));
+                    if(isset($service["require_user_id"]))
+                        $this->resolveService($service,[$token->idUser],$conn);
+                    else
+                        $this->resolveService($service,$params,$conn);
+                         
+                }else{
+                    echo json_encode(array("error" => true,"data" => "Accesso no permitido"));
+                }
+                
             }else{
-                echo json_encode(array("error" => true,"data" => "Servicio no disponible"));
+                $this->resolveService($service,$params,$conn);
             }
-            
+
         }else{
-            echo json_encode(array("error" => true,"data" => "Accesso no permitido"));
+            echo json_encode(array("error" => true,"data" => "Servicio no disponible"));
         }
+        
         
         
   }

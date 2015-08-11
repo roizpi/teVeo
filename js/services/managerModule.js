@@ -157,18 +157,24 @@ var ManagerModule = (function(_super,$,environment){
         return name && modules[name].instance;
     };
 
-    ManagerModule.prototype.getDefferedModule = function(name) {
+    ManagerModule.prototype.getDefferedModule = function(name,callback) {
         
-        var deferred = $.Deferred();
+        var activityManager = environment.getService("ACTIVITY_MANAGER");
 
-        downloadModule(modules[name]).done(function(){
+        //Comprobamos si el módulo solicitado está especificado en el manifiesto de la actividad.
+        if (activityManager.getCurrentActivity().modules.indexOf(name) != -1) {
             var module = modules[name];
-            module.instance = new window[module.className];
-            delete window[module.className];
-            deferred.resolve(module.instance);
-        });
+            downloadModule(module).done(function(){
+                module.instance = new window[module.className];
+                delete window[module.className];
+                //Ejecutamos el callback especificado.
+                typeof(callback) == "function" && callback(module.instance);
+            });
 
-        return deferred.promise();
+        }else{
+            console.log("MÓDULO "+name+" , no declarado para esta actividad");
+        }
+
     };
    
     

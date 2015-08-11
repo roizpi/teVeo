@@ -11,11 +11,12 @@ var ServiceLocator = (function(_super,environment){
     var pendingRequest = [];
     var timerReenvio = null;
 
-    function ServiceLocator(utils,debug){
+    function ServiceLocator(utils,debug,sessionManager){
 
         self = this;
         this.utils = utils;
         this.debug = debug;
+        this.sessionManager = sessionManager;
 
         this.events = {
             "USER_CONNECTED":[],
@@ -81,6 +82,7 @@ var ServiceLocator = (function(_super,environment){
 
     //Manejador de Mensajes del Servidor WebSocket
     var handlerMessage = function(e){
+        //Parseamos la respuesta.
         var response = JSON.parse(e.data);
         self.debug.log(response,"log");
         if(response.type == "EVENT"){
@@ -88,7 +90,7 @@ var ServiceLocator = (function(_super,environment){
             var data = response.data;
             this.triggerEvent(name,data);
         }else if(response.type == "RESPONSE"){
-            
+
             clearInterval(timerReenvio);
             
             if(!response.data.error){
@@ -153,10 +155,20 @@ var ServiceLocator = (function(_super,environment){
         de módulos y que se resolverán remotamente.
     
     */
+
+    ServiceLocator.prototype.authenticate = function(credentials) {
+        return enqueueRequest({
+            service:"USER_AUTHENTICATOR",
+            params:{
+                nick:credentials.nick,
+                password:credentials.password
+            }
+        });
+    };
     
     ServiceLocator.prototype.getUserConnectedData = function(){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"GET_USER_CONNECTED_DATA",
             params:null
         });
@@ -164,7 +176,7 @@ var ServiceLocator = (function(_super,environment){
     
     ServiceLocator.prototype.notifyInitSession = function(idUser,contacts){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"NOTIFY_INIT_SESSION",
             params:{
                 idUser:idUser,
@@ -179,7 +191,7 @@ var ServiceLocator = (function(_super,environment){
         var exclusions = terms.exclusions && terms.exclusions.constructor.toString().match(/array/i) ?  terms.exclusions : null;
         //Encolamos la petición.
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"SEARCH_USERS",
             params:{
                 idUser:userConnected.id,
@@ -199,7 +211,7 @@ var ServiceLocator = (function(_super,environment){
     
     ServiceLocator.prototype.notifyStatus = function(userId,remoteUserId,status){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"NOTIFY_USER_STATUS",
             params:{
                 userId:userId,
@@ -212,7 +224,7 @@ var ServiceLocator = (function(_super,environment){
     //Obtener detalles de un usuario.
     ServiceLocator.prototype.getDetailsOfUser = function(id){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"DETAILS_OF_USER",
             params:{
                 id:id
@@ -222,7 +234,7 @@ var ServiceLocator = (function(_super,environment){
     //Obtener Solicitudes de amistad pendientes.
     ServiceLocator.prototype.getApplicationsOfFriendship = function(idUserConnected){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"PENDING_APPLICATIONS_FRIENDSHIP",
             params:{
                 idUserConnected:idUserConnected
@@ -232,7 +244,7 @@ var ServiceLocator = (function(_super,environment){
     //Aceptar una Solicitud de amistad.
     ServiceLocator.prototype.acceptApplication = function(idSolicitado,idSolicitador){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"ACCEPT_APPLICATION",
             params:{
                 idSolicitado:idSolicitado,
@@ -243,7 +255,7 @@ var ServiceLocator = (function(_super,environment){
     //Rechazar una solicitud de amistad.
     ServiceLocator.prototype.rejectApplication = function(idSolicitado,idSolicitador){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"REJECT_APPLICATION",
             params:{
                 idSolicitado:idSolicitado,
@@ -254,7 +266,7 @@ var ServiceLocator = (function(_super,environment){
     //Enviar Solicitud de amistad.
     ServiceLocator.prototype.sendApplication = function(idUserConnected,idUser,message){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"TO_ASK_FOR_FRIENDSHIP",
             params:{
                 idUserConnected:idUserConnected,
@@ -266,7 +278,7 @@ var ServiceLocator = (function(_super,environment){
     
     ServiceLocator.prototype.getApplicationForUser = function(usuSolicitador,usuSolicitado){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"GET_APPLICATIONS_FOR_USER",
             params:{
                 usuSolicitador:usuSolicitador,
@@ -278,7 +290,7 @@ var ServiceLocator = (function(_super,environment){
     //Obtener lista de contactos.
     ServiceLocator.prototype.getAllContacts = function(idUser){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"GET_ALL_CONTACTS",
             params:{
                 idUser:idUser
@@ -288,7 +300,7 @@ var ServiceLocator = (function(_super,environment){
     //Añadir Contacto.
     ServiceLocator.prototype.addContact = function(idSolicitado,idSolicitador){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"ADD_CONTACT",
             params:{
                 idSolicitado:idSolicitado,
@@ -300,7 +312,7 @@ var ServiceLocator = (function(_super,environment){
     //Borrar contacto
     ServiceLocator.prototype.dropContact = function(user_one,user_two){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"DROP_CONTACT",
             params:{
                 user_one:user_one,
@@ -311,7 +323,7 @@ var ServiceLocator = (function(_super,environment){
     
     ServiceLocator.prototype.updateContact = function(user_one,user_two,desc){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"UPDATE_CONTACT",
             params:{
                 user_one:user_one,
@@ -324,7 +336,7 @@ var ServiceLocator = (function(_super,environment){
     //Enviar un mensaje en una conversación.
     ServiceLocator.prototype.createMessage = function(idConver,idUserEmisor,idUsuRecep,text){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"CREATE_MESSAGE",
             params:{
                 idConver:idConver,
@@ -337,7 +349,7 @@ var ServiceLocator = (function(_super,environment){
     //Actualiza el estado de los mensajes "NOLEIDOS"
     ServiceLocator.prototype.updateMessagesStatus = function(receptor,messages){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"UPDATE_MSG_STATUS",
             params:{
                 receptor:receptor,
@@ -349,7 +361,7 @@ var ServiceLocator = (function(_super,environment){
     //Obtiene todas las conversaciones en las que participa estos usuarios
     ServiceLocator.prototype.getConversations = function(idUserOne,idUserTwo){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"GET_CONVERSATIONS",
             params:{
                 idUserOne:idUserOne,
@@ -361,7 +373,7 @@ var ServiceLocator = (function(_super,environment){
     //Crea una nueva conversación.
     ServiceLocator.prototype.createConversation = function(idUserOne,idUserTwo,name){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"CREATE_CONVERSATION",
             params:{
                 idUserOne:idUserOne,
@@ -373,7 +385,7 @@ var ServiceLocator = (function(_super,environment){
     //Borra una conversación cuyo id, es el pasado como argumento
     ServiceLocator.prototype.dropConversation = function(idConv,otherUser){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"DROP_CONVERSATION",
             params:{
                 idConv:idConv,
@@ -384,7 +396,7 @@ var ServiceLocator = (function(_super,environment){
     //Borra todas la conversaciones existentes entre dos usuarios,
     ServiceLocator.prototype.dropAllConversations = function(user_one,user_two){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"DROP_ALL_CONVERSATIONS",
             params:{
                 user_one:user_one,
@@ -395,7 +407,7 @@ var ServiceLocator = (function(_super,environment){
     //Comprueba si ya existe un conversación con ese nombre con ese usuario
     ServiceLocator.prototype.existsConversationName = function(name,user_one,user_two){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"EXISTS_CONVERSATION_NAME",
             params:{
                 name:name,
@@ -408,7 +420,7 @@ var ServiceLocator = (function(_super,environment){
     //Obtiene todos los mensajes de una conversación
     ServiceLocator.prototype.getMessages = function(idConver){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"GET_MESSAGES",
             params:{
                 idConver:idConver
@@ -419,7 +431,7 @@ var ServiceLocator = (function(_super,environment){
     //Obtiene todos los mensajes no leidos
     ServiceLocator.prototype.getPendingMessages = function(idUser){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"GET_PENDING_MESSAGES",
             params:{
                 idUser:idUser
@@ -429,7 +441,7 @@ var ServiceLocator = (function(_super,environment){
     
     ServiceLocator.prototype.getCalls = function(idUser){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"GET_CALLS",
             params:{
                 idUser:idUser
@@ -452,7 +464,7 @@ var ServiceLocator = (function(_super,environment){
             if(currentChunk < numChunks){
                 console.log("Enviando trozo .....");
                 return enqueueRequest({
-                    token:sessionStorage.getItem("session_token"),
+                    token:self.sessionManager.getToken(),
                     service:"SEND_OFFER_SDP_CHUNK",
                     params:{
                         idUsuCaller:idUsuCaller,
@@ -470,7 +482,7 @@ var ServiceLocator = (function(_super,environment){
         }
         
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"SEND_OFFER",
             params:{
                 type:type,
@@ -500,7 +512,7 @@ var ServiceLocator = (function(_super,environment){
             if(currentChunk < numChunks){
                 console.log("Enviando trozo .....");
                 return enqueueRequest({
-                    token:sessionStorage.getItem("session_token"),
+                    token:self.sessionManager.getToken(),
                     service:"SEND_ANSWER_SDP_CHUNK",
                     params:{
                         idUsuCaller:idUsuCaller,
@@ -519,7 +531,7 @@ var ServiceLocator = (function(_super,environment){
         }
         
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"SEND_ANSWER",
             params:{
                 idUsuCaller:idUsuCaller,
@@ -536,7 +548,7 @@ var ServiceLocator = (function(_super,environment){
     
     ServiceLocator.prototype.saveCall = function(type,caller,called,convName,status){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"SAVE_CALL",
             params:{
                 type:type,
@@ -550,7 +562,7 @@ var ServiceLocator = (function(_super,environment){
         
     ServiceLocator.prototype.finishCall = function(callId,remoteUserId){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"FINISH_CALL",
             params:{
                 callId:callId,
@@ -561,7 +573,7 @@ var ServiceLocator = (function(_super,environment){
     
     ServiceLocator.prototype.sharePosition = function(user,timestamp,formatted_address,address_components,users){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"SHARE_POSITION",
             params:{
                 user:user,
@@ -577,7 +589,7 @@ var ServiceLocator = (function(_super,environment){
 
     ServiceLocator.prototype.logout = function(){
         return enqueueRequest({
-            token:sessionStorage.getItem("session_token"),
+            token:self.sessionManager.getToken(),
             service:"LOGOUT",
             params:null
         });
