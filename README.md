@@ -1,2 +1,2 @@
 # teVeo
-teVeo! Aplicación de videollamadas con WebRTC y WebSockets
+teVeo! Videollamadas y mensajería instantánea con WebRTC y WebSockets
