@@ -130,7 +130,7 @@ var ServiceLocator = (function(_super,environment){
     var enqueueRequest = function($request){
         var deferred = $.Deferred();
         if(socket.readyState == 1){
-            if(!currentRequest || currentRequest.state() == "resolved" || currentRequest.state() == "failed"){
+            if(!currentRequest || currentRequest.state() == "resolved" || currentRequest.state() == "rejected"){
                 sendRequest({data:$request,deferred:deferred});
             }else{
                 //hay una petición en curso, portanto la encolamos.
@@ -173,6 +173,15 @@ var ServiceLocator = (function(_super,environment){
             params:null
         });
     }
+
+    ServiceLocator.prototype.checkExistsUser = function(email) {
+        return enqueueRequest({
+            service:"CHECK_EXISTS_USER",
+            params:{
+                email:email
+            }
+        });
+    };
     
     ServiceLocator.prototype.notifyInitSession = function(idUser,contacts){
         return enqueueRequest({

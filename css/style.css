@@ -747,7 +747,10 @@ DESC: Distribuidores de contenidos.
   background-color: #4e69a2;
   color: #fff;
   overflow: hidden;
+}
 
+.btn-facebook .fa{
+  line-height: 55px;
 }
 
 .btn-facebook:hover{
@@ -755,9 +758,7 @@ DESC: Distribuidores de contenidos.
   box-shadow:#4e69a2 0px 0px 0px 3px;
 }
 
-.btn-facebook .fa{
-  margin-right: 5px;
-}
+
 
 .btn-upload{
     position: relative;
@@ -1750,21 +1751,6 @@ DESC: Distribuidores de contenidos.
     margin-left: calc(100% / 12 * 11);
 }
 
-/* 
-
-  Flex Container
-  ====================
-
-*/
-
-.flexContainer{
-  display: -webkit-flex;
-  display: flex;
-  flex-wrap:wrap;
-  justify-content:space-around;
-  margin-top: 1.5rem;
-}
-
 
 
 /*
@@ -2397,114 +2383,131 @@ DESC: Distribuidores de contenidos.
 }
 
 
-
 /*
-    Estilo Estadísticas
+  
+  Login Form
+  ====================
+
 */
 
-.estadisticas{
-    position: absolute;
-    top: 10%;right: 0px;bottom: 10%;
-    overflow: hidden;
-    max-width: 300px;
-    -webkit-transform:translateX(180px);
-        transform:translateX(180px);
-    -webkit-transition:-webkit-transform .5s;
-        transition:transform .5s;
+.form-box{
+  width: 404px;
+  z-index: 99;
+  overflow: hidden;
+  border-radius: 8px;
 }
 
-.estadisticas:hover,
-.estadisticas.visible{
-    -webkit-transform:translateX(0);
-        transform:translateX(0);
+.form-box .form-header{
+  overflow: hidden;
+  padding: 0 25px 15px 25px;
+  background-color: rgba(255,255,255, 0.7);
+  text-align: left;
+  color: #00aff0;
 }
 
-.estadisticas > *{
-    padding-bottom: 20px;
-    overflow: hidden;
-    float: right;
-    width: 250px;
-    position: relative;
-    -webkit-transition:all .5s;
-        transition:all .5s
-}
-.estadisticas:hover  > *:hover,
-.estadisticas.visible > *:hover{
-    width: 300px;
-    box-shadow: #fff 0px 0px 10px inset;
-    cursor: pointer;
+.form-box .form-header > *{
+  float: left;
 }
 
-.estadisticas .newMessages{
-    background-color: #4c87b9;
+.form-box .form-header .form-header-left {
+  width: 75%;
+  padding-top: 25px;
 }
 
-.estadisticas .friends{
-    background-color: #d05454;
+.form-box .form-header .form-header-left h3 {
+  margin-top: 0;
 }
 
-.estadisticas .calls{
-    background-color: #8877a9;
+.form-box .form-header  .form-header-left p {
+  font-size: .9rem;
+  opacity: 0.8;
 }
 
-.estadisticas .newApplicationsOfFriendship{
-    background-color: #3faba4;
+.form-box .form-header .form-header-right {
+  width: 25%;
+  padding-top: 5px;
+  font-size: 70px;
+  line-height: 100px;
+  text-align: right;
+  opacity: 0.3;
 }
 
-.estadisticas * .visual {
-    width: 80px;
-    height: 80px;
-    display: block;
-    float: left;
-    padding-top: 10px;
-    padding-left: 15px;
-    margin-bottom: 15px;
-    font-size: 35px;
-    line-height: 35px;
+.form-box .form-body {
+  padding: 25px 25px 30px 25px;
+  background-color: rgba(255,255,255, 0.5);
+  text-align: left;
 }
 
-.estadisticas * .visual > .fa {
-    color: #FFFFFF;
-    opacity: 0.1;
-    filter: alpha(opacity=10);
+.form-box .form-body .form-group {
+  margin-bottom: 15px;
+  height: 50px;
+  padding: 0 20px;
+  letter-spacing: -0.25rem;
 }
 
-.estadisticas * .visual > .fa {
-    margin-left: -35px;
-    font-size: 110px;
-    line-height: 110px;
+.form-box .form-body .form-group > *{
+  display: inline-block;
+  letter-spacing: normal;
+  vertical-align: middle;
+  height: 100%;
 }
 
-.estadisticas * .details {
-    margin-bottom: 5px;
-    position: absolute;
-    right: 15px;
-    padding-right: 15px;
+.form-box .form-body .form-group .form-label{
+  width: 20%;
+  background-color: #00aff0;
+  color: #fff;
+  text-align: center;
+  line-height: 50px;
+  font-size: 1.3rem;
 }
 
-.estadisticas * .details .number {
-    font-weight: 300;
-    margin-bottom: 0px;
-    color: #FFFFFF;
-    padding-top: 25px;
-    text-align: right;
-    font-size: 34px;
-    line-height: 36px;
-    letter-spacing: -1px;
-    font-weight: 300;
+.form-box .form-body .form-group .form-label{
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
 
-.estadisticas * .details .desc {
-    color: #FFFFFF;
-    opacity: 1;
-    filter: alpha(opacity=100);
+.form-box .form-body .form-group .formControl{
+  width:80%;
+  margin: 0;
+  background: #fff;
+  border: 3px solid #fff;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 50px;
+  color: #00aff0;
+  border-radius: 4px;
+  text-indent: 14px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  -o-transition: all .3s;
+  -moz-transition: all .3s;
+  -webkit-transition: all .3s;
+  -ms-transition: all .3s;
+  transition: all .3s;
 }
-.estadisticas * .details .desc {
-    text-align: right;
-    font-size: 14px;
-    letter-spacing: 0px;
-    font-weight: 300;
+
+.form-box .form-body .form-group  .formControl:focus {
+  outline: 0;
+  background: #fff;
+  box-shadow: #4353FF 0px 0px 10px inset;
 }
+
+.form-box .form-body .social-auth{
+  border-top: 1px solid #888;
+  padding: 10px 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
 
 
 /* Presentación Contacto */
@@ -5912,6 +5915,35 @@ span.css-emoticon.nintendo-controller {
   ======================
 
 */
+
+#homepage,
+#homepage::before{
+  position: absolute;
+  top: 0;left: 0;bottom: 0;right: 0;
+}
+
+#homepage{
+  background:#00aff0 url(../resources/img/homepage.jpg) no-repeat center;
+  background-size: 100% 100%;
+}
+
+#homepage::before{
+  content: '';
+  background-color: rgba(0, 175, 240, 0.6);
+  z-index: 99;
+}
+
+#login .backstretch{
+  left: 0px;
+  top: 0px;
+  overflow: hidden;
+  margin: 0px;
+  padding: 0px;
+  height: 936px;
+  width: 1143px;
+  z-index: -999998;
+  position: absolute;
+}
 
 #containerSearchUsers{
   width: 95%;

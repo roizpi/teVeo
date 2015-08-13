@@ -50,6 +50,28 @@ var FacebookAuthenticator = (function(_super,$,environment){
         });
     }
 
+    var signUp = function(callbackSuccess,callbackError){
+        //Obtenemos información del usuario.
+        getUserData(function(data){
+            //Obtenemos el localizador de servicios remotos.
+            var serviceLocator = environment.getService("SERVICE_LOCATOR");
+            //Comprobamos si el usuario ya está registrado.
+            serviceLocator.checkExistsUser(data.email)
+                .done(function(result){
+                    //Comprobamos el resultado.
+                    if (result.exists) {
+                        //El usuario existe.
+                        typeof(callbackSuccess) == "function" && callbackSuccess.apply(self,[result.id]);
+                    }else{
+                        //El usuario no existe, lo registramos.
+                    }
+                    
+                }).fail(function(){
+                    //error.
+                });
+        });
+    }
+
     
     FacebookAuthenticator.prototype.login = function(callbackSuccess,callbackError) {
         var self = this;
@@ -64,18 +86,12 @@ var FacebookAuthenticator = (function(_super,$,environment){
                         //Comprobamos si se ha conectado.
                         if (response.status === 'connected')
                         	//Usuario conectado.
-                            getUserData(function(data){
-                                callbackSuccess.apply(self,[data]);
-                            });
+                            signUp(callbackSuccess,callbackError);
                         else
                             callbackError.call(self);
                     }, {scope: SCOPES});
                 }else{
-                	//El usuario ya está conectado.
-                    getUserData(function(data){
-                    	//Obtenemos su información.
-                        callbackSuccess.apply(self,[data]);
-                    });
+                	signUp(callbackSuccess,callbackError);
                 }
             });
         });

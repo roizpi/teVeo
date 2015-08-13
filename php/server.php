@@ -39,6 +39,13 @@ class ServerSocket extends WebSocketServer {
                 ),
                 "throw_event" => false
             ),
+            "CHECK_EXISTS_USER" => array(
+                "controller" => array(
+                    "controller_name" => "userController",
+                    "action_name" => "existsUser"
+                ),
+                "throw_event" => false
+            ),
             "LOGOUT" => array(
                 "controller" => array(
                     "controller_name" => "userController",

@@ -8,7 +8,6 @@ var LocalAuthenticator = (function(_super,$,environment){
 	LocalAuthenticator.prototype.login = function(credentials,callbackSuccess,callbackError) {
 
 		if (credentials) {
-
 			//Obtenemos el servicio de localización de servicios remotos.
 			var serviceLocator = environment.getService("SERVICE_LOCATOR");
 			//Autenticamos al usuario.
@@ -16,6 +15,8 @@ var LocalAuthenticator = (function(_super,$,environment){
 				if (result && !isNaN(result.id)) {
 					typeof(callbackSuccess) == "function" && callbackSuccess(result.id);
 				};
+			}).fail(function(error){
+				typeof(callbackError) == "function" && callbackError(error);
 			});
 
 		};

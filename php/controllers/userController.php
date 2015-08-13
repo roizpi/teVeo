@@ -61,6 +61,36 @@ class userController extends baseController{
         
     }
 
+    public function existsUser($email){
+        $sql = $this->conn->prepare('SELECT id FROM USUARIOS WHERE email = :email');
+        $sql->execute(array("email" => $email));
+        if ($sql->rowCount() > 0) {
+            $id = $sql->fetch(PDO::FETCH_ASSOC);
+            $msg = array(
+                "exists" => true,
+                "id" => $id 
+            );
+            
+        }else{
+            $msg = array(
+                "exists" => false,
+                "id" => null 
+            );
+        }
+
+        return array(
+            "response_message" => array(
+                "type" => "RESPONSE",
+                "name" => "CHECK_EXISTS_USER",
+                "data" => array(
+                    "error" => false,
+                    "msg" =>$msg
+                )
+            )
+        );
+        
+    }
+
     
     /*Método para obtener todos los detalles de un usuario*/
     public function getUserDetails($id){

@@ -35,7 +35,7 @@ class authController extends baseController{
 
 	            if(!$this->check_password($password,$usuario["password"])){
 	                //Fallo al intentar iniciar sesión.
-	                throw new LoginFailed("Usuario o contraseña no válidos");
+	                throw new LoginFailed("Usuario o contrasenia no validos");
 	            }else{
 	               	//usuario logeado correctamente.
 	              	$response = array(
@@ -74,7 +74,8 @@ class authController extends baseController{
             );
 
         }
-
+        echo "RESPUESTA : " . PHP_EOL;
+        print_r($response);
         return $response;
       
     }
