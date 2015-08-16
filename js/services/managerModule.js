@@ -25,9 +25,6 @@ var ManagerModule = (function(_super,$,environment){
         //Retornamos los módulos que corresponden con los nombres.
         var extractedModules =  names.map(function(module){
             return modules[module];
-        }).filter(function(module){
-            //Eliminamos los módulos que no existen y los que ya están cargados.
-            return module != undefined && !module.loaded;
         });
         //Ordenamos los módulos ascendentemente 
         return utilitis.orderByInsercionBinariaAsc(extractedModules,"order");
@@ -63,10 +60,13 @@ var ManagerModule = (function(_super,$,environment){
     //Descarga un grupo de Módulos especificados en el parámetro modulesRequired.
     var downloadModules = function(modulesRequired){
         
-        var promises = [];
-        for (var i = 0; i < modulesRequired.length; i++) {
-            promises.push(downloadModule(modulesRequired[i]));
-        };
+        var promises = modulesRequired.filter(function(module){
+            //Eliminamos los módulos que no existen y los que ya están cargados.
+            return module != undefined && !module.loaded;
+        }).map(function(module){
+            return downloadModule(module);
+        })
+
         //Sincronizamos todas las promises.
         return $.when.apply($, promises).done(function(){
             self.debug.log("ALL MODULES DOWNLOADED.....","LOG");

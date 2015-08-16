@@ -22,8 +22,17 @@ class authController extends baseController{
 
     	//Validamos datos.
         //Saneamos y Filtramos los datos.
-        $nick = filter_var($nick,FILTER_SANITIZE_STRING,FILTER_NULL_ON_FAILURE);
-        $password = filter_var($password,FILTER_SANITIZE_STRING,FILTER_NULL_ON_FAILURE);
+
+        $nick = filter_var(trim($nick),FILTER_SANITIZE_STRING,FILTER_NULL_ON_FAILURE);
+        $password = filter_var(trim($password),FILTER_SANITIZE_STRING,FILTER_NULL_ON_FAILURE);
+        
+        $response = array(
+            "response_message" => array(
+                "type" => "RESPONSE",
+                "name" => "AUTHENTICATION_COMPLETED",
+                "data" => array()
+            )
+        );
 
         try {
 
@@ -35,22 +44,17 @@ class authController extends baseController{
 
 	            if(!$this->check_password($password,$usuario["password"])){
 	                //Fallo al intentar iniciar sesión.
-	                throw new LoginFailed("Usuario o contrasenia no validos");
+	                throw new LoginFailed("Usuario o contraseña no válidos");
 	            }else{
 	               	//usuario logeado correctamente.
-	              	$response = array(
-                    	"response_message" => array(
-                    		"type" => "RESPONSE",
-                    		"name" => "AUTHENTICATION_COMPLETED",
-                    		"data" => array(
-                    			"error" => false,
-                    			"msg" => array(
-                    				"msg" => "Properly authenticated user",
-                    				"id" => $usuario['id'] //Devolvemos el id.
-                    			)
-                    		)
+	              	$response["response_message"]["data"] = array(
+                        "error" => false,
+                    	"msg" => array(
+                    		"msg" => "Properly authenticated user",
+                    		"id" => $usuario['id'] //Devolvemos el id.
                     	)
-                	);
+                    );
+   
 	            }
 
         	}else{
@@ -60,24 +64,18 @@ class authController extends baseController{
         } catch (Exception $e) {
 
         	//fallo de autenticación.
-	        $response = array(
-                "response_message" => array(
-                   	"type" => "RESPONSE",
-                    "name" => "AUTHENTICATION_COMPLETED",
-                    "data" => array(
-                    	"error" => true,
-                    	"msg" => array(
-                    		"msg" => $e->getMessage()
-                    	)
-                    )
+            $response["response_message"]["data"] = array(
+                "error" => true,
+                "msg" => array(
+                    "msg" => $e->getMessage()
                 )
             );
-
+	        
         }
-        echo "RESPUESTA : " . PHP_EOL;
-        print_r($response);
+
         return $response;
-      
+
+
     }
 
 

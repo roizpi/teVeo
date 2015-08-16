@@ -15,8 +15,9 @@ var LoginActivity = (function(environment,$){
 
 	var attachHandlers = function(){
 
+		var $login = self.view.getView("login").get();
 		//Autenticación Local.
-		self.view.getView("login").get().on("submit",function(e){
+		$login.on("submit",function(e){
 			e.preventDefault();
 			var $this = $(this);
 			var credentials = {};
@@ -31,20 +32,21 @@ var LoginActivity = (function(environment,$){
 				authenticator.login(credentials,function(idUser){
 					//En este punto debes obtener el id del usuario
 					//y crear la sesión. 
-					console.log("LOGEADO CORRECTAMENTE...");
-					console.log(idUser);
 					var sessionManager = environment.getService("SESSION_MANAGER");
 					//Creamos la sesión para este usuario.
 					sessionManager.createSession(idUser).done(function(){
 						//Iniciamos la actividad DASHBOARD.
-						//var activityManager = environment.getService("ACTIVITY_MANAGER");
-						//activityManager.startActivity("DASHBOARD_ACTIVITY");
-						
+						var activityManager = environment.getService("ACTIVITY_MANAGER");
+						activityManager.startActivity("DASHBOARD_ACTIVITY");
 					});
 				},function(error){
+					$(".form-group",$login).addClass("invalid");
 					//Fallo de autenticación.
-					console.log("Error de autenticación");
-					console.log(error);
+                    self.modules["notificator"].dialog.alert({
+                        title:"Fallo al iniciar sesión",
+                        text:error.msg,
+                        level:"alert"
+                    });
 				});
 
 			});
@@ -77,7 +79,9 @@ var LoginActivity = (function(environment,$){
 	}
 
 	LoginActivity.prototype.run = function() {
-		console.log("Corriendo la Actividad...");
+
+		var video = this.view.getView("video").getNativeNode();
+		video.play();
 
 	};
 

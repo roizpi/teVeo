@@ -5,7 +5,8 @@ var Contacts = (function(_super,$,environment){
         
     var userContacts = [];
     var self;
-    var envir;
+    var user;
+    var contactsView;
 
     function Contacts(webSpeech,notificator,geoLocation){
 
@@ -14,6 +15,8 @@ var Contacts = (function(_super,$,environment){
         this.webSpeech = webSpeech;
         this.notificator = notificator;
         this.geoLocation = geoLocation;
+
+        userConnected = environment.getService("SESSION_MANAGER").getUser();
 
         //Reporting the module events .
         this.events = {
@@ -34,11 +37,9 @@ var Contacts = (function(_super,$,environment){
     */
 
     //Configuramos manejador para la template "contacts".
-    var onCreateViewContacts = function(){
-
-        var view = this;
-
-        var container = view.getView("container");
+    var onCreateViewContacts = function(view){
+        contactsView = view;
+        var container = contactsView.getView("container");
         //Utilizamos delegación de evento, porque la lista de contactos puede ser muy amplia.
         container.get().delegate('a[data-action]','click',function(e){
             e.preventDefault();
@@ -87,9 +88,9 @@ var Contacts = (function(_super,$,environment){
                 
         });
             
-        var $searchContacts = view.getView("searchContacts").get();
+        var $searchContacts = contactsView.getView("searchContacts").get();
             
-        var $microphone = view.getView("microphone").get();
+        var $microphone = contactsView.getView("microphone").get();
         $microphone.on("click",function(){
             //comienza el proceso.
             self.webSpeech.hearSentence(function(result){
@@ -140,7 +141,7 @@ var Contacts = (function(_super,$,environment){
             //filtramos contactos.
             container.filter(val);
         }).focus();
-            
+
         //mostramos cada contacto.
         userContacts.forEach(showContact);
 
@@ -353,9 +354,7 @@ var Contacts = (function(_super,$,environment){
     var showContact= function(contact){
         //solucionar
         //$viewContact.find("[data-photo]").attr({src:contact.foto,alt:"Foto de " + contact.name,title:"Ver detalles de " + contact.name});
-        var templateManager = environment.getService("TEMPLATE_MANAGER");
-        var view = templateManager.getView("contacts");
-        view && view.getView("container").createView("contact",{
+        contactsView && contactsView.getView("container").createView("contact",{
             id:contact.idRepresentado,
             photo:contact.foto,
             name:contact.name,
@@ -470,7 +469,7 @@ var Contacts = (function(_super,$,environment){
             var templateManager = environment.getService("TEMPLATE_MANAGER");
             templateManager.loadTemplate({
                 name:"contacts",
-                type:"MODULE_VIEWS",
+                category:"MODULE_VIEWS",
                 handlers:{
                     onCreate:onCreateViewContacts
                 }

@@ -74,7 +74,6 @@ var DependencesManager = (function(_super,$,environment){
         
         source = {};
         var instances = {};
-
         for (var i = 0; i < components.length; i++) {
             source[components[i].name] = components[i];
         }

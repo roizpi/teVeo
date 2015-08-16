@@ -1,6 +1,9 @@
 {
 	"LOGIN_ACTIVITY":{
+		"id":1,
 		"name":"LOGIN",
+		"slug":"login",
+		"title":"Inicia Sesión en TeVeo!",
 		"className":"LoginActivity",
 		"file":"loginActivity.js",
 		"status":"",
@@ -10,14 +13,16 @@
 		"modules":[
 			"AUTHENTICATOR_FACTORY",
 			"FACEBOOK_AUTHENTICATOR",
-			"LOCAL_AUTHENTICATOR"
+			"LOCAL_AUTHENTICATOR",
+			"WEB_SPEECH",
+			"NOTIFICATOR"
 		],
 		"templates":{
 			"gui":{
 				"file":"login/login.html",
 				"animations":{
-					"animationIn":"zoomInUp",
-					"animationOut":"zoomOutDown"
+					"animationIn":"slideInLeft",
+					"animationOut":"slideOutLeft"
 				},
 				"regions":{
 					"menu":"#viewPanelSideNav",
@@ -27,8 +32,8 @@
 			"uploadPage":{
 				"file":"dashboard/uploadpage.html",
 				"animations":{
-					"animationIn":"zoomInUp",
-					"animationOut":"zoomOutDown"
+					"animationIn":"slideInLeft",
+					"animationOut":"slideOutLeft"
 				}
 			},
 			"errorPage":{}
@@ -36,7 +41,10 @@
 
 	},
 	"DASHBOARD_ACTIVITY" : {
+		"id":2,
 		"name":"DASHBOARD",
+		"slug":"dashboard",
+		"title":"TeVeo! habla con familiares y amigos",
 		"className":"DashboardActivity",
 		"file":"dashboardActivity.js",
 		"status":"",
@@ -56,8 +64,8 @@
 			"gui":{
 				"file":"dashboard/dashboard.html",
 				"animations":{
-					"animationIn":"zoomInUp",
-					"animationOut":"zoomOutDown"
+					"animationIn":"slideInLeft",
+					"animationOut":"slideOutLeft"
 				},
 				"regions":{
 					"menu":"#viewPanelSideNav",
@@ -67,8 +75,8 @@
 			"uploadPage":{
 				"file":"dashboard/uploadpage.html",
 				"animations":{
-					"animationIn":"zoomInUp",
-					"animationOut":"zoomOutDown"
+					"animationIn":"slideInLeft",
+					"animationOut":"slideOutLeft"
 				}
 			},
 			"errorPage":{}

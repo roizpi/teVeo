@@ -86,22 +86,22 @@ var Environment = (function(){
 			auto:true,
 			instance:null
 		},
-		ACTIVITY_MANAGER:{
-			name:"activityManager",
-			className:"ActivityManager",
-			file:"ActivityManager.js",
-			type:"application",
-			dependences:["TEMPLATE_MANAGER","MANAGER_MODULE","SESSION_MANAGER"],
-			loaded:false,
-			auto:true,
-			instance:null
-		},
 		HISTORY_MANAGER:{
 			name:"historyManager",
 			className:"HistoryManager",
 			file:"HistoryManager.js",
 			type:"application",
 			dependences:null,
+			loaded:false,
+			auto:true,
+			instance:null
+		},
+		ACTIVITY_MANAGER:{
+			name:"activityManager",
+			className:"ActivityManager",
+			file:"ActivityManager.js",
+			type:"application",
+			dependences:["TEMPLATE_MANAGER","MANAGER_MODULE","SESSION_MANAGER","HISTORY_MANAGER"],
 			loaded:false,
 			auto:true,
 			instance:null

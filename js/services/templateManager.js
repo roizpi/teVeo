@@ -1,21 +1,28 @@
-var View = (function(){
+var View = (function(_super,$,environment){
 
 
-	function View(el,id,type,name,animations,handlers){
+	function View(el,id,type,category,name,animations,handlers,target){
 
 		this.el = el;
 		this.id = id;
 		this.type = type;
+		this.category = category;
 		this.name = name;
 		this.views = {};
 		this.templates={};
 		this.animations = animations;
 		this.handlers = handlers;
+		this.target = target;
 		this.timestamp = new Date().getTime();
+
 	}
 
-		
-
+	var convertToRegion = function(target){
+		var values = target.split(":");
+		var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
+		return activity["templates"]["gui"]["regions"][values[1]];
+	}
+	
 	var create = function($element,data,options) {
 		//Obtenemos el id de la vista.
 		var id = (data && data.id) || Math.round(Math.random() * 100000 + 5000);
@@ -23,13 +30,18 @@ var View = (function(){
 		var type = $element.get(0).dataset.type || 'html';
 		//Obtenemos nombre de la vista.
 		var name = (data && data.name) || $element.get(0).dataset.view;
+		//Obtenemos la categoría de la vista.
+		var category = (data && data.category) || "";
 		//Obtenemos las animaciones de la vista.
 		var animations = options && (options.animations || {});
 		//Obtenemos los manejadores del ciclo de vida de la vista.
 		var handlers = options && (options.handlers || {});
+		//Obtenemos el target (lugar donde se insertará la vista).
+		var target = options && (options.target || "body");
 		$element.data("id",id);
-		var view = new View($element,id,type,name,animations,handlers);
+		var view = new View($element,id,type,category,name,animations,handlers,target);
 
+	
 		//las animaciones para los componentes se expresan en el marcado.
 		//data-animationin
 		//data-animationout
@@ -49,12 +61,20 @@ var View = (function(){
 					view.templates[name] = $child.removeAttr("data-type").remove();
 				}else{
 					//creamos la vista.
-					var subView = create($child,{},{});
+					var subView = create($child,{},{
+						target:view.el
+					});
 					view.views[subView.getId()] = subView;
 				}
 			}
 			
 		});
+
+		//Notificamos que la vista fue creada.
+		view.onCreate();
+
+		view.show();
+
 		//Eliminamos las meta-información del elementos
 		view.get().removeAttr("data-view").removeAttr("data-type");
 		//hidratamos la vista con los datos especificados.
@@ -105,7 +125,6 @@ var View = (function(){
 
 		}
 
-
 	}
 
 	View.prototype.onCreate = function() {
@@ -132,6 +151,10 @@ var View = (function(){
 		return this.el;
 	};
 
+	View.prototype.getNativeNode = function() {
+		return this.el.get(0);
+	};
+
 	View.prototype.getName = function() {
 		return this.name;
 	};
@@ -144,25 +167,32 @@ var View = (function(){
 		return this.views;
 	};
 	//Oculta y opcionalmente elimina un elemento.
-	View.prototype.hide = function(remove) {
+	View.prototype.hide = function(remove,callback) {
+		this.onBeforeHide();
 		if(this.animations && this.animations.animationOut){
 			var animation = this.animations.animationOut;
 			this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
 				var $this = $(this);
 				$this.removeClass(animation);
-				remove ? $this.remove() : $this.hide();
+				remove ? $this.detach() : $this.hide();
+				typeof(callback) == "function" && callback();
 			});
 		}
+		this.onAfterHide();
 	};
-
+	
 	View.prototype.show = function() {
+		this.onBeforeShow();
+		var target = this.target;
 		if(this.animations && this.animations.animationIn){
 			var animation = this.animations.animationIn;
 			this.el.show().addClass(animation).one("webkitAnimationEnd animationend",function(){
 				var $this = $(this);
 				$this.removeClass(animation);
-			});
+			}).appendTo(target == "body" ? target : convertToRegion(target));
 		}
+
+		this.onAfterShow();
 	};
 	//Comprueba si la vista es visible.
 	View.prototype.isVisible = function() {
@@ -295,7 +325,7 @@ var View = (function(){
 		create:create
 	};
 
-})();
+})(Component,jQuery,environment);
 
 
 var TemplateManager = (function(_super,$,environment){
@@ -307,68 +337,45 @@ var TemplateManager = (function(_super,$,environment){
 	function TemplateManager(){}
 
 
-	var hasActiveView = function(type,target){
+	var getCurrentActiveView = function(category,target){
 		for(var view in views){
 			var currentView = views[view];
-			if (currentView.type == type && currentView.active && currentView.target == target )
+			if (currentView.category == category && currentView.isVisible() && currentView.target == target )
 				return currentView;
 		}
 	}
 
-	var convertToRegion = function(target){
-		var values = target.split(":");
-		var activity = environment.getService("ACTIVITY_MANAGER").getCurrentActivity();
-		return activity["templates"]["gui"]["regions"][values[1]];
+	var createView = function(template,data,options,callback){
 
-	}
-
-	var hideView = function(view,callback){
-		console.log("Eliminando VISTA");
-		typeof(view["handlers"]["onBeforeHide"]) == "function" && view["handlers"]["onBeforeHide"].call(view.component);
-		//Aplicamos animación de salida.
-		view.node
-			.addClass(view["animations"]["animationOut"])
-			.one("webkitAnimationEnd  animationend",function(){
-				console.log("VISTA ELIMINADA");
-                var $this = $(this);
-                $this.removeClass(view["animations"]["animationOut"]).detach();
-                typeof(view["handlers"]["onAfterHide"]) == "function" && view["handlers"]["onAfterHide"].call(view.component);
-                typeof(callback) == "function" && callback();
-            });
+		var currentActiveView = getCurrentActiveView(data.category,options.target);
+		if(currentActiveView){
+			currentActiveView.hide(false,function(){
+				//creamos la vista
+				var view = View.create(template,data,options);
+				typeof(callback) == "function" && callback(view);
+			});
+		}else{
+			//creamos la vista
+			var view = View.create(template,data,options);
+			typeof(callback) == "function" && callback(view);
+		}
 
 	}
 
 	var showView = function(view,callback){
-		//llamamos al beforeShow
-		typeof(view["handlers"] && view["handlers"]["onBeforeShow"]) == "function" && view["handlers"]["onBeforeShow"].call(view.el);
-		view.node
-			.addClass(view["animations"]["animationIn"])
-			.one("webkitAnimationEnd  animationend",function(){
-                    var $this = $(this);
-                    typeof(view["handlers"] && view["handlers"]["onAfterShow"]) == "function" && view["handlers"]["onAfterShow"].call(view.component);
-                    $this.removeClass(view["animations"]["animationIn"]);
-                    typeof(callback) == "function" && callback.call("Pedro");
-            })
-            .appendTo(view["target"] == "body" ? view["target"] : convertToRegion(view["target"]));
-
-	}
-
-	var viewLoad = function(view,callback){
-		console.log("Cargando la vista...");
-		console.log(view);
-		var activeView = hasActiveView(view.type,view.target);
-		//Si hay una vista activa la ocultamos
-		if(activeView){
-			console.log("HAY VISTA ACTIVA");
-			hideView(activeView,function(){
-				showView(view,callback);
-			})
-
+		//la vista ya se creó
+		var currentActiveView = getCurrentActiveView(view.category,view.target);
+		if(currentActiveView){
+			currentActiveView.hide(false,function(){
+				//mostramos la vista
+				view.show();
+				typeof(callback) == "function" && callback(view);
+			});
 		}else{
-			showView(view,callback);
-		}	
+			view.show();
+			typeof(callback) == "function" && callback(view);
+		}
 	}
-
 
 	//Carga la template especificada.
 	TemplateManager.prototype.loadTemplate = function(data) {
@@ -382,10 +389,11 @@ var TemplateManager = (function(_super,$,environment){
 		//Comprobamos si ya existe una vista para esta template.
 		if(!views[fqn]){
 			//comprobamos el tipo de template a cargar.
-			var type = data["type"].toUpperCase();
+			var category = data["category"].toUpperCase();
+			var handlers = data["handlers"];
 			var path,animations,target;
 			//obtenemos el path.
-			switch(type){
+			switch(category){
 				case "ACTIVITY_VIEWS":
 					//Ruta de la interfaz de la actividad.
 					path = environment.ACTIVITY_TEMPLATES_BASE_PATH + activity["templates"]["gui"]["file"];
@@ -422,28 +430,30 @@ var TemplateManager = (function(_super,$,environment){
 				//cacheamos la template.
 				var $template = $(template);
 				$template.addClass("animateView");
-				//creamos la vista 
-		        var view = {
-		        	component:View.create($template,animations,data["handlers"]),//estructura de vistas derivada de la template
-		        	node:$template,//objeto jquery original
-		        	type:type,//tipo de vista
-		        	timestamp:new Date().getTime(),//timemstamp de creación
-		        	handlers:data["handlers"],//manejadores del ciclo de vida
-		        	animations:animations,//animaciones.
-		        	target:target//Donde se ubicará la interfaz.
-		        }
+				var data = {
+					name:fqn,
+					category:category
+				};
+				var options = {
+					handlers:handlers,//manejadores del ciclo de vida
+					animations:animations,//animaciones.
+					target:target//Donde se ubicará la interfaz.
+				}
 
-		        views[fqn] = view;
-		        //llamamos al onCreate
-		        typeof(data["handlers"] && data["handlers"]["onCreate"]) == "function" && data["handlers"]["onCreate"].call(view.component);
-		        //la cargamos.
-		        viewLoad(view,function(){
-		        	view.active = true;
-		        	deferred.resolve(view.component);
-		        });
-
+				createView($template,data,options,function(view){
+					views[fqn] = view;
+					deferred.resolve(view);
+				});
+				
 			}).fail(function(){
 				console.log("Fallo al descargar template");
+			});
+
+		}else{
+			var view = views[fqn];
+			//mostramos la vista.
+			showView(view,function(){
+				deferred.resolve(view);
 			});
 		}
 

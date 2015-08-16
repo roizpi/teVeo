@@ -287,6 +287,12 @@ figure.inline > *{
   overflow: auto;
 }
 
+.logo{
+  text-align: center;
+  font-size: 8em !important;
+  color: #fff;
+}
+
 
 /*
 
@@ -2086,33 +2092,6 @@ DESC: Distribuidores de contenidos.
 
 */
 
-#main .intro{
-    height: calc(100vh - 70px);
-    position: relative;
-    overflow: hidden;
-}
-
-#main .intro .background,
-#main .intro .foreground{
-    position: absolute;
-    top: 0;bottom: 0;
-    left: 0;right: 0;
-}
-
-#main .intro .background video{
-    width: 100%;
-}
-
-#main .intro .foreground{
-    background-color:rgba(18, 96, 254, 0.3);
-    height: 100%;
-    position: relative;
-    display: flex;
-    justify-content:space-around;
-    align-items: center;
-    padding: 0 10px;
-
-}
 
 
 /*
@@ -2394,7 +2373,6 @@ DESC: Distribuidores de contenidos.
   width: 404px;
   z-index: 99;
   overflow: hidden;
-  border-radius: 8px;
 }
 
 .form-box .form-header{
@@ -2403,6 +2381,8 @@ DESC: Distribuidores de contenidos.
   background-color: rgba(255,255,255, 0.7);
   text-align: left;
   color: #00aff0;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
 .form-box .form-header > *{
@@ -2416,6 +2396,7 @@ DESC: Distribuidores de contenidos.
 
 .form-box .form-header .form-header-left h3 {
   margin-top: 0;
+  font-weight: bold;
 }
 
 .form-box .form-header  .form-header-left p {
@@ -2429,13 +2410,16 @@ DESC: Distribuidores de contenidos.
   font-size: 70px;
   line-height: 100px;
   text-align: right;
-  opacity: 0.3;
+  opacity: 0.5;
 }
 
 .form-box .form-body {
+  width: 100%;
   padding: 25px 25px 30px 25px;
   background-color: rgba(255,255,255, 0.5);
   text-align: left;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .form-box .form-body .form-group {
@@ -2475,7 +2459,6 @@ DESC: Distribuidores de contenidos.
   font-weight: 300;
   line-height: 50px;
   color: #00aff0;
-  border-radius: 4px;
   text-indent: 14px;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
@@ -2486,11 +2469,33 @@ DESC: Distribuidores de contenidos.
   transition: all .3s;
 }
 
+
 .form-box .form-body .form-group  .formControl:focus {
   outline: 0;
   background: #fff;
   box-shadow: #4353FF 0px 0px 10px inset;
 }
+
+.form-box .form-body .form-group.valid .formControl{
+  color: #2ecc71;
+  border-color: #2ecc71;
+  box-shadow: none;
+}
+
+.form-box .form-body .form-group.valid .form-label{
+  background-color: #2ecc71;
+}
+
+.form-box .form-body .form-group.invalid .formControl{
+  color: #e74c3c;
+  border-color: #e74c3c; 
+  box-shadow: none;
+}
+
+.form-box .form-body .form-group.invalid .form-label{
+  background-color: #e74c3c;
+}
+
 
 .form-box .form-body .social-auth{
   border-top: 1px solid #888;
@@ -5916,22 +5921,62 @@ span.css-emoticon.nintendo-controller {
 
 */
 
-#homepage,
-#homepage::before{
-  position: absolute;
-  top: 0;left: 0;bottom: 0;right: 0;
-}
-
 #homepage{
-  background:#00aff0 url(../resources/img/homepage.jpg) no-repeat center;
-  background-size: 100% 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
-#homepage::before{
-  content: '';
-  background-color: rgba(0, 175, 240, 0.6);
-  z-index: 99;
+#homepage .background,
+#homepage .foreground,
+#homepage .foreground section{
+  position: absolute;
+  top: 0;bottom: 0;
+  left: 0;right: 0;
 }
+
+#homepage .background video{
+  width: 100%;
+}
+
+#homepage .foreground{
+  background-color:rgba(18, 96, 254, 0.3);
+  height: 100%;
+  position: relative;
+  padding: 0 10px;
+}
+
+#homepage .foreground section{
+  width: 100%;
+  height: 500px;
+  margin: auto;
+}
+
+#homepage .foreground section > *{
+  height: 100%;
+  vertical-align: middle;
+}
+
+#homepage .foreground  h1{
+  margin:0;
+  font-size: 2.5rem;
+  font-weight:lighter; 
+  color: #fff;
+  text-shadow: #000 3px -3px 3px;
+  text-align: center;
+  text-rendering: optimizeLegibility;
+}
+
+#homepage .foreground .slogan{
+  width: 60%;
+}
+
+#homepage .foreground .form-box{
+  width: 30%;
+}
+
+
+
 
 #login .backstretch{
   left: 0px;

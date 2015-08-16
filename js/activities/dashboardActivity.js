@@ -1,22 +1,21 @@
 var DashboardActivity = (function(environment,$){
 
+    var self;
+    var sessionManager;
 	var visibilityState;
-    var modules;
-    var gui;
-    var envir;
     var timerChangeWallpaper;
     var $theme;
     var currentTheme;
 
-	function DashboardActivity (view,mods) {
+	function DashboardActivity (view,modules) {
 
-		envir = environment;
-		gui = view;
-		modules = mods;
+        self = this;
+		this.view = view;
+		this.modules = modules;
+        sessionManager = environment.getService("SESSION_MANAGER");
 		$theme = $("#currentTheme"); 
 		visibilityState = document.visibilityState ? "visibilityState" : "webkitVisibilityState";
-		console.log("Estos son los módulos cargados.");
-        console.log(mods);
+
         //aplicamos preferencias
 		applyPreferences();
 		//Configuramos manejadores
@@ -26,7 +25,7 @@ var DashboardActivity = (function(environment,$){
 
     var applyPreferences = function(){
 
-        currentTheme = modules['preferences'].getPreference('theme');
+        currentTheme = self.modules['preferences'].getPreference('theme');
         //Aplicamos el tema seleccionado
         $theme.attr("href",environment.THEMES_FOLDER + currentTheme.name);
     }
@@ -36,13 +35,13 @@ var DashboardActivity = (function(environment,$){
         //Controlamos si la pestaña cambia a estado no visible.
 		$(document).on("visibilitychange webkitvisibilitychange",function(){
             if(document[visibilityState] == "hidden")
-                document.title = "TeVeo! | (" + modules["notificator"].getNumOfNotifications() + ") notificaciones pendientes";
+                document.title = "TeVeo! | (" + self.modules["notificator"].getNumOfNotifications() + ") notificaciones pendientes";
             else if(document[visibilityState] == "visible")
                 document.title = "TeVeo!";
                 
         });
 
-        var $panelMenu = gui.getView("panelMenu").get();
+        var $panelMenu = self.view.getView("panelMenu").get();
         //Icono para ocultar menú de acceso rápido.
         $("#navIcon").on("click",function(){
             var $navicon = $(this).find("span.fa");
@@ -86,7 +85,7 @@ var DashboardActivity = (function(environment,$){
                             break;
                         case 'searchUsers':
                             //Inicializamos Módulo de Búsquedas
-                            modules['searchs'].startSearch();
+                            self.modules['searchs'].startSearch();
                             break;
                         case 'viewApplications':
                             //Mostramos solicitudes de amistad.
@@ -94,7 +93,7 @@ var DashboardActivity = (function(environment,$){
                             break;
                         case 'showNotifications':
                             //Mostramos la notificaciones pendientes.
-                            modules['notificator'].showNotifications();
+                            self.modules['notificator'].showNotifications();
                             break;
                         case 'logout':
                             self.serviceLocator.logout()
@@ -116,7 +115,7 @@ var DashboardActivity = (function(environment,$){
                     
                 }catch(e){
                     
-                    modules["notificator"].dialog.alert({
+                    self.modules["notificator"].dialog.alert({
                     	title:"Operación no realizada",
                     	text:e.message,
                         level:"info"
@@ -147,7 +146,7 @@ var DashboardActivity = (function(environment,$){
                     switch(action){
                         case 'showAllContacts':
                             //Mostramos la lista de contactos.
-                            modules['contacts'].showListOfContact();
+                            self.modules['contacts'].showListOfContact();
                             break;
                         case 'showCalls':
                             //Mostramos todas la llamadas que ha realizado.
@@ -159,7 +158,7 @@ var DashboardActivity = (function(environment,$){
                     
                 }catch(e){
 
-                    modules['notificator'].dialog.alert({
+                    self.modules['notificator'].dialog.alert({
                         title:"Operación no realizada",
                         text:e.message,
                         level:"info"
@@ -227,25 +226,19 @@ var DashboardActivity = (function(environment,$){
 
 
 	DashboardActivity.prototype.run = function() {
-
-        var sessionManager = environment.getService("SESSION_MANAGER");
-
+        //Obtenemos la información del usuario.
         var user = sessionManager.getUser();
         //Aplicamos animaciones.
-        var panelMenu = gui.getView("panelMenu");
+        var panelMenu = self.view.getView("panelMenu");
         panelMenu.get().removeClass("slideOutLeft").addClass("slideInLeft").one("Webkitanimationend animationend",function(){
-            panelMenu.getView("userImage").get().attr("src",URL.createObjectURL(user.foto)).addClass("cutEffect-visible");
+            panelMenu.getView("userImage").get().attr("src",user.foto).addClass("cutEffect-visible");
         });
         //Iniciamos el configurador de wallpapers.
-		startWallpaperConfigurator();
+        startWallpaperConfigurator();
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();
-		console.log("Corriendo Actividad");
-		console.log("Esta es la vista");
-		console.log(gui);
-        console.log("Estos son los modulos");
-        console.log(modules);
+	
 	};
 
 
