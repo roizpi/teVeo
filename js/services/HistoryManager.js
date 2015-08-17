@@ -21,6 +21,17 @@ var HistoryManager = (function(_super,environment){
 		history.pushState(activity.id,activity.title,origin+activity.slug);
 	};
 
+	HistoryManager.prototype.back = function() {
+		history.back();
+	};
+
+	HistoryManager.prototype.forward = function() {
+		history.forward();
+	};
+
+	HistoryManager.prototype.goTo = function(pos) {
+		!isNaN(parseInt(pos)) && history.go(pos);
+	};
 	
 	HistoryManager.prototype.hasLastActivity = function() {
 		return false;

@@ -2370,13 +2370,14 @@ DESC: Distribuidores de contenidos.
 */
 
 .form-box{
-  width: 404px;
+  min-width: 400px;
+  max-width: 470px;
   z-index: 99;
   overflow: hidden;
 }
 
 .form-box .form-header{
-  overflow: hidden;
+  width: 100%;
   padding: 0 25px 15px 25px;
   background-color: rgba(255,255,255, 0.7);
   text-align: left;

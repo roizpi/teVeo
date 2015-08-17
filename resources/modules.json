@@ -64,7 +64,7 @@
         "className":"Searchs",
         "file":"searchsModule.js",
         "order":7,
-        "dependences":["WEB_SPEECH","APPLICATIONS","NOTIFICATOR"],
+        "dependences":["WEB_SPEECH","APPLICATIONS","NOTIFICATOR","GEO_LOCATION"],
         "templates":{
             "searchUsers":{
                 "DASHBOARD":{

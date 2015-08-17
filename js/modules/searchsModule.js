@@ -3,9 +3,13 @@ var Searchs = (function(_super,$,environment){
 
     __extends(Searchs, _super);
 
-    var self,templating,serviceLocator;
+    var self,templating,serviceLocator,searchUserView;
 
-    function Searchs(webSpeech,applications,notificator){
+    //Mínimo de resultados mostrados;
+    const MIN_RESULT_SHOWN = 5;
+    const STEPTS = 5;
+
+    function Searchs(webSpeech,applications,notificator,geoLocation){
 
         self = this;
         //Obtenemos el template manager.
@@ -16,6 +20,7 @@ var Searchs = (function(_super,$,environment){
         //MANEJADOR DE SOLICITUDES.
         this.applications = applications;
         this.notificator = notificator;
+        this.geoLocation = geoLocation;
 
             
     }
@@ -28,15 +33,11 @@ var Searchs = (function(_super,$,environment){
     //handlers
 
     //Configuramos manejador onCreate para la template "searchUsers".
-    var onCreate = function(){
+    var onCreate = function(view){
 
-        var view = this;
-        console.log("Esta es la vista");
-        console.log(view);
-        console.log("Micrófono....");
-        console.log(view.getView("microphone"));
+        searchUserView = view;
         //Configuramos el micrófono.
-        var $microphone = view.getView("microphone").get();
+        var $microphone = searchUserView.getView("microphone").get();
         //Micrófono.
         $microphone.on("click",function(){
             var $self = $(this);
@@ -76,7 +77,7 @@ var Searchs = (function(_super,$,environment){
             $microphone.removeClass("fa-microphone").addClass("fa-microphone-slash");
         });
 
-        var $container = view.getView("container").get();
+        var $container = searchUserView.getView("container").get();
         //Delegamos la resolución de todas las acciones en el contenedor.
         $container.delegate("[data-action]","click",function(e){
             e.stopPropagation();
@@ -85,17 +86,22 @@ var Searchs = (function(_super,$,environment){
             //obtenemos el nombre de la acción a realizar.    
             var action = this.dataset.action.toUpperCase();
             if(action == 'SUGGEST_USERS'){
-                //Sugerencia de usuarios
-                if(userConnected.currentPosition){
-                    console.log("Cogiendo posición actual.");
-                    var location = userConnected.currentPosition.detail.address_components[3].long_name;
-                }else{
-                    var location = userConnected.ubicacion;
-                }
-               
-                //Llamamos a un servicio para obtener usuarios que contengan esos caracteres.
-                serviceLocator.searchUsers(userConnected.id,"LOCATION",location)
-                    .done(function(users){
+                //Obtenemos la ubicación del usuario.
+                self.geoLocation.getLocation().done(function(location){
+
+                    console.log("POSICIÓN OBTENIDA");
+                    console.log(location);
+                    //Obtenemos el nombre de la ciudad.
+                    var town = location.address_components[3].long_name;
+
+                    serviceLocator.searchUsers({
+                        value:town,
+                        field:'LOCATION',
+                        start:0,
+                        count:10,
+                        exclusions:[]
+                    }).done(function(users){
+                    
                         //Mostramos usuarios.
                         if(users && users.length){
                             //Mostramos los nuevos resultados.
@@ -107,15 +113,36 @@ var Searchs = (function(_super,$,environment){
                     .fail(function(error){
 
                     });
+
+                }).fail(function(error){
+
+                    self.notificator.dialog.alert({
+                        title:"Ubicación no disponible",
+                        text:"Tu ubicación no pudo obtenerse",
+                        level:"info"
+                    });
+                    console.log("LA POSICIÓN NO PUDO OBTENERSE");
+                    console.log(error);
+
+
+                });
+                //Sugerencia de usuarios
+                /*if(userConnected.currentPosition){
+                    console.log("Cogiendo posición actual.");
+                    var location = userConnected.currentPosition.detail.address_components[3].long_name;
+                }else{
+                    var location = userConnected.ubicacion;
+                }*/
+               
+                //Llamamos a un servicio para obtener usuarios que contengan esos caracteres.
+                
                     
             }else if(action == 'TO_ASK_FOR_FRIENDSHIP'){
                 //Solicitar amistad.
                 var idUser = $this.data("id");
                 //Comprobamos si ya tenemos una solicitud de amistad de este usuario.
                 if(!self.applications.existeSolicitudDeAmistadPendiente(idUser)){
-                    var form = templating.getView("searchUsers").getView("form"+idUser);
-                    console.log("HOLA ESTE ES EL FORM");
-                    console.log(form);
+                    var form = searchUserView.getView("form"+idUser);
                     //Comprobamos si ya existe un formulario para este usuario.
                     if (!form) {
                         //Comprobamos si existe alguna solicitud PENDIENTES O RECHAZADAS con este usuario.
@@ -213,9 +240,7 @@ var Searchs = (function(_super,$,environment){
 
         //Buscador de Usuarios.
 
-        //Mínimo de resultados mostrados;
-        var MIN_RESULT_SHOWN = 5;
-        var STEPTS = 5;
+        
 
         var currentFilter;//Filtro actual.
         var currentField = "name";//Campo actual.
@@ -223,9 +248,9 @@ var Searchs = (function(_super,$,environment){
         var regExp;//Expresión regular actual.
 
         //Configuramos el formulario de búsqueda.
-        var $searchForm = view.getView("searchForm").get();
+        var $searchForm = searchUserView.getView("searchForm").get();
         //Obtenemos una referencia al contenedor de usuarios.
-        var $users = view.getView("users_found").get();
+        var $users = searchUserView.getView("users_found").get();
         //Formulario de búsqueda de usuarios por nombre.
         $searchForm.on("submit",function(e){
             e.stopPropagation();
@@ -318,48 +343,44 @@ var Searchs = (function(_super,$,environment){
         
     }
     //Manejador onAfterShow para la template searchUser.
-    var onAfterShow = function(){
-        var view = this;
+    var onAfterShow = function(view){
         view.getView("help").get().addClass("active");
     }
     //Manejador onAfterHide para la template searchUser.
-    var onAfterHide = function(){
-        var view = this;
+    var onAfterHide = function(view){
         view.getView("help").get().removeClass("active");
     }
 
 
     //Crea un nuevo componente usuario.
     var showUser = function(user){
-        //Obtenemos una referencia a la vista.
-        var view = templating.getView("searchUsers");
         //creamos un nuevo componente.
-        view.getView("users_found").createView("userProfile",{
+        searchUserView.getView("users_found").createView("userProfile",{
             id:user.id,
             profileBack:"resources/img/prueba.png",
             avatar:user.foto,
             name:user.name,
+            location:user.ubicacion
         },{})
     }
 
     //Oculta un usuario sugerido.
     var hideUser = function(id){
-        templating.getView("searchUsers")
+        searchUserView
             .getView("users_found")
                 .hideChild(id,true);
     }
 
     //Oculta todos los usuarios sugeridos.
     var hideUsers = function(){
-        templating.getView("searchUsers")
+        searchUserView
             .getView("users_found")
                 .hideAllComponents(true);
     
     }
 
     var highlightText = function(regExp){
-        var view = templating.getView("searchUsers");
-        var $users = view.getView("users_found").get();
+        var $users = searchUserView.getView("users_found").get();
         //Marcamos el texto coincidente.
         $("[data-mark]",$users).each(function(idx,text){
             $text = $(text);
@@ -370,8 +391,7 @@ var Searchs = (function(_super,$,environment){
     //Crea el formulario para el envío de solicitudes.
     var createForm = function(user){
 
-        templating
-            .getView("searchUsers")
+        searchUserView
             .getView("container")
             .createView("ToAskForFriendship",{
                 id:"form"+user.id
@@ -425,7 +445,7 @@ var Searchs = (function(_super,$,environment){
     //Oculta el formulario de envío de solicitud
     var hideForm = function(id){
 
-        templating.getView("searchUsers")
+        searchUserView
             .getView("container")
                 .hideChild(id,false);
 
@@ -440,15 +460,15 @@ var Searchs = (function(_super,$,environment){
     Searchs.prototype.startSearch = function() {
         templating.loadTemplate({
             name:"searchUsers",
-            type:"MODULE_VIEWS",
+            category:"MODULE_VIEWS",
             handlers:{
                 onCreate:onCreate,
                 onAfterShow:onAfterShow,
                 onAfterHide:onAfterHide
             }
-        }).done(function(){
+        }).done(function(view){
             console.log("La vista cargada");
-            console.log(this);
+            console.log(view);
         });
     };
 

@@ -12,12 +12,12 @@ class userController extends baseController{
             //Decodificamos el patrón.
             $value = $filter->pattern;
             //Construimos la query.
-            $query = 'SELECT id,foto,name FROM USUARIOS_VIEW U ';
+            $query = 'SELECT id,foto,name,ubicacion FROM USUARIOS_VIEW U ';
 
             if ($field === 'NAME') {
                 $query .= "WHERE UPPER(name) LIKE UPPER(:value)";
             }elseif($field === 'LOCATION'){
-                $query .= "WHERE UPPER(location) LIKE UPPER(:value)";
+                $query .= "WHERE UPPER(ubicacion) LIKE UPPER(:value)";
             }
 
             $query .= " AND id != :idUser";
