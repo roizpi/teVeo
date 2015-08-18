@@ -30,6 +30,7 @@ class ServerSocket extends WebSocketServer {
                     "controller_name" => "contactosController",
                     "action_name" => "notifyInitSession"
                 ),
+                "token_required" => true,
                 "throw_event" => true
             ),
             "USER_AUTHENTICATOR" => array(
@@ -256,6 +257,7 @@ class ServerSocket extends WebSocketServer {
                     "controller_name" => "geolocationController",
                     "action_name" => "sharePosition"
                 ),
+                "token_required" => true,
                 "throw_event" => true
             )
         );

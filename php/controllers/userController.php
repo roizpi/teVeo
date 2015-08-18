@@ -8,7 +8,7 @@ class userController extends baseController{
         $fields = array('NAME','LOCATION');
         $field = strtoupper($filter->field);
 
-        if($field && in_array($field,$fields)){
+        if(strtoupper($field) && in_array($field,$fields)){
             //Decodificamos el patrón.
             $value = $filter->pattern;
             //Construimos la query.

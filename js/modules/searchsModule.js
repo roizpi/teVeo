@@ -29,6 +29,101 @@ var Searchs = (function(_super,$,environment){
         Métodos Privados
         ************************************
     */
+    //Método para destacar texto.
+    var highlightText = function(filter){
+        var $users = searchUserView.getView("users_found").get();
+        var regExp = new RegExp("(" + filter.value + ")","i");
+        //Marcamos el texto coincidente.
+        $("[data-"+filter.field.toLowerCase()+"]",$users).each(function(idx,text){
+            $text = $(text);
+            $text.html($text.text().replace(regExp,"<mark>$1</mark>"));
+        });
+    }
+
+    //Método para la carga de nuevos usuarios.
+    var loadUsers = function(config){
+        var self = this;
+        
+        //Obtenemos una referencia al contenedor de usuarios.
+        var $users = searchUserView.getView("users_found").get();
+    
+        if (config.type.toUpperCase() === "FILTER") {
+
+            this.exclusions = [];
+
+            //Obtenemos el valor del filtro.
+            if(config.filter && config.filter.value){
+                this.filterValue = config.filter.value;
+            }
+            //Obtenemos el campo para el filtro.
+            if(config.filter && config.filter.field){
+                this.filterField = config.filter.field;
+            }
+            //Creamos la expresión regular especificando el valor como una captura.
+            var regExp = new RegExp("(" + this.filterValue + ")","i");
+            //Recorremos los usuarios actuales en el DOM si existen.
+            $users.children().length && $users.children().each(function(idx,user){
+                var $user = $(user);
+                if ($user.find("[data-"+self.filterField.toLowerCase()+"]").text().match(regExp)) {
+                    //Guardamos el identificador del usuario en la lista de exclusiones.
+                    self.exclusions.push($user.data("id"));
+                }else{
+                    $user.remove();
+                }
+            });
+
+            if ($users.children().length < MIN_RESULT_SHOWN) {
+                //Obtenemos la diferencia.
+                var diff = MIN_RESULT_SHOWN - $users.children().length;
+            
+                serviceLocator.searchUsers({
+                    value:self.filterValue,
+                    field:self.filterField,
+                    start:0,
+                    count:diff,
+                    exclusions:self.exclusions
+                }).done(function(users){
+                    
+                    if(users && users.length){
+                        //Mostramos usuarios.
+                        users.forEach(showUser);
+                    }else{
+                        //Ningún resultado encontrado.
+                        !$users.children().length && typeof(config.callbacks.onNoDataFound) == "function" && config.callbacks.onNoDataFound();
+                    }
+
+                    //Destacamos parte coincidente.
+                    highlightText(config.filter);
+                });
+
+            }
+
+        }else if(config.type.toUpperCase() === "APPEND"){
+            //Tipo de Carga "APPEND", se añadirán STEPTS usuarios al conjunto actual.
+            var start = $users.children().length - self.exclusions.length;
+            //Utilizamos el servicio "searchUsers" para obtener más resultados.
+            serviceLocator.searchUsers({
+                value:self.filterValue,
+                field:self.filterField,
+                start:start,
+                count:STEPTS,
+                exclusions:self.exclusions
+            }).done(function(users){
+                if(users && users.length){
+                    //Mostramos usuarios.
+                    users.forEach(showUser);
+                    //Destacamos parte coincidente.
+                    highlightText({
+                        field:self.filterField,
+                        value:self.filterValue
+                    });
+                }
+            });
+
+        }
+    
+        
+    }
 
     //handlers
 
@@ -77,6 +172,66 @@ var Searchs = (function(_super,$,environment){
             $microphone.removeClass("fa-microphone").addClass("fa-microphone-slash");
         });
 
+        //Buscador de Usuarios.
+        var currentValue;//Valor de filtro actual.
+        var currentField = "name";//Campo actual.
+
+        //Configuramos el formulario de búsqueda.
+        var $searchForm = searchUserView.getView("searchForm").get();
+        //Obtenemos una referencia al contenedor de usuarios.
+        var $users = searchUserView.getView("users_found").get();
+        //Formulario de búsqueda de usuarios por nombre.
+        $searchForm.on("submit",function(e){
+            e.stopPropagation();
+            e.preventDefault();
+
+            //recogemos valor del campo de búsqueda
+            currentValue = this.search.value.toLowerCase().trim().replace(/\s+/,"i");
+            //Cargamos los resultados.
+            loadUsers({
+                type:"FILTER",
+                filter:{
+                    field:currentField,
+                    value:currentValue
+                },
+                callbacks:{
+                    onDataFound:function(){
+
+                    },
+                    onNoDataFound:function(){
+                        //Mostramos advertencia.
+                        $("<div>",{class:"msg  warning  animateView"})
+                            .append(
+                                //icon
+                                $("<span>",{class:"fa fa-warning fa-3x"}),
+                                //párrafo
+                                $("<p>",{text:"Ningún resultado encontrado"})
+                            )
+                            .addClass("bounceInLeft")
+                            .one("webkitAnimationEnd animationend",function(){
+                                $this = $(this);
+                                $this.addClass("bounceOutRight").one("webkitAnimationEnd animationend",function(){
+                                    $this.remove();
+                                });
+                            }).appendTo($users).end().addClass("active");
+                    }
+                }
+            });
+        
+        });
+        //Manejador para el evento Scroll sobre la lista de usuarios encontrados.
+        $users.on("scroll",function(){
+            var $this = $(this);
+            console.log("Evento Scroll");
+            if($this.scrollTop() + $this.innerHeight() >= $this.get(0).scrollHeight){
+                console.log("Cargando más resultados");
+                //Cargamos más resultados.
+                loadUsers({
+                    type:"APPEND"
+                });
+            }
+        });
+
         var $container = searchUserView.getView("container").get();
         //Delegamos la resolución de todas las acciones en el contenedor.
         $container.delegate("[data-action]","click",function(e){
@@ -92,26 +247,33 @@ var Searchs = (function(_super,$,environment){
                     console.log("POSICIÓN OBTENIDA");
                     console.log(location);
                     //Obtenemos el nombre de la ciudad.
-                    var town = location.address_components[3].long_name;
-
-                    serviceLocator.searchUsers({
-                        value:town,
-                        field:'LOCATION',
-                        start:0,
-                        count:10,
-                        exclusions:[]
-                    }).done(function(users){
-                    
-                        //Mostramos usuarios.
-                        if(users && users.length){
-                            //Mostramos los nuevos resultados.
-                            users.forEach(showUser);
-                        }else{
-                            hideUsers();
+                    var town = location.address_components.town;
+                    //Cargamos resultados.
+                    loadUsers({
+                        type:"FILTER",
+                        filter:{
+                            field:"location",
+                            value:town
+                        },
+                        callbacks:{
+                            onNoDataFound:function(){
+                                //Mostramos advertencia.
+                                $("<div>",{class:"msg  warning  animateView"})
+                                    .append(
+                                        //icon
+                                        $("<span>",{class:"fa fa-warning fa-3x"}),
+                                        //párrafo
+                                        $("<p>",{text:"No hemos encontrado usuarios cerca de tí"})
+                                    )
+                                    .addClass("bounceInLeft")
+                                    .one("webkitAnimationEnd animationend",function(){
+                                        $this = $(this);
+                                        $this.addClass("bounceOutRight").one("webkitAnimationEnd animationend",function(){
+                                            $this.remove();
+                                        });
+                                    }).appendTo($users).end().addClass("active");
+                            }
                         }
-                    })
-                    .fail(function(error){
-
                     });
 
                 }).fail(function(error){
@@ -126,17 +288,8 @@ var Searchs = (function(_super,$,environment){
 
 
                 });
-                //Sugerencia de usuarios
-                /*if(userConnected.currentPosition){
-                    console.log("Cogiendo posición actual.");
-                    var location = userConnected.currentPosition.detail.address_components[3].long_name;
-                }else{
-                    var location = userConnected.ubicacion;
-                }*/
-               
-                //Llamamos a un servicio para obtener usuarios que contengan esos caracteres.
-                
-                    
+        
+                        
             }else if(action == 'TO_ASK_FOR_FRIENDSHIP'){
                 //Solicitar amistad.
                 var idUser = $this.data("id");
@@ -238,108 +391,7 @@ var Searchs = (function(_super,$,environment){
         });
 
 
-        //Buscador de Usuarios.
-
         
-
-        var currentFilter;//Filtro actual.
-        var currentField = "name";//Campo actual.
-        var exclusions = [];//Exclusiones.
-        var regExp;//Expresión regular actual.
-
-        //Configuramos el formulario de búsqueda.
-        var $searchForm = searchUserView.getView("searchForm").get();
-        //Obtenemos una referencia al contenedor de usuarios.
-        var $users = searchUserView.getView("users_found").get();
-        //Formulario de búsqueda de usuarios por nombre.
-        $searchForm.on("submit",function(e){
-            e.stopPropagation();
-            e.preventDefault();
-            exclusions = [];
-            //recogemos valor del campo de búsqueda
-            currentFilter = this.search.value.toLowerCase().trim().replace(/\s+/,"i");
-            //Creamos la expresión regular especificando el valor como una captura.
-            regExp = new RegExp("(" + currentFilter + ")","i");
-            //Recorremos los usuarios actuales en el DOM si existen.
-            $users.children().length && $users.children().each(function(idx,user){
-                var $user = $(user);
-                if ($user.find("[data-mark]").text().match(regExp)) {
-                    $name = $user.find("[data-mark]");
-                    $name.html($name.text().replace(regExp,"<mark>$1</mark>"));
-                    //Guardamos el identificador del usuario en la lista de exclusiones.
-                    exclusions.push($user.data("id"));
-                }else{
-                    $user.remove();
-                }
-            });
-
-            if ($users.children().length < MIN_RESULT_SHOWN) {
-                //Obtenemos la diferencia.
-                var diff = MIN_RESULT_SHOWN - $users.children().length;
-                console.log("Exclusiones : " + exclusions);
-                //Utilizamos el servicio "searchUsers" para obtener más resultados.
-                serviceLocator.searchUsers({
-                    value:currentFilter,
-                    field:currentField,
-                    start:0,
-                    count:diff,
-                    exclusions:exclusions
-                })
-                .done(function(users){
-                    
-                    if(users && users.length){
-                        //Mostramos usuarios.
-                        users.forEach(showUser);
-                        //Destacamos parte coincidente.
-                        highlightText(regExp);
-                    }else{
-                        //Ningún resultado encontrado.
-                        !$users.children().length && $("<div>",{class:"msg  warning  animateView"})
-                            .append(
-                                //icon
-                                $("<span>",{class:"fa fa-warning fa-3x"}),
-                                //párrafo
-                                $("<p>",{text:"Ningún resultado encontrado"})
-                            )
-                            .addClass("bounceInLeft")
-                            .one("webkitAnimationEnd animationend",function(){
-                                $this = $(this);
-                                $this.addClass("bounceOutRight").one("webkitAnimationEnd animationend",function(){
-                                    $this.remove();
-                                });
-                            }).appendTo($users).end().addClass("active");
-                    }
-                })
-                .fail(function(error){
-                    //El servicio falló.
-
-                });     
-            };
-
-             
-        });
-        //Manejador para el evento Scroll sobre la lista de usuarios encontrados.
-        $users.on("scroll",function(){
-            var $this = $(this);
-            if($this.scrollTop() + $this.innerHeight() >= $this.get(0).scrollHeight){
-                var start = $users.children().length - exclusions.length;
-                //Utilizamos el servicio "searchUsers" para obtener más resultados.
-                serviceLocator.searchUsers({
-                    value:currentFilter,
-                    field:currentField,
-                    start:start,
-                    count:STEPTS,
-                    exclusions:exclusions
-                }).done(function(users){
-                    if(users && users.length){
-                        //Mostramos usuarios.
-                        users.forEach(showUser);
-                        //Destacamos parte coincidente.
-                        highlightText(regExp);
-                    }
-                });
-            }
-        });
         
     }
     //Manejador onAfterShow para la template searchUser.
@@ -377,15 +429,6 @@ var Searchs = (function(_super,$,environment){
             .getView("users_found")
                 .hideAllComponents(true);
     
-    }
-
-    var highlightText = function(regExp){
-        var $users = searchUserView.getView("users_found").get();
-        //Marcamos el texto coincidente.
-        $("[data-mark]",$users).each(function(idx,text){
-            $text = $(text);
-            $text.html($text.text().replace(regExp,"<mark>$1</mark>"));
-        });
     }
 
     //Crea el formulario para el envío de solicitudes.

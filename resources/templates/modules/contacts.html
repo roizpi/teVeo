@@ -1,4 +1,4 @@
-<div class="container flex-block flex-direction-column flex-liquid-content" data-view="contacts" data-type='main'>
+<div class="container" data-view="contacts" data-type='main'>
     <form action="" class="search-form  y-large" data-view="searchContacts" autocomplete="off">
         <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..." required/>
         <button type="submit"><span class="fa fa-search"></span></button>
@@ -14,6 +14,10 @@
                     <div class="info flex-block flex-direction-column">
                         <span class="status" data-view="status" data-type="data"></span>
                         <p class="name singleLine" data-mark data-view="name" data-type="text"></p>
+                        <p>
+                            <a href="#"><span class="fa fa-map-marker"></span></a>
+                            <span data-view="town" data-type="text"></span>
+                        </p>
                         <p class="sentece singleLine">Lorem ipsum consequetur Lorem ipsum consequetur</p>
                     </div>
                     <div class="actions">

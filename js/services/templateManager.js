@@ -83,6 +83,7 @@ var View = (function(_super,$,environment){
 		return view;
 	};
 
+	
 	//Rellenar el componente con los datos especificados.
 	View.prototype._hydrate = function(data){
 
@@ -209,6 +210,13 @@ var View = (function(_super,$,environment){
 		};
 	};
 
+	View.prototype.scrollAtChild = function(id) {
+		var child = this.getView(id);
+		var pos = child.el.position().top;
+		this.scrollAt(pos);
+		return child;
+	};
+
 	View.prototype.detach = function() {
 		this.el.detach();
 	};
@@ -291,6 +299,39 @@ var View = (function(_super,$,environment){
 	View.prototype.showAllChild = function() {
 		// body...
 	};
+
+	View.prototype.setChildValue = function(id,value) {
+		if (id && value) {
+			var view = this.getView(id);
+			console.log("Esta es la vista obtenida");
+			console.log(view);
+			//recogemos el tipo.
+			var type = view.type &&  view.type.toUpperCase();
+			switch(type){
+
+				case 'IMG':
+					view.el.attr("src",value);
+					break;
+				case 'TEXT':
+					view.el.text(value);
+					break;
+				case 'HTML':
+					view.el.html(value);
+					break;
+				case 'BACKGROUND':
+					view.el.css("background-image","url("+value+")");
+					break;
+				case 'HIDDEN':
+					view.el.data("id",value);
+					break;
+				case 'DATA':
+					view.el.attr("data-"+view.name,value);
+					default:
+				console.log("Valor no conocido");
+			}
+		};
+	};
+
 
 	View.prototype.createView = function(name,data,options) {
 		//Obtenemos la template.

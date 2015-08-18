@@ -233,8 +233,22 @@ var DashboardActivity = (function(environment,$){
         panelMenu.get().removeClass("slideOutLeft").addClass("slideInLeft").one("Webkitanimationend animationend",function(){
             panelMenu.getView("userImage").get().attr("src",user.foto).addClass("cutEffect-visible");
         });
+
+        //Notificamos el inicio de sesión a todos nuestro contactos.
+        var ids = this.modules["contacts"].getContactsIds();
+        sessionManager.notifyInitSession(ids);
+        //Solicitamos permiso para mostrar notificaciones.
+        this.modules["notificator"].requestPermission();
+        //Compartimos nuestra ubicación.
+        this.modules["geoLocation"].sharePosition(ids).fail(function(error){
+            self.modules["notificator"].dialog.alert({
+                title:"Ubicación no disponible",
+                text:"Tu ubicación no pudo obtenerse",
+                level:"info"
+            });
+        });
         //Iniciamos el configurador de wallpapers.
-        startWallpaperConfigurator();
+        //startWallpaperConfigurator();
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();

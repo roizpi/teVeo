@@ -580,16 +580,16 @@ var ServiceLocator = (function(_super,environment){
         });    
     }
     
-    ServiceLocator.prototype.sharePosition = function(user,timestamp,formatted_address,address_components,users){
+    ServiceLocator.prototype.sharePosition = function(timestamp,formatted_address,address_components,users){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"SHARE_POSITION",
             params:{
-                user:user,
+                user:self.sessionManager.getUser().id,
                 timestamp:timestamp,
                 formatted_address:self.utils.urlencode(formatted_address),
-                address_components:address_components.map(function(component){
-                    return self.utils.urlencode(component.long_name);
+                address_components:Object.keys(address_components).map(function(component){
+                    return self.utils.urlencode(address_components[component]);
                 }),
                 users:users
             }

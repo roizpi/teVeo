@@ -6,6 +6,25 @@
     userConnected.ubicacion = "avila";
     sessionStorage.setItem("session_token",1234);
 
+    //Inicializamos plugin ionSound.
+    $.ionSound({
+        sounds: [
+            {name:"userConnected"},
+            {name:"userDisconnected"},
+            {name:"nuevaSolicitudAmistad"},
+            {name:"acceptYourApplication"},
+            {name:"Ring01",loop:3,ended_callback:null},
+            {name:"Ring02",loop:3,ended_callback:null},
+            {name:"Ring03",loop:3,ended_callback:null},
+            {name:"Ring04",loop:3,ended_callback:null},
+            {name:"Ring07",loop:3,ended_callback:null},
+            {name:"Ring08",loop:3,ended_callback:null}
+        ],
+        path: "resources/sonidos/",
+        multiPlay: true,
+        volume: "1.0"
+    });
+
 	$(function(){
 
 		$.getScript("js/Environment.js").done(function(){

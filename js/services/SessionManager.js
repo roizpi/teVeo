@@ -5,12 +5,13 @@ var SessionManager = (function(_super,$,environment){
 
 	var session = {};
 	var self = this;
-	
+
 	function SessionManager(debug,utils){
 
 		self = this;
 		this.debug = debug;
 		this.utils = utils;
+
 		//recuperamos el token del almacenamiento local.
 		var item = sessionStorage.getItem("session_token");
 		token = item ? JSON.parse(item) : false;
@@ -39,12 +40,12 @@ var SessionManager = (function(_super,$,environment){
 		};
 		//Persistimos el token en el almacenamiento local HTML5
 		storageToken(session.token);
-       
-		//Obtenemos el servicio de localización de servicios remotos.
+       	//Obtenemos el servicio de localización de servicios remotos.
 		var serviceLocator = environment.getService("SERVICE_LOCATOR");
 		//Obtenemos la información del usuario.
 		return serviceLocator.getUserConnectedData().done(function(data){
 			if (data) session.user = data;
+
 		});
 		
 	};
@@ -64,6 +65,12 @@ var SessionManager = (function(_super,$,environment){
 	//Devuelve el tiempo de vida del token de sesión.
 	SessionManager.prototype.getSessionLife = function() {
 		return false;
+	};
+
+	SessionManager.prototype.notifyInitSession = function(users) {
+		//Obtenemos el servicio de localización de servicios remotos.
+		var serviceLocator = environment.getService("SERVICE_LOCATOR");
+		serviceLocator.notifyInitSession(session.user.id,users);
 	};
 
 	SessionManager.prototype.destroy = function() {

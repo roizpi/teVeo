@@ -1,68 +1,67 @@
-var Caller = (function(_super,$) {
+var Caller = (function(_super,$,environment) {
         
-        __extends(Caller, _super);
+    __extends(Caller, _super);
 
-        var self;
-        var calls = [];
-        navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-        document.fullscreenElement = document.fullscreenElement || document.webkitfullscreenElement || document.mozfullscreenElement;
-        var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-        var iceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
-        var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
-        //Stuns and Turn Servers. (utilizo servidor de pruebas de google)
-        var configuration = {"iceServers":[{"url":"stun:stun.1.google.com:19302"}]};
-        var options = {
-            optional: [
-                //DtlsSrtpKeyAgreement is required for Chrome and Firefox to interoperate.
-                {DtlsSrtpKeyAgreement: true},
-                //RtpDataChannels is required if we want to make use of the DataChannels API on Firefox.
-                {RtpDataChannels: true}
-            ]
-        }
-        var dataChannel = null;
-        //aloja objeto PeerConnection
-        var pc = null;
-        var dataChannelOptions = {
-            ordered:true,
-            maxRetransmitTime: 3000
-        };
+    var self;
+    var calls = [];
+    //estandarizamos el método getUserMedia.
+    navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    //estandarizamos el método fullscreenElement.
+    document.fullscreenElement = document.fullscreenElement || document.webkitfullscreenElement || document.mozfullscreenElement;
+    var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+    var iceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.webkitRTCIceCandidate;
+    var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
+    //Stuns and Turn Servers. (utilizo servidor de pruebas de google)
+    var configuration = {"iceServers":[{"url":"stun:stun.1.google.com:19302"}]};
+    var options = {
+        optional: [
+            //DtlsSrtpKeyAgreement is required for Chrome and Firefox to interoperate.
+            {DtlsSrtpKeyAgreement: true},
+            //RtpDataChannels is required if we want to make use of the DataChannels API on Firefox.
+            {RtpDataChannels: true}
+        ]
+    }
+    var dataChannel = null;
+    //aloja objeto PeerConnection
+    var pc = null;
+    var dataChannelOptions = {
+        ordered:true,
+        maxRetransmitTime: 3000
+    };
     
-        //Objeto que guarda toda la información de llamada.
-        var currentCalling = {};
-        var chunksize = 0;
-        //Almacena información de una offer sdp entrante
-        var currentOffer = {};
-        //Almacena información de una answer sdp entrante
-        var currentAnswer = {};
-        //Almacena información sobre el fichero que se esta enviando.
-        var currentFileSending = null;
-        //tono de llamada
-        var soundCallAlert;
-        //Referencia al timer encargado de contabilizar el tiempo de la llamada.
-        var timerCallTime = null;
-        var dataChannelEvents = {
-            onChannelOpened:false,
-            onChannelError:false,
-            onChannelClosed:false,
-            onChannelMessage:false
+    //Objeto que guarda toda la información de llamada.
+    var currentCalling = {};
+    var chunksize = 0;
+    //Almacena información de una offer sdp entrante
+    var currentOffer = {};
+    //Almacena información de una answer sdp entrante
+    var currentAnswer = {};
+    //Almacena información sobre el fichero que se esta enviando.
+    var currentFileSending = null;
+    //tono de llamada
+    var soundCallAlert;
+    //Referencia al timer encargado de contabilizar el tiempo de la llamada.
+    var timerCallTime = null;
+    var dataChannelEvents = {
+        onChannelOpened:false,
+        onChannelError:false,
+        onChannelClosed:false,
+        onChannelMessage:false
+    }
+
+    function Caller(contacts,notificator){
+
+        self = this;
+        this.contacts = contacts;
+        this.notificator = notificator;
+        //Eventos que notifica el módulo.
+        this.eventsModule = {
+            "CALLS_AVALIABLE":[],
+            "CALL_ESTABLISHED":[],
+            "CALL_CLOSE":[],
+            "CALL_ABORTED":[],
+            "CALL_FINISHED":[]
         }
-
-        function Caller(templateManager,serviceLocator,contacts,notificator,preferences){
-
-            self = this;
-            this.templateManager = templateManager;
-            this.serviceLocator = serviceLocator;
-            this.contacts = contacts;
-            this.notificator = notificator;
-            this.preferences = preferences;
-            //Eventos que notifica el módulo.
-            this.eventsModule = {
-                "CALLS_AVALIABLE":[],
-                "CALL_ESTABLISHED":[],
-                "CALL_CLOSE":[],
-                "CALL_ABORTED":[],
-                "CALL_FINISHED":[]
-            }
             //Aplicamos preferencias
             applyPreferences();
             //Configuramos manejadores
@@ -1477,7 +1476,7 @@ var Caller = (function(_super,$) {
 
     return Caller;
 
-})(Component,jQuery);
+})(Component,jQuery,environment);
         
         
         

@@ -4,7 +4,7 @@ var GeoLocation = (function(_super,$,environment){
 
   const URL_API_GOOGLE_MAPS = "http://maps.google.com/maps/api/js?sensor=false&callback=setupAPIGoogleMaps";
 
-  var location;
+  var location = {};
   
   function GeoLocation(){}
 
@@ -31,17 +31,24 @@ var GeoLocation = (function(_super,$,environment){
   /*API Pública*/
 
   //Compartimos nuestra posición con otros usuarios.
-  GeoLocation.prototype.sharePosition = function(position,users) {
-    //Obtenemos el servicio de localización de servicios remotos.
-    var serviceLocator = environment.getService("SERVICE_LOCATOR");
-    //Utilizamos el servicio "sharePosition" para compartir nuestra ubicación
-    //con otros usuarios conectados.
-    return serviceLocator.sharePosition(
-      position.timestamp,
-      position.detail.formatted_address,
-      position.detail.address_components,
-      users //Usuarios a los que notificar esta información
-    );
+  GeoLocation.prototype.sharePosition = function(users) {
+
+    return this.getLocation().done(function(location){
+      console.log("ESTA ES LA POSICIÓN");
+      console.log(location);
+      //Obtenemos el servicio de localización de servicios remotos.
+      var serviceLocator = environment.getService("SERVICE_LOCATOR");
+      //Utilizamos el servicio "sharePosition" para compartir nuestra ubicación
+      //con otros usuarios conectados.
+      return serviceLocator.sharePosition(
+        location.timestamp,
+        location.formatted_address,
+        location.address_components,
+        users //Usuarios a los que notificar esta información
+      );
+
+    });
+    
     
   };
 
@@ -50,7 +57,7 @@ var GeoLocation = (function(_super,$,environment){
     
     var deferred = $.Deferred();
 
-    if (location) {
+    if (!$.isEmptyObject(location)) {
       //Si ya hay una localización cacheada, la devolvemos.
       deferred.resolve(location);
       
@@ -76,12 +83,16 @@ var GeoLocation = (function(_super,$,environment){
             if (status == google.maps.GeocoderStatus.OK){
 
               if (results[0]){
-                var result = {};
-                result.address_components = results[0].address_components;
-                result.formatted_address =  results[0].formatted_address;
-                location = result;
+                location.timestamp = new Date().getTime();
+                location.address_components = {
+                  street:results[0].address_components[1].long_name,
+                  town:results[0].address_components[2].long_name,
+                  province:results[0].address_components[3].long_name,
+                  county:results[0].address_components[4].long_name,
+                }
+                location.formatted_address = results[0].formatted_address;
                 //resolvemos la promise devolviendo el resultado.
-                deferred.resolve(result);
+                deferred.resolve(location);
               }else{
                 deferred.reject("No se ha podido obtener ninguna dirección en esas coordenadas.");
               }

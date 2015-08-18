@@ -288,13 +288,7 @@ var Contacts = (function(_super,$,environment){
         //Un usuario ha compartido su posición contigo.
         serviceLocator.addEventListener("USER_SHARE_YOUR_POSITION",function(user){
             //Establecemos o actualizamos la posición del usuario.
-            console.log(user);
-            var contact = getContactById(user.id);
-            if(!contact.data.currentPosition || contact.data.currentPosition.timestamp < user.position.timestamp){
-                contact.data.currentPosition = user.position;
-                //compartimos nuestra ubicación con él
-                self.geoLocation.sharePosition(userConnected.currentPosition,[user.id]);
-            } 
+            setPosition(user.id,user.position);
         });
 
         /*//Si el usuario establece una llamada,cambiamos el estado a "ocupado" y lo notificamos.
@@ -408,22 +402,32 @@ var Contacts = (function(_super,$,environment){
             throw new Error("Contacto no encontrado");
         }
     }
+    //Actualiza la posición de un usuario.
+    var setPosition = function(idUser,position){
+        var contact = self.getContactById(idUser);
+        if(!contact.data.currentPosition || contact.data.currentPosition.timestamp < position.timestamp){
+            contact.data.currentPosition = position;
+            contactsView
+                .getView("container")
+                .scrollAtChild(idUser)
+                .setChildValue("town",position.detail.address_components[1]);
+            //compartimos nuestra ubicación con él
+            self.geoLocation.sharePosition([idUser]);
 
+       } 
+          
+    }
 
     //Función para cambiar el estado de un contacto (Disponible,Desconectado,Ausente,Ocupado).
     var setStatus = function(idUser,status){
         //Actualizamos contacto en la lista de contactos.
-        var contact = getContactById(idUser);
+        var contact = self.getContactById(idUser);
         contact.data.status = status;
-        var view = self.templateManager.getView("contacts");
-        var container = view.getView("container");
-        var offset = $contact.offset().top  - $contact.parent().offset().top;
-        var contact = container.getChild(idUser)
-            if($contactsContainer && $contactsContainer.children().length){
-                
-            }
-        
-        }
+        contactsView
+            .getView("container")
+            .scrollAtChild(idUser)
+            .setChildValue("status",status);  
+    }
 
     /*
         Métodos Públicos
@@ -481,7 +485,6 @@ var Contacts = (function(_super,$,environment){
             throw new Error("Tu lista de Contactos esta vacía");
         }
     };
-
 
 
     return Contacts;

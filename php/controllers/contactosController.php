@@ -17,7 +17,7 @@ class contactosController extends baseController{
     }
     //Notifica el inicio de sesión de un usuario a todos sus contactos.
     public function notifyInitSession($idUser,$contactos){
-        echo var_dump($contactos) .  PHP_EOL;
+        
         if(is_numeric($idUser) && is_array($contactos)){
             //Obtenemos datos del usuario.
             $sql = $this->conn->prepare('SELECT id,foto,name,ubicacion FROM USUARIOS_VIEW WHERE id = :idUsuario');
@@ -33,12 +33,14 @@ class contactosController extends baseController{
                 ));
             }
             
-            return array(
+            $response = array(
                 "response_message" => array("type" => "RESPONSE","name" => "NOTIFIED_USER_INIT_SESSION","data" => array("error" => false,"msg" =>null)),
                 "event_message" => array("type" => "EVENT","name" => "USER_CONNECTED","targets" => $targets)
             );
         
         }
+
+        return $response;
         
     }
     
