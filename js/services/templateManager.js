@@ -33,18 +33,16 @@ var View = (function(_super,$,environment){
 		//Obtenemos la categoría de la vista.
 		var category = (data && data.category) || "";
 		//Obtenemos las animaciones de la vista.
-		var animations = options && (options.animations || {});
+		var animations = {};
+		//Animación de entrada.
+		animations.animationIn = $element.get(0).dataset.animationin ||(options.animations && options.animations.animationIn) || "" ;
+		animations.animationOut = $element.get(0).dataset.animationout ||(options.animations && options.animations.animationOut) || "" ;
 		//Obtenemos los manejadores del ciclo de vida de la vista.
 		var handlers = options && (options.handlers || {});
 		//Obtenemos el target (lugar donde se insertará la vista).
-		var target = options && (options.target || "body");
+		var target = $element.get(0).dataset.target || options.target || "body";
 		$element.data("id",id);
 		var view = new View($element,id,type,category,name,animations,handlers,target);
-
-	
-		//las animaciones para los componentes se expresan en el marcado.
-		//data-animationin
-		//data-animationout
 		//los handlers se configuran mediante la API.
 		//mediante método setOnCreate
 		//Procesamos todos los componentes que contiene el elemento
@@ -169,31 +167,46 @@ var View = (function(_super,$,environment){
 	};
 	//Oculta y opcionalmente elimina un elemento.
 	View.prototype.hide = function(remove,callback) {
-		this.onBeforeHide();
-		if(this.animations && this.animations.animationOut){
-			var animation = this.animations.animationOut;
-			this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
-				var $this = $(this);
-				$this.removeClass(animation);
-				remove ? $this.detach() : $this.hide();
-				typeof(callback) == "function" && callback();
-			});
-		}
-		this.onAfterHide();
+
+		if (this.isVisible()) {
+			this.onBeforeHide();
+			if(this.animations && this.animations.animationOut){
+				var animation = this.animations.animationOut;
+				this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
+					var $this = $(this);
+					$this.removeClass(animation);
+					remove ? $this.remove() : $this.detach();
+					typeof(callback) == "function" && callback();
+				});
+			}
+			this.onAfterHide();
+		};
+		
 	};
 	
-	View.prototype.show = function() {
-		this.onBeforeShow();
-		var target = this.target;
-		if(this.animations && this.animations.animationIn){
-			var animation = this.animations.animationIn;
-			this.el.show().addClass(animation).one("webkitAnimationEnd animationend",function(){
-				var $this = $(this);
-				$this.removeClass(animation);
-			}).appendTo(target == "body" ? target : convertToRegion(target));
-		}
+	View.prototype.show = function(callback) {
+		
+		if (!this.isVisible()) {
+			this.onBeforeShow();
+			if(this.animations && this.animations.animationIn){
+				var animation = this.animations.animationIn;
+				var target;
+				if (this.category && this.category == "MODULE_VIEWS") {
+					target = convertToRegion(this.target);
+				}else{
+					target = this.target;
+				}
 
-		this.onAfterShow();
+				//Aplicamos Animación de Entrada.
+				this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
+					$(this).removeClass(animation);
+					typeof(callback) == "function" && callback();
+				}).appendTo(target);
+				
+			}	
+			this.onAfterShow();
+		};
+		
 	};
 	//Comprueba si la vista es visible.
 	View.prototype.isVisible = function() {
@@ -221,22 +234,33 @@ var View = (function(_super,$,environment){
 		this.el.detach();
 	};
 
-	View.prototype.filter = function(pattern) {
+	View.prototype.remove = function() {
+		this.el.remove();
+	};
+
+	View.prototype.match = function(pattern) {
+		var text = this.el.find("[data-mark]").html().replace(/<mark>|<\/mark>/ig,"");
+		if(text.search(pattern) == -1){
+			return false;
+		}else{
+			//El texto encaja con el patrón, señalamos en que parte.
+			//Con $1 hacemos referencia a la captura anterior.
+			this.el.find("[data-mark]").html(text.replace(pattern,"<mark>$1</mark>"));
+			return true;
+		}
+	};
+
+	View.prototype.filterChild = function(pattern) {
 		
 		var pattern = new RegExp("("+pattern+")","i");
-		$.each(this.el.children(),function(indx,element){
-			var $element = $(element);
-			var text = $element.find("[data-mark]").html().replace(/<mark>|<\/mark>/ig,"");
-			if(text.search(pattern) == -1){
-				$element.fadeOut(1000);
+		$.each(this.views,function(key,view){
+			if(view.match(pattern)){
+				console.log("La")
+				this.show();
 			}else{
-				//El texto encaja con el patrón, señalamos en que parte.
-				//Con $1 hacemos referencia a la captura anterior.
-				$element.find("[data-mark]").html(text.replace(pattern,"<mark>$1</mark>"));
-				if($element.is(":hidden")){
-					$element.fadeIn(1000).effect("highlight",1000);
-				}
+				this.hide(false);
 			}
+			
 		});
 	};
 
@@ -338,6 +362,8 @@ var View = (function(_super,$,environment){
 		var template = this.templates && this.templates[name];
 		//Comprobamos si hay una template con ese nombre.
 		if(template){
+			var optionsDefault = {target:this.el};
+			options = $.extend(options,optionsDefault);
 			//Clonamos la template.
 			var $template = template.clone(true).removeClass("template").data("id",name);
 			//Creamos la vista a partir de la template.
@@ -484,6 +510,7 @@ var TemplateManager = (function(_super,$,environment){
 				createView($template,data,options,function(view){
 					views[fqn] = view;
 					deferred.resolve(view);
+
 				});
 				
 			}).fail(function(){

@@ -132,5 +132,24 @@
         "deferred":true,
         "dependences":null,
         "templates":{}
+    },
+    "METRO":{
+        "name":"metro",
+        "className":"Metro",
+        "file":"metroModule.js",
+        "order":12,
+        "dependences":null,
+        "templates":{
+            "metro":{
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"metro.html",
+                    "animations":{
+                        "animationIn":"bounceInLeft",
+                        "animationOut":"bounceOutRight"
+                    }
+                }  
+            }
+        }
     }
 }

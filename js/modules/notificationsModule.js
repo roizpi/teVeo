@@ -6,7 +6,7 @@ var Notificator = (function(_super,$,environment){
     const DEFAULT_IMAGE = "resources/img/logo.png";
     var state;
     var self;
-    var templating;
+    var notificationsView;
 
     //Muestra cuadros de diálogo.
     var Dialog = (function(){
@@ -67,7 +67,8 @@ var Notificator = (function(_super,$,environment){
         //Eventos del Módulo
         this.events = {
             "NOT_FOUND_NOTIFICATIONS":[],
-            "NEW_NOTIFICATION":[]
+            "NEW_NOTIFICATION":[],
+            "VIEWS_NOTICES":[]
         }
 
         pendingNotifications.push({
@@ -88,11 +89,11 @@ var Notificator = (function(_super,$,environment){
     */
 
     //Manejador onCreate para la template "notifications".
-    var onCreate = function(){
+    var onCreate = function(view){
         //cacheamos contenedor de notificaciones
-        var view = this;
+        notificationsView = view;
         //obtenemos una referencia al contenedor.
-        var container = view.getView("container");
+        var container = notificationsView.getView("container");
         //Delegamos evento click sobre las notificaciones en el contenedor.
         container.get().delegate("[data-notification]","click",function(){
             var $this = $(this);
@@ -145,7 +146,6 @@ var Notificator = (function(_super,$,environment){
         //Mostramos cada notificación pendiente.
         pendingNotifications.forEach(showNotification);
         //refrescamos contador de notificaciones pendientes.
-        updateCountNotifications();
         pendingNotifications = [];
     }
 
@@ -155,18 +155,17 @@ var Notificator = (function(_super,$,environment){
         data.id = Math.round((Math.random() * 100000) + 1);
         data.timestamp = new Date().toLocaleString();
         
-        if(templating.getView("notifications").getView("container").isVisible()){
+        if(notificationsView){
             //La insertamos en el DOM
             showNotification(data);
-            //refrescamos contador de notificaciones pendientes.
-            updateCountNotifications();
         }else{
             //la añadimos a las notificaciones no leídas.
             pendingNotifications.push(data);
+            //Notificamos que existe una nueva notificación.
+            self.triggerEvent("NEW_NOTIFICATION");
         }
 
-        //Notificamos que existe una nueva notificación.
-        self.triggerEvent("NEW_NOTIFICATION");
+        
     }
 
     var removeNotification = function(id){
@@ -179,8 +178,7 @@ var Notificator = (function(_super,$,environment){
     //Inserta Notificación en el DOM.
     var showNotification = function(data){
     
-        templating
-            .getView("notifications")
+        notificationsView
             .getView("container")
             .createView('notification',{
                 icon:data.icon,
@@ -278,14 +276,14 @@ var Notificator = (function(_super,$,environment){
         if(pendingNotifications.length){
             templating.loadTemplate({
                 name:"notifications",
-                type:"MODULE_VIEWS",
+                category:"MODULE_VIEWS",
                 handlers:{
                     onCreate:onCreate,
                     onBeforeShow:onBeforeShow
                 }
-            },function(){
-                console.log("La vista de notificaciones cargada");
-                console.log(this);
+            }).done(function(){
+                console.log("Se cargo la vista...");
+                self.triggerEvent("VIEWS_NOTICES");
             });
         }else{
             throw new Error("No tienes notificaciones pendientes");

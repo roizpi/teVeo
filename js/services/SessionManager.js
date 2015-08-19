@@ -44,7 +44,10 @@ var SessionManager = (function(_super,$,environment){
 		var serviceLocator = environment.getService("SERVICE_LOCATOR");
 		//Obtenemos la información del usuario.
 		return serviceLocator.getUserConnectedData().done(function(data){
-			if (data) session.user = data;
+			if (data){ 
+				session.user = data;
+				session.user.status = "connected";
+			}
 
 		});
 		

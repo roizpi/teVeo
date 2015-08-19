@@ -15,13 +15,24 @@ var DashboardActivity = (function(environment,$){
         sessionManager = environment.getService("SESSION_MANAGER");
 		$theme = $("#currentTheme"); 
 		visibilityState = document.visibilityState ? "visibilityState" : "webkitVisibilityState";
-
         //aplicamos preferencias
 		applyPreferences();
 		//Configuramos manejadores
 		attachHandlers();
+        //Configuramos la vista.
+        configureView();
 		
 	}
+
+    var configureView = function(){
+
+        var notifications = self.modules["notificator"].getNumOfNotifications();
+        if (notifications) {
+            $("#tasks").find("[data-notifications]").text(notifications);
+        };
+        
+    }
+
 
     var applyPreferences = function(){
 
@@ -39,6 +50,23 @@ var DashboardActivity = (function(environment,$){
             else if(document[visibilityState] == "visible")
                 document.title = "TeVeo!";
                 
+        });
+
+        var $el = $("[data-notifications]","#tasks");
+        //Implementamos manejador para el evento "NOTIFICATION_ELIMINATED".
+        self.modules["notificator"].addEventListener("VIEWS_NOTICES",function(){
+            $el.text("");
+        });
+
+        //Implementamos manejador para el evento "NEW_NOTIFICATION".
+        self.modules["notificator"].addEventListener("NEW_NOTIFICATION",function(){
+            var count = this.getNumOfNotifications();
+            $el.text(count);
+        });
+        
+        //Implementamos manejador para el evento "NOT_FOUND_NOTIFICATIONS".
+        self.modules["notificator"].addEventListener("NOT_FOUND_NOTIFICATIONS",function(){
+            self.modules['metro'].showApps();
         });
 
         var $panelMenu = self.view.getView("panelMenu").get();
@@ -68,16 +96,7 @@ var DashboardActivity = (function(environment,$){
                 try{
                     switch(action){
                         case 'goHome':
-                            /*loadHomeTemplate(function(){
-                                //mostramos panel de estadisticas.
-                                setTimeout(function(){
-                                    $("[data-summary]").addClass("visible");
-                                },500);
-                                setTimeout(function(){
-                                    // lo ocultamos al cabo de 3 segundos
-                                    $("[data-summary]").removeClass("visible");
-                                },3000);
-                            });*/
+                            self.modules['metro'].showApps();
                             break;
                         case 'preferences':
                             //Mostramos plantilla para la edición de algunas de las preferencias.

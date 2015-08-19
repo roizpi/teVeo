@@ -58,7 +58,8 @@
 			"SEARCHS",
 			"PREFERENCES",
 			"CONTACTS",
-			"GEO_LOCATION"
+			"GEO_LOCATION",
+			"METRO"
 		],
 		"templates":{
 			"gui":{

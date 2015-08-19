@@ -7,6 +7,7 @@ var Contacts = (function(_super,$,environment){
     var self;
     var user;
     var contactsView;
+    var userConnected;
 
     function Contacts(webSpeech,notificator,geoLocation){
 
@@ -99,7 +100,7 @@ var Contacts = (function(_super,$,environment){
                     $searchContacts.val(result.transcript);
                     this.speak("Has Dicho " + result.transcript);
                     //filtramos los contactos para ese valor.
-                    container.filter(result.transcript);
+                    container.filterChild(result.transcript);
                 }else{
                     this.speak("No te entiendo, inténtalo otra vez");
                 }
@@ -136,10 +137,11 @@ var Contacts = (function(_super,$,environment){
         });
             
             
-        $searchContacts.on("keyup",function(e){
+        $searchContacts.on("submit",function(e){
+            e.preventDefault();
             var val = this.search.value;
             //filtramos contactos.
-            container.filter(val);
+            container.filterChild(val);
         }).focus();
 
         //mostramos cada contacto.
@@ -231,6 +233,8 @@ var Contacts = (function(_super,$,environment){
             });
             //Actualizamos contacto.
             setStatus(user.id,"connected");
+            //Notificamos nuestro estado al usuario.
+            serviceLocator.notifyStatus(userConnected.id,user.id,userConnected.status);
         });
         
         //Manejador para el evento USER_DISCONNECTED.
@@ -352,7 +356,8 @@ var Contacts = (function(_super,$,environment){
             id:contact.idRepresentado,
             photo:contact.foto,
             name:contact.name,
-            status:contact.status ? contact.status : "disconnected"
+            status:contact.status ? contact.status : "disconnected",
+            town:contact.currentPosition ? contact.currentPosition.detail.address_components[1] : "ubicación no disponible"
         },{});
         
     
@@ -371,6 +376,41 @@ var Contacts = (function(_super,$,environment){
         // acción.
         triggerEvent("CONTACT_DROPED",{id:user.data.idRepresentado});
             
+    }
+
+    //Método utilizado para actualizar la posición de un usuario.
+    var setPosition = function(idUser,position){
+        var contact = self.getContactById(idUser);
+        if(!contact.data.currentPosition || contact.data.currentPosition.timestamp < position.timestamp){
+            contact.data.currentPosition = position;
+            //Mostramos la ubicación actual del usuario.
+            if (contactsView) {
+                contactsView
+                    .getView("container")
+                    .scrollAtChild(idUser)
+                    .setChildValue("town",position.detail.address_components[1]);
+            };
+            
+            //compartimos nuestra ubicación con él
+            self.geoLocation.sharePosition([idUser]);
+        } 
+          
+    }
+
+    //Método utilizado para cambiar el estado de un contacto (Disponible,Desconectado,Ausente,Ocupado).
+    var setStatus = function(idUser,status){
+        //Actualizamos contacto en la lista de contactos.
+        var contact = self.getContactById(idUser);
+        contact.data.status = status;
+        //Actualizamos visualmente su estado.
+        if (contactsView) {
+            contactsView
+                .getView("container")
+                .scrollAtChild(idUser)
+                .setChildValue("status",status);
+        };
+    
+        
     }
 
     //Método para mostrar todos los detalles de un contacto.
@@ -402,32 +442,9 @@ var Contacts = (function(_super,$,environment){
             throw new Error("Contacto no encontrado");
         }
     }
-    //Actualiza la posición de un usuario.
-    var setPosition = function(idUser,position){
-        var contact = self.getContactById(idUser);
-        if(!contact.data.currentPosition || contact.data.currentPosition.timestamp < position.timestamp){
-            contact.data.currentPosition = position;
-            contactsView
-                .getView("container")
-                .scrollAtChild(idUser)
-                .setChildValue("town",position.detail.address_components[1]);
-            //compartimos nuestra ubicación con él
-            self.geoLocation.sharePosition([idUser]);
 
-       } 
-          
-    }
 
-    //Función para cambiar el estado de un contacto (Disponible,Desconectado,Ausente,Ocupado).
-    var setStatus = function(idUser,status){
-        //Actualizamos contacto en la lista de contactos.
-        var contact = self.getContactById(idUser);
-        contact.data.status = status;
-        contactsView
-            .getView("container")
-            .scrollAtChild(idUser)
-            .setChildValue("status",status);  
-    }
+
 
     /*
         Métodos Públicos

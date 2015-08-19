@@ -1219,6 +1219,11 @@ DESC: Distribuidores de contenidos.
   font-weight: bold;
 }
 
+.contact-list .contact .content .info .location{
+  font-size: .9rem;
+  color: #ADFF2F;
+}
+
 .contact-list .contact .content  .sentece,
 .contact-list .contact .content .info .personality{
   font-size: .9rem;
@@ -1859,7 +1864,7 @@ DESC: Distribuidores de contenidos.
 .notification .icon{
   float: right;
   width: 80%;
-  background: #fff url(../resources/img/wallpaper/CanisLupus.jpg) no-repeat  center center;
+  background: #fff no-repeat  center center;
   background-size: 100% 100%;
 }
 
