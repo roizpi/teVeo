@@ -596,6 +596,22 @@ var ServiceLocator = (function(_super,environment){
         });
     }
 
+    ServiceLocator.prototype.getLatestSportsNews = function() {
+        return enqueueRequest({
+            token:self.sessionManager.getToken(),
+            service:"GET_LATEST_SPORTS_NEWS",
+            params:{}
+        });
+    };
+
+    ServiceLocator.prototype.getLatestTechnologyNews = function() {
+        return enqueueRequest({
+            token:self.sessionManager.getToken(),
+            service:"GET_LATEST_TECHNOLOGY_NEWS",
+            params:{}
+        });
+    };
+    
     ServiceLocator.prototype.logout = function(){
         return enqueueRequest({
             token:self.sessionManager.getToken(),

@@ -25,6 +25,22 @@ class ServerSocket extends WebSocketServer {
                 "task_before_send" => "attachUser",
                 "throw_event" => false
             ),
+            "GET_LATEST_SPORTS_NEWS" => array(
+                "controller" => array(
+                    "controller_name" => "newsController",
+                    "action_name" => "getLatestSportsNews"
+                ),
+                "token_required" => true,
+                "throw_event" => false
+            ),
+            "GET_LATEST_TECHNOLOGY_NEWS" => array(
+                "controller" => array(
+                    "controller_name" => "newsController",
+                    "action_name" => "getLatestTechnologyNews"
+                ),
+                "token_required" => true,
+                "throw_event" => false
+            ),
             "NOTIFY_INIT_SESSION" => array(
                 "controller" => array(
                     "controller_name" => "contactosController",
