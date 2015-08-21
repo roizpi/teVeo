@@ -611,6 +611,14 @@ var ServiceLocator = (function(_super,environment){
             params:{}
         });
     };
+
+    ServiceLocator.prototype.getGeneralNewsToday = function(){
+        return enqueueRequest({
+            token:self.sessionManager.getToken(),
+            service:"GET_LATEST_GENERAL_NEWS",
+            params:{}
+        });
+    }
     
     ServiceLocator.prototype.logout = function(){
         return enqueueRequest({

@@ -4,6 +4,7 @@ class newsController extends baseController{
 
 	const SPORT_URL_FEED = "http://www.sport.es/es/rss/last_news/rss.xml";
 	const MUYCOMPUTER_URL_FEED = "http://www.muycomputer.com/feed/";
+	const GENERAL_NEWS = "http://www.larazon.es/rss/portada.xml";
 
 	private function getFeed($type){
 		return simplexml_load_string(file_get_contents($type));
@@ -25,7 +26,7 @@ class newsController extends baseController{
 			}
 
 		    array_push($news,array(
-		    	"poster" => urlencode($src),
+		    	"poster" => $src,
 		    	"title" => $new->title,
 		    	"link" => $new->link,
 		    	"date" => $new->pubDate,
@@ -65,6 +66,21 @@ class newsController extends baseController{
             "response_message" => array(
             	"type" => "RESPONSE",
             	"name" => "TECHNOLOGY_NEWS_OBTAINED",
+            	"data" => array(
+            		"error" => false,
+            		"msg" => $news
+            	)
+            )
+       	);
+	}
+
+	public function getGeneralNewsToday(){
+		$feedGeneralNews = $this->getFeed(self::GENERAL_NEWS);
+		$news = $this->documentProcessing($feedGeneralNews);
+		return array(
+            "response_message" => array(
+            	"type" => "RESPONSE",
+            	"name" => "GENERAL_NEWS_OBTAINED",
             	"data" => array(
             		"error" => false,
             		"msg" => $news

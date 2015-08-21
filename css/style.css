@@ -6031,4 +6031,19 @@ span.css-emoticon.nintendo-controller {
       animation:  animacionFoto 1s 1 linear;
 }
 
+/*Estilos customizados para los tiles*/
+
+.tile .tile-content .tile-label{
+  height: 60px;
+  width: 100%;
+  margin: 0;
+  left: 0;
+  font-size: .9rem;
+  overflow: hidden;
+}
+
+.tile .tile-content .tile-label span[class^='mif-']{
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
 

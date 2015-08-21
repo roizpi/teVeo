@@ -13,14 +13,34 @@
         </div>
     </div>
 
-    <div class="tile-wide bg-orange fg-white" data-role="tile">
+    <div class="tile-wide bg-orange fg-white flex-block flex-liquid-content" data-role="tile">
         <div class="tile-content iconic">
             <span class="icon mif-cloud"></span>
             <span class="tile-label">Cloud service</span>
         </div>
     </div>
 
-    <div class="tile tile-wide fg-darkViolet" data-role="tile" data-effect="slideUp" >
+    <div class="tile tile-wide " data-role="tile" data-effect="slideUp" >
+        
+        <div class="tile-content" data-view='generalNews'>
+        
+            <div class="live-slide" data-view="news" data-type='template'>
+                <div class="image-container image-format-fill">
+                    <div class="frame">
+                        <img src='' data-view='poster' data-type='img'/>
+                    </div>
+                </div>
+                <p class='tile-label fg-white bg-magenta flex-block flex-liquid-content' data-view='title' data-type='text'>
+                    <span class="mif-pencil"></span>
+                    <span data-view='title' data-type='text'></span>
+                </p>
+            </div>
+
+        </div>
+        
+    </div>
+
+    <div class="tile tile-wide " data-role="tile" data-effect="slideUp" >
         
         <div class="tile-content" data-view='sportNews'>
         
@@ -30,7 +50,10 @@
                         <img src='' data-view='poster' data-type='img'/>
                     </div>
                 </div>
-                <p class='tile-label' data-view='title' data-type='text'></p>
+                <p class='tile-label fg-white bg-darkViolet flex-block flex-liquid-content'>
+                    <span class="mif-trophy"></span>
+                    <span data-view='title' data-type='text'></span>
+                </p> 
             </div>
 
         </div>
@@ -48,7 +71,10 @@
                         <img src='' data-view='poster' data-type='img'/>
                     </div>
                 </div>
-                <p class='tile-label' data-view='title' data-type='text'></p>
+                <p class='tile-label fg-white bg-lightOlive flex-block flex-liquid-content'>
+                    <span class="mif-phonelink"></span>
+                    <span data-view='title' data-type='text'></span>
+                </p>
             </div>
 
         </div>
