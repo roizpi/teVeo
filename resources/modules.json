@@ -151,5 +151,24 @@
                 }  
             }
         }
+    },
+    "CONVERSATION":{
+        "name":"conversation",
+        "className":"Conversation",
+        "file":"conversationModule.js",
+        "order":13,
+        "dependences":["WEB_SPEECH","NOTIFICATOR","CONTACTS"],
+        "templates":{
+            "conversations":{
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"conversations.html",
+                    "animations":{
+                        "animationIn":"bounceInLeft",
+                        "animationOut":"bounceOutRight"
+                    }
+                }  
+            }
+        }
     }
 }

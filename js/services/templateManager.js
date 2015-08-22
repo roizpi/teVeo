@@ -115,11 +115,15 @@ var View = (function(_super,$,environment){
 							break;
 						case 'DATA':
 							view.el.attr("data-"+view.name,value);
+						case "CLASS":
+							view.el.addClass(value);
 						default:
 							console.log("Valor no conocido");
 					}
 						
 				};
+
+				view._hydrate(data);
 			}
 
 		}
@@ -362,17 +366,17 @@ var View = (function(_super,$,environment){
 		var template = this.templates && this.templates[name];
 		//Comprobamos si hay una template con ese nombre.
 		if(template){
+			data = data || {};
+			options = options || {};
 			var optionsDefault = {target:this.el};
 			options = $.extend(options,optionsDefault);
 			//Clonamos la template.
 			var $template = template.clone(true).removeClass("template").data("id",name);
 			//Creamos la vista a partir de la template.
 			var view = create($template,data,options);
-			//Notificamos que la vista fue creada.
-			view.onCreate();
 			//Guardamos la vista creada.
 			this.views[view.getId()] = view;
-			view.onBeforeShow();
+			/*view.onBeforeShow();
 			if(this.el.mixItUp && this.el.mixItUp('isLoaded')){
 				if(options.position == "prepend")
 					this.el.mixItUp('prepend',view.get());
@@ -383,7 +387,7 @@ var View = (function(_super,$,environment){
 			}else{
 				this.el.append(view.get());
 				view.onAfterShow();
-			}			            
+			}*/			            
 		}
 	};
 

@@ -89,6 +89,11 @@ var ManagerModule = (function(_super,$,environment){
         });
     };
 
+    ManagerModule.prototype.getModule = function(name) {
+        //comprobar si este módulo esta marcado como dependecia en la actividad y en el módulo
+        return modules[name] && modules[name].instance;
+    };
+
     //Cargador de Módulos
 
     ManagerModule.prototype.getModules = function(names) {
@@ -176,6 +181,8 @@ var ManagerModule = (function(_super,$,environment){
         }
 
     };
+
+
    
     
 	return ManagerModule;

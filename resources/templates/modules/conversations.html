@@ -1,0 +1,50 @@
+<div class="viewContainer" data-view="conversations" data-type='main'>
+    <h2 class="view-tittle">Conversaciones</h2>
+    
+    <div class="chatContainer">
+        <article class="chat">
+            <header class="header contentInline">
+                <!-- Título de la Conversación -->
+                <h2 data-view="title" data-type="text"></h2>
+                <!--Buscador-->
+                <form class="search-form" action="#" method="GET"  data-view="searchFormMessages" autocomplete="off">
+                    <div class="input-group">
+                        <input type="search" class="form-control" placeholder="buscar mensaje" name="query" autocomplete="off">
+                        <span class="input-group-btn">
+                            <button class="submit"><span class="fa fa-search"></span></button>
+                        </span>
+                    </div>
+                </form>
+            </header>
+            <div class="conversations">
+                <ul class="conversation" data-view="conversation" data-type="template">
+                    <li class="message" data-view="message" data-type="template">
+                        <div class="grid">
+                            <div class="row">
+                                <div class="item">
+                                    <img class="authorImg" data-view="photo" data-type="img" src="" alt="">
+                                </div>
+                                <div class="item authorName" data-view="authorName" data-type="text"></div>
+                                <div class="item messageDate" data-view="creation" data-type="text"></div>
+                                <div class="item">
+                                    <span class="fa" data-view="status" data-type="class"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="item authorMsg" data-view="text" data-type="text"></div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <form class="sendMessage" data-action="send-message" action="#" method="post">
+                <div class="textControl">
+                    <input type="text"  name="message" id="message" data-message required autocomplete="off" placeholder="escribe un mensaje"/>
+                    <span data-microphone class="invert fa"></span>
+                    <label for="message"><span class="fa fa-paper-plane"></span></label>
+                </div>
+                <input type="submit" value="Enviar">
+            </form>
+        </article>
+    </div>
+</div>

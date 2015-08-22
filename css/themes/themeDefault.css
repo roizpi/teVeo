@@ -87,6 +87,17 @@
 .contact-list .contact .content .actions .action2:nth-child(odd){
   background-color: #4353FF;
 }
+
+.contact-list .contact .content .actions .action2.active:nth-child(even),
+.contact-list .contact .content .actions .action2:nth-child(even):hover{
+  color: #00aff0;
+  background-color: #fff;
+}
+
+.contact-list .contact .content .actions .action2:nth-child(odd):hover{
+  color: #4353FF;
+  background-color: #fff;
+}
 /*
   Profile Card
   ==============

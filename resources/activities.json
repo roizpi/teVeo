@@ -59,7 +59,8 @@
 			"PREFERENCES",
 			"CONTACTS",
 			"GEO_LOCATION",
-			"METRO"
+			"METRO",
+			"CONVERSATION"
 		],
 		"templates":{
 			"gui":{

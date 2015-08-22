@@ -1,5 +1,7 @@
 var Metro = (function(_super,$,environment){
 
+	__extends(Metro, _super);
+
 	var templating;
 
 	function Metro(){
@@ -8,55 +10,63 @@ var Metro = (function(_super,$,environment){
 	}
 
 	var onCreate = function(view){
-		
+
+		var tiles = {
+			GENERAL_NEWS:{
+				service:"getGeneralNewsToday",
+				colors:"fg-white bg-magenta",
+				icon:"mif-pencil"
+			},
+			SPORT_NEWS:{
+				service:"getLatestSportsNews",
+				colors:"fg-white bg-darkViolet",
+				icon:"mif-trophy"
+			},
+			TECHNOLOGY_NEWS:{
+				service:"getLatestTechnologyNews",
+				colors:"fg-white bg-lightOlive",
+				icon:"mif-phonelink"
+			}
+		}
 		var serviceLocator = environment.getService("SERVICE_LOCATOR");
 		var utils = environment.getService("UTILS");
 
-		var generalNews = serviceLocator.getGeneralNewsToday();
-		var sportNews = serviceLocator.getLatestSportsNews();
-		var technologyNews = serviceLocator.getLatestTechnologyNews();
+		for (var tile in tiles) 
 
-		$.when(generalNews,sportNews,technologyNews).done(function(generalNews,sportNews,technologyNews){
+			(function(tile){
 
-			var containerGeneralNews = view.getView("generalNews");
-			for(var i = 0; i < 2; i++){
-				var poster = utils.utf8_decode(generalNews[i].poster);
-				containerGeneralNews.createView("news",{
-					poster:poster,
-					title:generalNews[i].title[0]
+				//llamamos al servicio para obtener las noticias.
+				serviceLocator[tile.service]().done(function(news){
+
+					view.createView("tileNews",{
+						name:tile
+					},{
+					
+						handlers:{
+							onCreate:function(view){
+								var tileContent = view.getView("tileContent");
+								for(var j = 0; j < 2; j++){
+									var title = news[j].title[0];
+									var poster = utils.utf8_decode(news[j].poster);
+									tileContent.createView("news",{
+										background:tile.colors,
+										poster:poster,
+										icon:tile.icon,
+										title:title
+									});
+								}
+							}
+						},
+						animations:{
+							animationIn:"zoomInUp",
+							animationOut:"zoomOutDown"
+						}
+
+					}); 
 				});
-			}
 
-			var containerSportNews = view.getView("sportNews");
-			for(var i = 0; i < 2; i++){
-				var poster = utils.utf8_decode(sportNews[i].poster);
-				containerSportNews.createView("news",{
-					poster:poster,
-					title:sportNews[i].title[0]
-				});
-			}
+			})(tiles[tile]);
 
-			var containerTechNews = view.getView("techNews");
-			for(var i = 0; i < 2; i++){
-				var poster = utils.utf8_decode(technologyNews[i].poster);
-				containerTechNews.createView("news",{
-					poster:poster,
-					title:technologyNews[i].title[0]
-				});
-			}
-			
-
-			$(".tile").filter(function(idx,tile){
-				return $(".tile-content",tile).children(".live-slide").length >= 2;
-			}).each(function(idx,tile){
-				setTimeout(function(){
-					$(".tile-content .live-slide:first",tile).remove();
-				},5000);
-			})
-			
-
-		});
-		
 	}
 
 	var onBeforeShow = function(){

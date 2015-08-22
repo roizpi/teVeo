@@ -1,4 +1,6 @@
-<div class="container" data-view="metro" data-type='main'>
+<div class="viewContainer" data-view="metro" data-type='main'>
+    <h2 class="view-tittle">Inicio</h2>
+    
 	<div class="tile bg-red fg-white" data-role="tile">
         <div class="tile-content iconic">
             <span class="icon mif-cogs"></span>
@@ -20,59 +22,18 @@
         </div>
     </div>
 
-    <div class="tile tile-wide " data-role="tile" data-effect="slideUp" >
+    <div class="tile tile-wide animateView" data-view="tileNews" data-type='template' data-role="tile" data-effect="slideUp" data-period="20000">
         
-        <div class="tile-content" data-view='generalNews'>
+        <div class="tile-content" data-view='tileContent'>
         
-            <div class="live-slide" data-view="news" data-type='template'>
+            <div class="live-slide" data-view="news" data-type='template' data-animationin="bounceInDown" data-animationout="fadeOutRight">
                 <div class="image-container image-format-fill">
                     <div class="frame">
                         <img src='' data-view='poster' data-type='img'/>
                     </div>
                 </div>
-                <p class='tile-label fg-white bg-magenta flex-block flex-liquid-content' data-view='title' data-type='text'>
-                    <span class="mif-pencil"></span>
-                    <span data-view='title' data-type='text'></span>
-                </p>
-            </div>
-
-        </div>
-        
-    </div>
-
-    <div class="tile tile-wide " data-role="tile" data-effect="slideUp" >
-        
-        <div class="tile-content" data-view='sportNews'>
-        
-            <div class="live-slide" data-view="news" data-type='template'>
-                <div class="image-container image-format-fill">
-                    <div class="frame">
-                        <img src='' data-view='poster' data-type='img'/>
-                    </div>
-                </div>
-                <p class='tile-label fg-white bg-darkViolet flex-block flex-liquid-content'>
-                    <span class="mif-trophy"></span>
-                    <span data-view='title' data-type='text'></span>
-                </p> 
-            </div>
-
-        </div>
-        
-    </div>
-
-
-    <div class="tile tile-wide fg-darkViolet" data-role="tile" data-effect="slideUp" >
-        
-        <div class="tile-content" data-view='techNews'>
-        
-            <div class="live-slide" data-view="news" data-type='template'>
-                <div class="image-container image-format-fill">
-                    <div class="frame">
-                        <img src='' data-view='poster' data-type='img'/>
-                    </div>
-                </div>
-                <p class='tile-label fg-white bg-lightOlive flex-block flex-liquid-content'>
-                    <span class="mif-phonelink"></span>
+                <p class='tile-label flex-block flex-liquid-content' data-view='background' data-type='class'>
+                    <span data-view='icon' data-type='class'></span>
                     <span data-view='title' data-type='text'></span>
                 </p>
             </div>

@@ -288,7 +288,7 @@ figure.inline > *{
 
 .logo{
   text-align: center;
-  font-size: 8em !important;
+  /*font-size: 8em !important;*/
   color: #fff;
 }
 
@@ -1221,7 +1221,6 @@ DESC: Distribuidores de contenidos.
 
 .contact-list .contact .content .info .location{
   font-size: .9rem;
-  color: #ADFF2F;
 }
 
 .contact-list .contact .content  .sentece,
@@ -1236,6 +1235,8 @@ DESC: Distribuidores de contenidos.
   padding-top: 5px;
   color: #fff;
   text-align: center;
+  -webkit-transition:all .5s;
+  transition:all .5s;
 }
 
 
@@ -2177,6 +2178,7 @@ DESC: Distribuidores de contenidos.
 
 .sidenav{
   width: 40%;
+  min-width: 350px;
   max-width: 600px;
   position: relative;
   will-change: transform;/*Hacking overflow hidden*/
@@ -6044,6 +6046,6 @@ span.css-emoticon.nintendo-controller {
 
 .tile .tile-content .tile-label span[class^='mif-']{
   font-size: 1.5rem;
-  margin-right: 1rem;
+  margin:0 1rem;
 }
 

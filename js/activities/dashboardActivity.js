@@ -267,7 +267,7 @@ var DashboardActivity = (function(environment,$){
             });
         });
         //Iniciamos el configurador de wallpapers.
-        //startWallpaperConfigurator();
+        startWallpaperConfigurator();
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();

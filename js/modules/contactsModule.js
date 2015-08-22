@@ -8,6 +8,7 @@ var Contacts = (function(_super,$,environment){
     var user;
     var contactsView;
     var userConnected;
+    var managerModule;
 
     function Contacts(webSpeech,notificator,geoLocation){
 
@@ -18,7 +19,7 @@ var Contacts = (function(_super,$,environment){
         this.geoLocation = geoLocation;
 
         userConnected = environment.getService("SESSION_MANAGER").getUser();
-
+        managerModule = environment.getService("MANAGER_MODULE");
         //Reporting the module events .
         this.events = {
             "CONTACTS_AVALIABLE":[],
@@ -53,7 +54,7 @@ var Contacts = (function(_super,$,environment){
                     switch(action){
                         case 'conversation':
                             //iniciamos conversación
-                            conversationModule.startConversation(idUser);
+                            managerModule.getModule("CONVERSATION").startConversation(idUser);
                             break;
                         case 'videocall':
                             //iniciamos videollamada
@@ -74,7 +75,7 @@ var Contacts = (function(_super,$,environment){
                     $this.addClass("active");
                     
                 }catch(e){
-
+                    console.log(e);
                     //Mostramos alerta con la excepción.
                     self.notificator.dialog.alert({
                         title:e.getTitle(),
@@ -355,7 +356,7 @@ var Contacts = (function(_super,$,environment){
         contactsView && contactsView.getView("container").createView("contact",{
             id:contact.idRepresentado,
             photo:contact.foto,
-            name:contact.name,
+            contactName:contact.name,
             status:contact.status ? contact.status : "disconnected",
             town:contact.currentPosition ? contact.currentPosition.detail.address_components[1] : "ubicación no disponible"
         },{});
