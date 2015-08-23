@@ -7,6 +7,10 @@ var Conversation = (function(_super,$,environment){
     //Mensajes pendientes.
     var pendingMessages = [];
     var templating;
+    var serviceLocator;
+    var viewConversations;
+    var userConnected;
+    var utils;
 
     function Conversation(webSpeech,notificator,contacts){
 
@@ -16,6 +20,9 @@ var Conversation = (function(_super,$,environment){
         this.notificator = notificator;
         this.contacts = contacts;
         templating = environment.getService("TEMPLATE_MANAGER");
+        serviceLocator = environment.getService("SERVICE_LOCATOR");
+        utils = environment.getService("UTILS");
+        userConnected = environment.getService("SESSION_MANAGER").getUser();
         //Reporting the module events.
         this.events = {
             "ANY_CONVERSATION_FOUND":[],
@@ -30,14 +37,148 @@ var Conversation = (function(_super,$,environment){
     }
 
     var onCreateViewConversations = function(view){
-
+        viewConversations = view;
 
     }
 
 
     var attachHandlers = function(){
 
-        var serviceLocator = environment.getService("SERVICE_LOCATOR");
+        
+
+    }
+
+    //Función para insertar mensajes en el DOM.
+    var showMessage = function(message){
+
+        //Obtenemos una referencia al contenedor de conversaciones.
+        var container = viewConversations.getView("conversationContainer");
+        
+        var convView = container.getView(message.idConv);
+        if(convView){
+
+            var status = "fa-eye-slash";
+            if(message.status == "LEIDO" || (message.status == "NOLEIDO"  && message.userId != userConnected.id)){
+                status = "fa-eye";
+            }
+
+            var photo;
+            if (message.userId == userConnected.id) {
+                photo = userConnected.foto;
+            }else{
+                photo = self.contacts.getContactPhoto(message.userId);
+            }
+
+            convView.createView("message",{
+                id:message.id,
+                photo:photo,
+                authorName:utils.urldecode(message.userName),
+                creation:message.creacion,
+                status:status,
+                text:utils.utf8_encode(message.text)
+            },{
+                handlers:{
+                    onCreate:function(view){
+                        if(message.userId == userConnected.id){
+                            view.get().addClass("emisor");
+                        }else{
+                            view.get().addClass("receptor");
+                        }
+                    }
+                }
+            });
+
+        }
+
+    }
+
+    //Método para la creación de conversaciones
+    var createConversation = function(name,idUser,callbackSuccess,callbackError){
+        //Creamos una conversación con ese nombre.
+        serviceLocator
+        .createConversation(userConnected.id,idUser,name)
+        .done(function(conversation){
+            
+        })
+        .fail();
+           
+    }
+
+    var initConversationList = function(conversations){
+
+    }
+
+    var initConversation = function(conversation){
+        //Obtenemos una referencia al contenedor de conversaciones.
+        var container = viewConversations.getView("conversationContainer");
+        //Intentamos mostrar la conversación
+        container.hideAllChild(false).showChild(conversation.id,function(){
+            console.log("Conversación Mostrada");
+        },function(){
+            //Creamos la vista para esta conversación.
+            container.createView("conversation",{
+                id:conversation.id
+            },{
+                handlers:{
+                    onAfterShow:function(view){
+                        //Obtenemos los mensajes para esta conversación.
+                        serviceLocator
+                        .getMessages(conversation.id)
+                        .done(function(messages){
+                            //Mostramos cada mensaje.
+                            messages.forEach(function(message){
+                                showMessage(message);
+                            });
+
+                            container.scrollAt(view.getHeight());    
+                        })
+                        .fail();
+                    }
+                }
+            });
+            
+
+        });
+
+    }
+
+
+    //Inicia la conversación especificada.
+    var createEnvironmentFor = function(idUser,idConv){
+       
+        //Obtenemos todas las conversaciones entre estos usuarios.
+        return serviceLocator
+        .getConversations(userConnected.id,idUser)
+        .done(function(conversations){
+            if(conversations.length){
+                //Obtenemos la conversación a iniciar
+                if(idConv){
+                    var idx = conversations.map(function(conversation){
+                        return conversation.id;
+                    }).indexOf(idConv);
+                            
+                    if(idx != -1)
+                        var conversation = conversations[idx];
+                    else
+                        //No existe conversación con ese id.
+                        var conversation =  conversations[0];
+                }else{
+                    //Iniciamos por defecto la primera conversación(la más reciente)
+                    var conversation = conversations[0];
+                }
+
+                initConversation(conversation);
+            }
+                
+        });
+            
+    }
+
+    //Método para la restauración de un entorno.
+    var restoreEnviroment = function(idUser,idConv,callback){
+
+        //viewConversations
+        
 
     }
 
@@ -51,7 +192,6 @@ var Conversation = (function(_super,$,environment){
 
     //Inicia una conversación con un usuario cuyo id es idUser.
     Conversation.prototype.startConversation = function(idUser,idConv){
-
         templating.loadTemplate({
             name:"conversations",
             category:"MODULE_VIEWS",
@@ -61,9 +201,11 @@ var Conversation = (function(_super,$,environment){
 
         }).done(function(view){
 
-            console.log("La vista se cargó");
-            console.log(view);
+           createEnvironmentFor(idUser,idConv).done(function(){
 
+           }).fail(function(){
+
+           });
 
         });
     }

@@ -2178,7 +2178,6 @@ DESC: Distribuidores de contenidos.
 
 .sidenav{
   width: 40%;
-  min-width: 350px;
   max-width: 600px;
   position: relative;
   will-change: transform;/*Hacking overflow hidden*/
@@ -3266,7 +3265,7 @@ table.resume tr th{
     position: relative;
 }
 
-.chat .conversations .messages{
+.chat .conversations .conversation{
     -webkit-box-sizing:border-box;
         -moz-box-sizing:border-box;
             box-sizing: border-box;
@@ -3274,28 +3273,28 @@ table.resume tr th{
     min-height: 100%;
 }
 
-.chat .conversations .messages .message{
+.chat .conversations .conversation .message{
     min-height: 60px;
     margin: 15px 5px;
     color: #fff;
     padding: 4px;
 }
 
-.chat .conversations .messages .message .authorImg{
+.chat .conversations .conversation .message .authorImg{
     width: 60px;
     height: 60px;
     border:2px solid #fff;
 }
 
-.chat .conversations .messages .message .authorName{
+.chat .conversations .conversation .message .authorName{
     font-weight: 700;
 }
 
-.chat .conversations .messages .message .messageDate{
+.chat .conversations .conversation .message .messageDate{
     font-size: .7em;
 }
 
-.chat .conversations .messages .message .authorMsg{
+.chat .conversations .conversation .message .authorMsg{
     max-width:400px;
     margin: 0 auto;
     word-wrap: break-word;

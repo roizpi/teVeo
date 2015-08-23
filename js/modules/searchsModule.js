@@ -32,7 +32,7 @@ var Searchs = (function(_super,$,environment){
     //Método para destacar texto.
     var highlightText = function(filter){
         var $users = searchUserView.getView("users_found").get();
-        var regExp = new RegExp("(" + filter.value + ")","i");
+        var regExp = new RegExp("(" + filter.value + ")","ig");
         //Marcamos el texto coincidente.
         $("[data-"+filter.field.toLowerCase()+"]",$users).each(function(idx,text){
             $text = $(text);
@@ -45,7 +45,7 @@ var Searchs = (function(_super,$,environment){
         var self = this;
         
         //Obtenemos una referencia al contenedor de usuarios.
-        var $users = searchUserView.getView("users_found").get();
+        var usersFound = searchUserView.getView("users_found");
     
         if (config.type.toUpperCase() === "FILTER") {
 
@@ -62,19 +62,25 @@ var Searchs = (function(_super,$,environment){
             //Creamos la expresión regular especificando el valor como una captura.
             var regExp = new RegExp("(" + this.filterValue + ")","i");
             //Recorremos los usuarios actuales en el DOM si existen.
-            $users.children().length && $users.children().each(function(idx,user){
-                var $user = $(user);
-                if ($user.find("[data-"+self.filterField.toLowerCase()+"]").text().match(regExp)) {
-                    //Guardamos el identificador del usuario en la lista de exclusiones.
-                    self.exclusions.push($user.data("id"));
+            usersFound.hideChildsByFilter(true,function(user){
+                console.log("HOLA");
+                console.log(user);
+                if (user.get().find("[data-"+self.filterField.toLowerCase()+"]").text().match(regExp)) {
+                    self.exclusions.push(user.get().data("id"));
+                    return false; 
                 }else{
-                    $user.remove();
+                    return true;
                 }
             });
 
-            if ($users.children().length < MIN_RESULT_SHOWN) {
+            console.log("SIZE");
+            console.log(usersFound.size());
+            console.log("EXCLUSIONES");
+            console.log(self.exclusions);
+
+            if (usersFound.size() < MIN_RESULT_SHOWN) {
                 //Obtenemos la diferencia.
-                var diff = MIN_RESULT_SHOWN - $users.children().length;
+                var diff = MIN_RESULT_SHOWN - usersFound.size();
             
                 serviceLocator.searchUsers({
                     value:self.filterValue,
@@ -85,11 +91,12 @@ var Searchs = (function(_super,$,environment){
                 }).done(function(users){
                     
                     if(users && users.length){
+                        console.log("Voy a mostrar a los usuarios");
                         //Mostramos usuarios.
                         users.forEach(showUser);
                     }else{
                         //Ningún resultado encontrado.
-                        !$users.children().length && typeof(config.callbacks.onNoDataFound) == "function" && config.callbacks.onNoDataFound();
+                        !usersFound.size() && typeof(config.callbacks.onNoDataFound) == "function" && config.callbacks.onNoDataFound();
                     }
 
                     //Destacamos parte coincidente.
@@ -100,7 +107,7 @@ var Searchs = (function(_super,$,environment){
 
         }else if(config.type.toUpperCase() === "APPEND"){
             //Tipo de Carga "APPEND", se añadirán STEPTS usuarios al conjunto actual.
-            var start = $users.children().length - self.exclusions.length;
+            var start = usersFound.size() - self.exclusions.length;
             //Utilizamos el servicio "searchUsers" para obtener más resultados.
             serviceLocator.searchUsers({
                 value:self.filterValue,
@@ -184,7 +191,7 @@ var Searchs = (function(_super,$,environment){
         $searchForm.on("submit",function(e){
             e.stopPropagation();
             e.preventDefault();
-
+            console.log("Inciándo búsqueda");
             //recogemos valor del campo de búsqueda
             currentValue = this.search.value.toLowerCase().trim().replace(/\s+/,"i");
             //Cargamos los resultados.
@@ -413,7 +420,12 @@ var Searchs = (function(_super,$,environment){
             avatar:user.foto,
             name:user.name,
             location:user.ubicacion
-        },{})
+        },{
+            animations:{
+                animationIn:"zoomIn",
+                animationOut:"zoomOut"
+            }
+        })
     }
 
     //Oculta un usuario sugerido.

@@ -7,7 +7,14 @@ class newsController extends baseController{
 	const GENERAL_NEWS = "http://www.larazon.es/rss/portada.xml";
 
 	private function getFeed($type){
-		return simplexml_load_string(file_get_contents($type));
+		
+		if(gethostbyname($type)){
+			return simplexml_load_string(file_get_contents($type));
+		}else{
+			echo "No existe";
+		}
+		
+		
 	}
 
 	private function documentProcessing($feed){
@@ -41,20 +48,26 @@ class newsController extends baseController{
 
 		
 		//cargamos el feed rss
-		$feedSport = $this->getFeed(self::SPORT_URL_FEED);
+		try {
+			$feedSport = $this->getFeed(self::SPORT_URL_FEED);
+			$news = $this->documentProcessing($feedSport);
 
-		$news = $this->documentProcessing($feedSport);
+			return array(
+	            "response_message" => array(
+	            	"type" => "RESPONSE",
+	            	"name" => "SPORTS_NEWS_OBTAINED",
+	            	"data" => array(
+	            		"error" => false,
+	            		"msg" => $news
+	            	)
+	            )
+	       	);
+		} catch (Exception $e) {
+			echo "Excepción producida";
+		}
+		
 
-		return array(
-            "response_message" => array(
-            	"type" => "RESPONSE",
-            	"name" => "SPORTS_NEWS_OBTAINED",
-            	"data" => array(
-            		"error" => false,
-            		"msg" => $news
-            	)
-            )
-       	);
+		
 	}
 
 

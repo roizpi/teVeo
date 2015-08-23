@@ -32,12 +32,9 @@ class userController extends baseController{
 
             //Validamos el Limit
             if (is_int($limit->start) && is_int($limit->count)) {
-                echo "El parámetro limit es válido";
                $query .= " LIMIT {$limit->start},{$limit->count}";
             }
-            
-            
-            
+
             $sql = $this->conn->prepare($query);
             //Ejecutamos la sentencia.
             $sql->execute(array("idUser"=> $idUser,"value" => "%$value%")); 

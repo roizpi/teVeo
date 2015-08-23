@@ -71,9 +71,6 @@ var Contacts = (function(_super,$,environment){
                                 
                     }
                     
-                    $("[data-actionsMenu]").find("[data-action].active").removeClass("active");
-                    $this.addClass("active");
-                    
                 }catch(e){
                     console.log(e);
                     //Mostramos alerta con la excepción.
@@ -451,6 +448,11 @@ var Contacts = (function(_super,$,environment){
         Métodos Públicos
         ***********************
     */
+
+    Contacts.prototype.getContactPhoto = function(idUser) {
+        var contact = this.getContactById(idUser);
+        return contact.data.foto;
+    };
 
     //Función para obtener la información del Contacto a partir de su de id.
     Contacts.prototype.getContactById = function(idUser) {

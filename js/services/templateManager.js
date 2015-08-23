@@ -162,6 +162,10 @@ var View = (function(_super,$,environment){
 		return this.name;
 	};
 
+	View.prototype.getHeight = function() {
+		return this.el.height();
+	};
+
 	View.prototype.getId = function() {
 		return this.id;
 	};
@@ -169,12 +173,18 @@ var View = (function(_super,$,environment){
 	View.prototype.getViews = function() {
 		return this.views;
 	};
+
+	View.prototype.size = function() {
+		return Object.keys(this.views).length;
+	};
 	//Oculta y opcionalmente elimina un elemento.
 	View.prototype.hide = function(remove,callback) {
 
 		if (this.isVisible()) {
 			this.onBeforeHide();
 			if(this.animations && this.animations.animationOut){
+				console.log("Ocultando la vista");
+				console.log(this);
 				var animation = this.animations.animationOut;
 				this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
 					var $this = $(this);
@@ -218,7 +228,8 @@ var View = (function(_super,$,environment){
 	};
 	//Coloca el scroll la vista al final.
 	View.prototype.scrollToLast = function() {
-		this.el.scrollTop(el.children(":last").offset().top);
+		var pos = this.el.children().height();
+		this.el.scrollTop(pos);
 	};
 
 	View.prototype.scrollAt = function(pos) {
@@ -317,11 +328,29 @@ var View = (function(_super,$,environment){
 	};
 
 	View.prototype.hideAllChild = function(remove) {
-		// body...
+		for(var view in this.views){
+			this.views[view].hide(remove);
+		};
+		return this;
 	};
 
-	View.prototype.showChild = function(id) {
-		// body...
+	View.prototype.hideChildsByFilter = function(remove,filter) {
+		if (this.views) {
+			if (typeof(filter) == "function") {
+				for(var view in this.views){
+					filter(this.views[view]) && this.hideChild(view,remove);
+				}
+			};
+		};
+	};
+
+	View.prototype.showChild = function(id,callbackSuccess,callbackFailed) {
+		var view = this.views && this.views[id];
+		if(view){
+			view.show(callbackSuccess);
+		}else{
+			typeof(callbackFailed) == "function" && callbackFailed();
+		}
 	};
 
 	View.prototype.showAllChild = function() {
@@ -523,10 +552,16 @@ var TemplateManager = (function(_super,$,environment){
 
 		}else{
 			var view = views[fqn];
-			//mostramos la vista.
-			showView(view,function(){
+
+			if(!view.isVisible()){
+				//mostramos la vista.
+				showView(view,function(){
+					deferred.resolve(view);
+				});
+			}else{
 				deferred.resolve(view);
-			});
+			}
+			
 		}
 
 		return deferred.promise();

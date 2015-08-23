@@ -50,7 +50,11 @@ var DashboardActivity = (function(environment,$){
             else if(document[visibilityState] == "visible")
                 document.title = "TeVeo!";
                 
-        });
+        });/*.delegate("[data-action]","click",function(e){
+            $("[data-action]").removeClass("active");
+            $(this).addClass("active");
+        });*/
+
 
         var $el = $("[data-notifications]","#tasks");
         //Implementamos manejador para el evento "NOTIFICATION_ELIMINATED".
@@ -267,7 +271,7 @@ var DashboardActivity = (function(environment,$){
             });
         });
         //Iniciamos el configurador de wallpapers.
-        startWallpaperConfigurator();
+        //startWallpaperConfigurator();
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();
