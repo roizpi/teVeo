@@ -16,23 +16,21 @@
                     </div>
                 </form>
             </header>
-            <div class="conversations" data-view="conversationContainer">
+            <div class="conversation-wrapper" data-view="conversationContainer">
                 <ul class="conversation animateView" data-view="conversation" data-type="template" data-animationin="slideInLeft" data-animationout="slideOutLeft">
-                    <li class="message animateView" data-view="message" data-type="template" data-animationin="slideInLeft" data-animationout="slideOutLeft">
-                        <div class="grid">
-                            <div class="row">
-                                <div class="item">
-                                    <img class="authorImg" data-view="photo" data-type="img" src="" alt="">
-                                </div>
-                                <div class="item authorName" data-view="authorName" data-type="text"></div>
-                                <div class="item messageDate" data-view="creation" data-type="text"></div>
-                                <div class="item">
-                                    <span class="fa" data-view="status" data-type="class"></span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="item authorMsg" data-view="text" data-type="text"></div>
-                            </div>
+                    <li class="message-wrapper animateView" data-view="message" data-type="template" data-animationin="slideInLeft" data-animationout="slideOutLeft">
+                        <div class="circle-wrapper">
+                            <img class="cover" data-view="photo" data-type="img" src="" alt="">
+                        </div>
+                        <div class="text-wrapper">
+                            <header class="flex-block">
+                                <span class="authorName" data-view="authorName" data-type="text"></span>
+                                <span class="fa" data-view="status" data-type="class"></span>
+                            </header>
+                            <p class="text" data-view="text" data-type="text"></p>
+                            <footer>
+                                <span class="messageDate" data-view="creation" data-type="text"></span>
+                            </footer>   
                         </div>
                     </li>
                 </ul>

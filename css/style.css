@@ -540,6 +540,12 @@ DESC: Distribuidores de contenidos.
     ============================
 */
 
+
+.cover{
+  height: 100%;
+  width: 100%;
+}
+
 /*Tamaños*/
 
 .verySmall{
@@ -1239,9 +1245,6 @@ DESC: Distribuidores de contenidos.
   transition:all .5s;
 }
 
-
-
-
 /*
 
   NOMBRE:Info List
@@ -1802,6 +1805,164 @@ DESC: Distribuidores de contenidos.
     width: 100%;
     height: 100%;
 }
+
+/* 
+
+  Conversation
+  ==================
+
+  DESC: Estilos para las conversaciones;
+
+*/
+
+.conversation-wrapper{
+  height: calc(100% - 120px);
+  overflow: auto;
+  position: relative;
+}
+
+.conversation-wrapper .conversation{
+  padding:2rem;
+  min-height: 100%;
+  margin-bottom: 32px;
+}
+
+.conversation-wrapper .conversation .message-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin: 2.5rem 0;
+  padding: 1rem 0;
+}
+
+.conversation-wrapper .conversation .message-wrapper .circle-wrapper {
+  height: 60px;
+  width: 60px;
+  overflow: hidden;
+  border-radius: 50%;
+  border:2px solid transparent;
+}
+
+.conversation-wrapper .conversation .message-wrapper.emisor .circle-wrapper{
+  border-color:  #00AFF0;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .circle-wrapper{
+  border-color: #4353FF;
+}
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper {
+  min-height: 40px;
+  width: 60%;
+  margin: 0 10.66667px;
+  box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
+  font-weight: 300;
+  position: relative;
+  color: #fff;
+  /* word-break: break-all; */
+}
+
+.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper{
+  border-radius: 0 50px 10px 50px;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper{
+  border-radius: 50px 0px 50px 10px;
+}
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper header{
+  padding:.5rem 1.2rem;
+  font-size: .9rem;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper header{
+  flex-direction:row-reverse;
+}
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper .text{
+  margin: 0;
+  padding: 1.2rem;
+  font-size: 1.2rem;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper .text::first-letter{
+  text-transform: uppercase;
+  font-size: 1.5rem;
+}
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper footer{
+  font-size: .8rem;
+  font-style: italic;
+}
+
+.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper footer{
+  text-align: right;
+  padding-right: .25rem;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper footer{
+  text-align: left;
+  padding-left: .25rem;
+}
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-style: solid;
+  position: absolute;
+  top: 0;
+}
+
+
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper .data{
+  font-size: .9rem;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .circle-wrapper, 
+.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper {
+  background: #4353FF;
+  float: right;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper::before {
+  border-width: 10px 10px 0 0;
+  border-color: #4353FF transparent transparent transparent;
+  right: -9px;
+}
+
+.conversation-wrapper .conversation .message-wrapper.emisor .circle-wrapper, 
+.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper {
+  background: #00AFF0;
+  float: left;
+}
+
+.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper::before {
+  border-width: 0 10px 10px 0;
+  border-color: transparent #00AFF0 transparent transparent;
+  left:-9px;
+}
+
+
+/*.chat .conversations .conversation .message .authorName{
+    font-weight: 700;
+}
+
+.chat .conversations .conversation .message .messageDate{
+    font-size: .7em;
+}
+
+.chat .conversations .conversation .message .authorMsg{
+    max-width:400px;
+    margin: 0 auto;
+    word-wrap: break-word;
+    hyphens:auto;
+    padding-top: 12px;
+    text-align: center;
+}*/
 
 
 /*
@@ -3259,49 +3420,7 @@ table.resume tr th{
         transform:scale(1.1);
 }
 
-.chat .conversations{
-    height: calc(100% - 120px);
-    overflow: auto;
-    position: relative;
-}
 
-.chat .conversations .conversation{
-    -webkit-box-sizing:border-box;
-        -moz-box-sizing:border-box;
-            box-sizing: border-box;
-    padding: 1px 0;
-    min-height: 100%;
-}
-
-.chat .conversations .conversation .message{
-    min-height: 60px;
-    margin: 15px 5px;
-    color: #fff;
-    padding: 4px;
-}
-
-.chat .conversations .conversation .message .authorImg{
-    width: 60px;
-    height: 60px;
-    border:2px solid #fff;
-}
-
-.chat .conversations .conversation .message .authorName{
-    font-weight: 700;
-}
-
-.chat .conversations .conversation .message .messageDate{
-    font-size: .7em;
-}
-
-.chat .conversations .conversation .message .authorMsg{
-    max-width:400px;
-    margin: 0 auto;
-    word-wrap: break-word;
-    hyphens:auto;
-    padding-top: 12px;
-    text-align: center;
-}
 
 .chat .sendMessage{
     margin-top:1%;
