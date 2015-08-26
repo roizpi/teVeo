@@ -48,12 +48,39 @@ var Conversation = (function(_super,$,environment){
 
     }
 
+    //Función para crear la vista de cada uno de los item de conversación
+    var showItemConversation = function(conversation){
+        //Obtenemos una referencia al contenedor del listado de conversaciones.
+        var container = viewConversations.getView("conversationListContainer");
+        var key = conversation.userOne.id == userConnected.id ? conversation.userTwo.id : conversation.userOne.id;
+        var convListView = container.getView("user"+key);
+        if(convListView){
+            var enviados = 0,recibidos = 0;
+            //Si trae información sobre el número de mensajes enviado por cada usuario
+            // lo recojemos, sino los consideramos como 0.
+            if(conversation.userOne && conversation.userTwo){
+                enviados = conversation.userOne.id == userConnected.id ? conversation.userOne.mensajes : conversation.userTwo.mensajes;
+                recibidos = conversation.userOne.id == userConnected.id ? conversation.userTwo.mensajes : conversation.userOne.mensajes;
+            }
+
+            convListView.createView("conversationItem",{
+                convName:conversation.name,
+                creation:conversation.creacion,
+                countmsg:conversation.mensajes,
+                countmensajesenviados:enviados,
+                countmensajesrecibidos:recibidos
+            });
+
+        }
+            
+
+    }
+
     //Función para insertar mensajes en el DOM.
     var showMessage = function(message){
 
         //Obtenemos una referencia al contenedor de conversaciones.
         var container = viewConversations.getView("conversationContainer");
-        
         var convView = container.getView(message.idConv);
         if(convView){
 
@@ -62,11 +89,15 @@ var Conversation = (function(_super,$,environment){
                 status = "fa-eye";
             }
 
-            var photo;
+            var photo,animationin,animationout;
             if (message.userId == userConnected.id) {
                 photo = userConnected.foto;
+                animationin = "slideInLeft";
+                animationout = "slideOutLeft";
             }else{
                 photo = self.contacts.getContactPhoto(message.userId);
+                animationin = "slideInRight";
+                animationout = "slideOutRight";
             }
 
             convView.createView("message",{
@@ -85,6 +116,10 @@ var Conversation = (function(_super,$,environment){
                             view.get().addClass("receptor");
                         }
                     }
+                },
+                animations:{
+                    animationIn:animationin,
+                    animationOut:animationout
                 }
             });
 
@@ -104,8 +139,25 @@ var Conversation = (function(_super,$,environment){
            
     }
 
-    var initConversationList = function(conversations){
-
+    var initConversationList = function(data){
+        //Obtenemos una referencia al contenedor de conversaciones.
+        var container = viewConversations.getView("conversationListContainer");
+        //Intentamos mostrar la conversación
+        container.hideAllChild(false).showChild("user"+data.idUser,function(){
+            console.log("Lista de conversacines mostradas");
+        },function(){
+            //Creamos un vista para mostrar el listado de conversaciones.
+            container.createView("conversationList",{
+                id:"user"+data.idUser
+            },{
+                handlers:{
+                    onAfterShow:function(view){
+                        data.conversations && data.conversations.forEach(showItemConversation);
+                    }
+                }
+            });
+        });
+        
     }
 
     var initConversation = function(conversation){
@@ -166,6 +218,11 @@ var Conversation = (function(_super,$,environment){
                     //Iniciamos por defecto la primera conversación(la más reciente)
                     var conversation = conversations[0];
                 }
+
+                initConversationList({
+                    idUser:idUser,
+                    conversations:conversations
+                });
 
                 initConversation(conversation);
             }

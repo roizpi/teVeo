@@ -1,24 +1,24 @@
 <div class="viewContainer" data-view="conversations" data-type='main'>
     <h2 class="view-tittle">Conversaciones</h2>
     
-    <div class="chatContainer">
-        <article class="chat">
-            <header class="header contentInline">
+    <div class="view-content flex-block flex-block-full flex-liquid-content">
+        <article class="flex-block flex-block-y-full flex-direction-column flex-liquid-content">
+            <header class="flex-block">
                 <!-- Título de la Conversación -->
                 <h2 data-view="title" data-type="text"></h2>
                 <!--Buscador-->
-                <form class="search-form" action="#" method="GET"  data-view="searchFormMessages" autocomplete="off">
+                <form class="search-form-type2" action="#" method="GET"  data-view="searchFormMessages" autocomplete="off">
                     <div class="input-group">
                         <input type="search" class="form-control" placeholder="buscar mensaje" name="query" autocomplete="off">
                         <span class="input-group-btn">
                             <button class="submit"><span class="fa fa-search"></span></button>
                         </span>
                     </div>
-                </form>
+                </form> 
             </header>
             <div class="conversation-wrapper" data-view="conversationContainer">
-                <ul class="conversation animateView" data-view="conversation" data-type="template" data-animationin="slideInLeft" data-animationout="slideOutLeft">
-                    <li class="message-wrapper animateView" data-view="message" data-type="template" data-animationin="slideInLeft" data-animationout="slideOutLeft">
+                <ul class="conversation animateView" data-view="conversation" data-type="template" data-animationin="zoomInUp" data-animationout="zoomOutDown">
+                    <li class="message-wrapper animateView" data-view="message" data-type="template" >
                         <div class="circle-wrapper">
                             <img class="cover" data-view="photo" data-type="img" src="" alt="">
                         </div>
@@ -35,14 +35,57 @@
                     </li>
                 </ul>
             </div>
-            <form class="sendMessage" data-action="send-message" action="#" method="post">
-                <div class="textControl">
-                    <input type="text"  name="message" id="message" data-message required autocomplete="off" placeholder="escribe un mensaje"/>
-                    <span data-microphone class="invert fa"></span>
-                    <label for="message"><span class="fa fa-paper-plane"></span></label>
+            <form class="conversation-sendmessage" data-action="send-message" action="#" method="post">
+                <div class="text">
+                    <input type="text"  name="message" id="message" data-message required autocomplete="off" autocorrect="off" placeholder="escribe un mensaje"/>
+                    <span data-microphone class="invert fa fa-microphone-slash"></span>
+                    <label for="message"></label>
                 </div>
-                <input type="submit" value="Enviar">
+                <button type="submit"><span class="fa fa-paper-plane"></span></button>
             </form>
+        </article>
+        <article class='flex-block flex-block-y-full flex-direction-column'>
+            <form action="" class="search-form  y-large" data-view="searchContacts" autocomplete="off">
+                <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..." required/>
+                <button type="submit"><span class="fa fa-search"></span></button>
+                <span data-view="microphone" class="fa"></span>
+            </form>
+            <div class='conversation-list-wrapper' data-view='conversationListContainer'>
+                <ul class="conversation-list animateView" data-view='conversationList' data-type='template' data-animationin="zoomInUp" data-animationout="zoomOutDown">
+                    <li class="conversation-item animateView" data-view="conversationItem" data-type='template' data-animationin="slideInLeft" data-animationout="slideOutLeft">
+                        <div class="" >
+                            <div class="" data-newmessages="0">
+                                <span class="fa fa-weixin"></span>
+                                <span data-view="convName" data-type='text'></span>
+                            </div>
+                            <div class="operations">
+                                <a class="operation" data-action="restoreConversation" title="Restaurar conversación" href="#"><span class="fa fa-play-circle"></span></a> 
+                                <a class="operation" data-action="dropConversation" title="Borrar conversación" href="#"><span class="fa fa-trash-o"></span></a>
+                            </div>
+                        </div>
+                        <div class="data">
+                            <table>
+                                <caption>Detalle Conversación</caption>
+                                <tr>
+                                    <th>Nombre:</th><td data-view="convName" data-type='text'></td>
+                                </tr>
+                                <tr>
+                                    <th>Creación:</th><td data-view="creation" data-type='text'></td>
+                                </tr>
+                                <tr>
+                                    <th>Mensajes:</th><td data-view="countmsg" data-type='text'></td>
+                                </tr>
+                                <tr>
+                                    <th>Enviados:</th><td data-view="countmensajesenviados" data-type='text'></td>
+                                </tr>
+                                <tr>
+                                    <th>Recibidos:</th><td data-view="countmensajesrecibidos" data-type='text'></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </article>
     </div>
 </div>

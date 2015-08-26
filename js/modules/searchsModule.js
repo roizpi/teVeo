@@ -460,8 +460,7 @@ var Searchs = (function(_super,$,environment){
                 handlers:{
 
                     onAfterShow:function(view){
-                        console.log("Esta es la vista creada ....");
-                        console.log(view);
+
                         view.createView("content",{
                             id:user.id,
                             photo:user.foto,

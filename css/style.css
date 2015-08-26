@@ -328,8 +328,19 @@ DESC: Distribuidores de contenidos.
   flex-wrap: nowrap;
 }
 
+.flex-block.flex-block-full{
+  width: 100%;
+  height: 100%;
+}
+
+.flex-block.flex-block-y-full{
+  height: 100%;
+}
+
 .flex-block.flex-liquid-content > *{
   flex:1 1 auto;
+  max-height: 100%;
+  max-width: 100%;
 }
 
 .flex-block.flex-x-content-start{
@@ -1019,6 +1030,7 @@ DESC: Distribuidores de contenidos.
   height: 50px;
   border-radius: 100%;
   line-height: 1;
+  background-color: #008abd;
 }
 
 .search-form-type2 .input-group > *{
@@ -1053,7 +1065,7 @@ DESC: Distribuidores de contenidos.
 }
 
 .search-form-type2 .input-group:hover .input-group-btn .submit > .fa{
-  font-size: 1.2em;
+  font-size: 1.2rem;
   text-shadow: #fff 0px 0px 4px;
 }
 
@@ -1076,7 +1088,7 @@ DESC: Distribuidores de contenidos.
 .search-form-type2 .input-group-btn .submit > .fa{
   color: #fff;
   line-height: 50px;
-  font-size: 0.7em;
+  font-size: .9rem;
 }
 
 /*
@@ -1246,6 +1258,37 @@ DESC: Distribuidores de contenidos.
 }
 
 /*
+  Nombre: Conversation List.
+  DESC:Estilos para mostrar una lista de conversaciones.
+*/
+
+.conversation-list-wrapper{
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  background-color: yellow;
+}
+
+.conversation-list-wrapper .conversation-list{
+  width: 100%;
+  min-height: 100%;
+}
+
+.conversation-list-wrapper .conversation-list .conversation-item{
+  width: 100%;
+  height: 70px;
+}
+
+.conversation-list-wrapper .conversation-list .conversation-item:nth-child(:even){
+  background-color: #00AFF0;
+}
+
+.conversation-list-wrapper .conversation-list .conversation-item:nth-child(:odd){
+  background-color: #4353FF;
+}
+
+
+/*
 
   NOMBRE:Info List
   DESC:Lista de Datos Simple,ideal para mostrar una simple lista de datos con iconos.
@@ -1283,59 +1326,59 @@ DESC: Distribuidores de contenidos.
     Cada item dispone de  una cabecera (head) opcional y un cuerpo (body)
 */
 
-.actionList{
-    width: 90%;
-    height: 230px;
-    overflow: auto;
-    margin: 0 auto 7px;
-    position: relative;
+.action-list{
+  width: 90%;
+  height: 230px;
+  overflow: auto;
+  margin: 0 auto 7px;
+  position: relative;
 }
 
-.actionList .containerItems{
-    width: 95%;
-    margin: 0 auto;
+.action-list .container-items{
+  width: 95%;
+  margin: 0 auto;
 }
 /*Añada clase "lineOfDivision" para marcar visualmente la separación entre los items*/
-.actionList .containerItems .item.lineOfDivision:not(:last-child){
-    border-bottom:2px solid;
+.action-list .container-items .item.lineOfDivision:not(:last-child){
+  border-bottom:2px solid;
 }
 /*Añada la clase separate para aplicar un pequeño margen entro los items*/
-.actionList .containerItems .item.separate{
-    margin-bottom: 6px;
+.action-list .container-items .item.separate{
+  margin-bottom: 6px;
 }
 
-.actionList .containerItems .item .head{
-    height: 55px;
-    padding: 0 6px;
-    position: relative;
-    font: 400 1rem/1.1;
-    cursor: pointer;
+.action-list .container-items .item .head{
+  height: 55px;
+  padding: 0 6px;
+  position: relative;
+  font: 400 1rem/1.1;
+  cursor: pointer;
 }
 
-.actionList .containerItems .item .body{
-    overflow: auto;
-    height: 70px;
-    padding: 6px 0;
+.action-list .container-items .item .body{
+  overflow: auto;
+  height: 70px;
+  padding: 6px 0;
 }
 
-.actionList .containerItems .item .body table{
-    table-layout: fixed;
-    margin: 0 auto;
-    text-align: left;
-    height:0;
-    border-collapse: separate;
-    border-spacing: 4px;
+.action-list .container-items .item .body table{
+  table-layout: fixed;
+  margin: 0 auto;
+  text-align: left;
+  height:0;
+  border-collapse: separate;
+  border-spacing: 4px;
 }
 
 
-.actionList .containerItems .item .head + .body{
-    display: none;
-    background-color: #fff;
-    height:200px;
+.action-list .container-items .item .head + .body{
+  display: none;
+  background-color: #fff;
+  height:200px;
 }
 
-.actionList .containerItems .item * {
-    color: #fff;
+.action-list .container-items .item * {
+  color: #fff;
 }
 
 /*
@@ -1816,10 +1859,17 @@ DESC: Distribuidores de contenidos.
 */
 
 .conversation-wrapper{
-  height: calc(100% - 120px);
+  width: 100%;
+  height: 70%;
   overflow: auto;
+  /*-ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;*/
   position: relative;
 }
+
+/*.conversation-wrapper::-webkit-scrollbar {
+  width: 0 !important;
+}*/
 
 .conversation-wrapper .conversation{
   padding:2rem;
@@ -1831,9 +1881,18 @@ DESC: Distribuidores de contenidos.
   position: relative;
   overflow: hidden;
   width: 100%;
-  margin: 2.5rem 0;
   padding: 1rem 0;
 }
+
+.conversation-wrapper .conversation .message-wrapper:not(:first-child){
+  margin-top: 2.5rem;
+}
+
+.conversation-wrapper .conversation .message-wrapper:not(:last-child){
+  margin-bottom: 2.5rem;
+}
+
+
 
 .conversation-wrapper .conversation .message-wrapper .circle-wrapper {
   height: 60px;
@@ -1855,6 +1914,7 @@ DESC: Distribuidores de contenidos.
   min-height: 40px;
   width: 60%;
   margin: 0 10.66667px;
+  max-width:350px;
   box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
   font-weight: 300;
   position: relative;
@@ -1925,6 +1985,10 @@ DESC: Distribuidores de contenidos.
 .conversation-wrapper .conversation .message-wrapper.receptor .circle-wrapper, 
 .conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper {
   background: #4353FF;
+  background: -webkit-linear-gradient(bottom left,rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(bottom left, rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(bottom left,rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(bottom left, rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* Standard syntax (must be last)*/
   float: right;
 }
 
@@ -1937,6 +2001,10 @@ DESC: Distribuidores de contenidos.
 .conversation-wrapper .conversation .message-wrapper.emisor .circle-wrapper, 
 .conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper {
   background: #00AFF0;
+  background: -webkit-linear-gradient(bottom right,rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* Standard syntax (must be last)*/
   float: left;
 }
 
@@ -1946,23 +2014,80 @@ DESC: Distribuidores de contenidos.
   left:-9px;
 }
 
+/*Envío de mensajes*/
 
-/*.chat .conversations .conversation .message .authorName{
-    font-weight: 700;
+.conversation-wrapper + .conversation-sendmessage{
+  width: 100%;
+  max-height: 40px;
 }
 
-.chat .conversations .conversation .message .messageDate{
-    font-size: .7em;
+.conversation-wrapper + .conversation-sendmessage > *{
+  display: inline-block;
+  vertical-align: top;
 }
 
-.chat .conversations .conversation .message .authorMsg{
-    max-width:400px;
-    margin: 0 auto;
-    word-wrap: break-word;
-    hyphens:auto;
-    padding-top: 12px;
-    text-align: center;
-}*/
+.conversation-wrapper + .conversation-sendmessage *{
+  height: 100%;
+}
+
+.conversation-wrapper + .conversation-sendmessage .text{
+  width: 90%;
+  background-color: #fff;
+  overflow: hidden; /*clear fix hack*/
+  position: relative;
+}
+
+.conversation-wrapper + .conversation-sendmessage .text > *{
+  float: right;
+}
+
+.conversation-wrapper + .conversation-sendmessage .text input[type=text]{
+  border: none;
+  width: 85%;
+  text-indent: 14px;
+  outline: none; 
+}
+
+.conversation-wrapper + .conversation-sendmessage .text input[type=text] ~ label{
+  width: 15%;
+  line-height: 40px;
+  text-align: center;
+}
+
+
+.conversation-wrapper + .conversation-sendmessage .text + button[type=submit]{
+  border:none;
+  color: #fff;
+  margin: 0;
+  width: 5%;
+  border-radius: 50%;
+  line-height: 40px;
+  padding: .5rem;
+  background-color: #4353FF;
+  -webkit-transition:all .5s;
+    transition:all .5s;
+}
+
+.conversation-wrapper + .conversation-sendmessage .text + button[type=submit]:hover{
+  background-color:#fff;
+  color: #4353FF;
+  font-size: 1.3rem;
+  text-shadow:#4353FF 0px 0px 5px;
+}
+
+
+
+
+.chat .sendMessage .textControl input[type=text] ~ label > .fa{
+    -webkit-transition:all .5s;
+            transition:all .5s;
+}
+
+.chat .sendMessage .textControl input[type=text]:focus ~ label > .fa{
+    font-size: 1.3em;
+}
+
+
 
 
 /*
@@ -2740,6 +2865,12 @@ DESC: Distribuidores de contenidos.
   background-color: #4353ff;
 }
 
+.viewContainer .view-content{
+  height: calc(100% - 45px);
+  overflow: hidden;
+  position: relative;
+}
+
 
 
 /*
@@ -3356,27 +3487,6 @@ table.resume tr th{
 
 */
 
-.videoCallContainer .chat,
-.callContainer .chat{
-    width: 40%;
-    margin-left: 10px;
-}
-
-.chatContainer{
-    height: calc(100% - 36px);
-    display: flex;
-    justify-content: space-around;
-}
-
-.chatContainer > *{
-    flex: 1 1 auto;
-    height: 100%;
-    margin-left: 10px;
-}
-
-.chat{
-    max-width: 600px;
-}
 
 .actionsChat{
     max-width: 450px;
@@ -3422,65 +3532,7 @@ table.resume tr th{
 
 
 
-.chat .sendMessage{
-    margin-top:1%;
-    height: 40px;
-}
 
-.chat .sendMessage > *{
-    display: inline-block;
-    vertical-align: top;
-}
-
-.chat .sendMessage *{
-    height: 100%;
-}
-
-.chat .sendMessage .textControl{
-    width: 80%;
-    background-color: #fff;
-    overflow: hidden; /*clear fix hack*/
-    position: relative;
-}
-
-.chat .sendMessage .textControl > *{
-    float: right;
-}
-
-.chat .sendMessage .textControl input[type=text]{
-    -webkit-box-sizing:border-box;
-        -moz-box-sizing:border-box;
-            box-sizing: border-box;
-    border: none;
-    width: 85%;
-    text-indent: 14px;
-    outline: none;
-    
-}
-
-.chat .sendMessage .textControl input[type=text] ~ label{
-    width: 15%;
-    line-height: 40px;
-    text-align: center;
-}
-
-.chat .sendMessage .textControl input[type=text] ~ label > .fa{
-    -webkit-transition:all .5s;
-            transition:all .5s;
-}
-
-.chat .sendMessage .textControl input[type=text]:focus ~ label > .fa{
-    font-size: 1.3em;
-}
-
-.chat .sendMessage .textControl + input[type=submit]{
-    width: 17%;
-    border: 2px solid #fff;
-    color: #fff;
-    margin: 0;
-    -webkit-transition:background-color .5s;
-            transition:background-color .5s;
-}
 
 /*
     Mensajes pendientes
@@ -5738,8 +5790,72 @@ span.css-emoticon.nintendo-controller {
   animation-name: slideInLeft;
 }
 
+@-webkit-keyframes slideInRight {
+  from {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+    visibility: visible;
+  }
+
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+    visibility: visible;
+  }
+
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.slideInRight {
+  -webkit-animation-name: slideInRight;
+  animation-name: slideInRight;
+}
+
+@-webkit-keyframes slideOutRight {
+  from {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    visibility: hidden;
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    visibility: hidden;
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+.slideOutRight {
+  -webkit-animation-name: slideOutRight;
+  animation-name: slideOutRight;
+}
+
 .slideOutLeft,
-.slideInLeft{
+.slideInLeft,
+.slideInRight,
+.slideOutRight {
   -webkit-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
 }

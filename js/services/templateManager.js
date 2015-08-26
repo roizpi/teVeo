@@ -199,7 +199,7 @@ var View = (function(_super,$,environment){
 	};
 	
 	View.prototype.show = function(callback) {
-		
+		var self = this;
 		if (!this.isVisible()) {
 			this.onBeforeShow();
 			if(this.animations && this.animations.animationIn){
@@ -215,10 +215,11 @@ var View = (function(_super,$,environment){
 				this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
 					$(this).removeClass(animation);
 					typeof(callback) == "function" && callback();
+					self.onAfterShow();
 				}).appendTo(target);
 				
 			}	
-			this.onAfterShow();
+			
 		};
 		
 	};
@@ -282,11 +283,10 @@ var View = (function(_super,$,environment){
 	View.prototype.getView = function(key){
 
 		var result = null;
-
 		if(this.views && this.views.constructor.toString().match(/object/i)){
 			for(var view in this.views){
 				var currentView = this.views[view];
-				if(currentView.getId() === key || currentView.getName() === key){
+				if(currentView.getId() == key || currentView.getName() === key){
 					result = currentView;
 					break;
 				}else{
