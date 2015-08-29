@@ -27,7 +27,7 @@
                                 <span class="authorName" data-view="authorName" data-type="text"></span>
                                 <span class="fa" data-view="status" data-type="class"></span>
                             </header>
-                            <p class="text" data-view="text" data-type="text"></p>
+                            <p class="text" data-view="text" data-mark data-type="text"></p>
                             <footer>
                                 <span class="messageDate" data-view="creation" data-type="text"></span>
                             </footer>   
@@ -35,35 +35,35 @@
                     </li>
                 </ul>
             </div>
-            <form class="conversation-sendmessage" data-action="send-message" action="#" method="post">
+            <form class="conversation-sendmessage flex-block flex-liquid-content" data-action="send-message" action="#" method="post" data-view='sendMessage'>
                 <div class="text">
                     <input type="text"  name="message" id="message" data-message required autocomplete="off" autocorrect="off" placeholder="escribe un mensaje"/>
                     <span data-microphone class="invert fa fa-microphone-slash"></span>
-                    <label for="message"></label>
+                    <label for="message"><span class="fa fa-paper-plane"></span></label>
                 </div>
-                <button type="submit"><span class="fa fa-paper-plane"></span></button>
+                <button type="submit" class='btn btn-normal btn-action'>Enviar</button>
             </form>
         </article>
         <article class='flex-block flex-block-y-full flex-direction-column'>
-            <form action="" class="search-form  y-large" data-view="searchContacts" autocomplete="off">
+            <form action="" class="search-form  y-large" data-view="searchConversations" autocomplete="off">
                 <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..." required/>
                 <button type="submit"><span class="fa fa-search"></span></button>
                 <span data-view="microphone" class="fa"></span>
             </form>
             <div class='conversation-list-wrapper' data-view='conversationListContainer'>
                 <ul class="conversation-list animateView" data-view='conversationList' data-type='template' data-animationin="zoomInUp" data-animationout="zoomOutDown">
-                    <li class="conversation-item animateView" data-view="conversationItem" data-type='template' data-animationin="slideInLeft" data-animationout="slideOutLeft">
-                        <div class="" >
-                            <div class="" data-newmessages="0">
+                    <li class="conversation-item animateView" data-action="showBody" data-view="conversationItem" data-type='template' data-animationin="slideInLeft" data-animationout="slideOutLeft">
+                        <div class="conversation-item-header" >
+                            <div class="data singleLine" data-newmessages="0">
                                 <span class="fa fa-weixin"></span>
-                                <span data-view="convName" data-type='text'></span>
+                                <span data-view="convName" data-mark data-type='text'></span>
                             </div>
-                            <div class="operations">
-                                <a class="operation" data-action="restoreConversation" title="Restaurar conversación" href="#"><span class="fa fa-play-circle"></span></a> 
-                                <a class="operation" data-action="dropConversation" title="Borrar conversación" href="#"><span class="fa fa-trash-o"></span></a>
+                            <div class="actions" data-view="id" data-type='hidden'>
+                                <a class="action" data-action="restoreConversation" title="Restaurar conversación" href="#"><span class="fa fa-play-circle"></span></a> 
+                                <a class="action" data-action="dropConversation" title="Borrar conversación" href="#"><span class="fa fa-trash-o"></span></a>
                             </div>
                         </div>
-                        <div class="data">
+                        <div class="conversation-item-body" data-body>
                             <table>
                                 <caption>Detalle Conversación</caption>
                                 <tr>

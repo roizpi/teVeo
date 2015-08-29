@@ -89,9 +89,10 @@ var ActivityManager = (function(_super,$,environment){
 					activity.instance = instance;
 					//eliminamos la clase del contexto global.
 					delete window[activity.className];
+		
 					uploadpage.detach();
 					//ejecutamos la actividad
-					instance.run();
+					instance.onResume();
 					
 				});
 
@@ -103,7 +104,7 @@ var ActivityManager = (function(_super,$,environment){
 				category:"ACTIVITY_VIEWS"
 			}).done(function(){
 				console.log("VISTA CARGADA...");
-				activity.instance.run();
+				activity.instance.onResume();
 			});
 		}
 		

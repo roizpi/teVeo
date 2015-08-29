@@ -342,32 +342,9 @@ var ServiceLocator = (function(_super,environment){
             }
         });
     }
-    
-    //Enviar un mensaje en una conversación.
-    ServiceLocator.prototype.createMessage = function(idConver,idUserEmisor,idUsuRecep,text){
-        return enqueueRequest({
-            token:self.sessionManager.getToken(),
-            service:"CREATE_MESSAGE",
-            params:{
-                idConver:idConver,
-                idUserEmisor:idUserEmisor,
-                idUsuRecep:idUsuRecep,
-                text:self.utils.urlencode(text)
-            }
-        });
-    }
-    //Actualiza el estado de los mensajes "NOLEIDOS"
-    ServiceLocator.prototype.updateMessagesStatus = function(receptor,messages){
-        return enqueueRequest({
-            token:self.sessionManager.getToken(),
-            service:"UPDATE_MSG_STATUS",
-            params:{
-                receptor:receptor,
-                messages:messages
-            }
-        });
-    }
-    
+
+    /*Servicios para las conversaciones*/
+
     //Obtiene todas las conversaciones en las que participa estos usuarios
     ServiceLocator.prototype.getConversations = function(idUserOne,idUserTwo){
         return enqueueRequest({
@@ -392,6 +369,7 @@ var ServiceLocator = (function(_super,environment){
             }
         });
     }
+
     //Borra una conversación cuyo id, es el pasado como argumento
     ServiceLocator.prototype.dropConversation = function(idConv,otherUser){
         return enqueueRequest({
@@ -426,7 +404,7 @@ var ServiceLocator = (function(_super,environment){
             }
         });    
     }
-    
+
     //Obtiene todos los mensajes de una conversación
     ServiceLocator.prototype.getMessages = function(idConver){
         return enqueueRequest({
@@ -448,6 +426,36 @@ var ServiceLocator = (function(_super,environment){
             }
         });        
     }
+    
+    //Enviar un mensaje en una conversación.
+    ServiceLocator.prototype.createMessage = function(idConv,idUserEmisor,idUsuRecep,text){
+        return enqueueRequest({
+            token:self.sessionManager.getToken(),
+            service:"CREATE_MESSAGE",
+            params:{
+                idConver:idConv,
+                idUserEmisor:idUserEmisor,
+                idUsuRecep:idUsuRecep,
+                text:self.utils.urlencode(text)
+            }
+        });
+    }
+    //Actualiza el estado de los mensajes "NOLEIDOS"
+    ServiceLocator.prototype.updateMessagesStatus = function(receptor,messages){
+        return enqueueRequest({
+            token:self.sessionManager.getToken(),
+            service:"UPDATE_MSG_STATUS",
+            params:{
+                receptor:receptor,
+                messages:messages
+            }
+        });
+    }
+    
+    
+    
+    
+    
     
     ServiceLocator.prototype.getCalls = function(idUser){
         return enqueueRequest({

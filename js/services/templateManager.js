@@ -68,16 +68,17 @@ var View = (function(_super,$,environment){
 			
 		});
 
+		//Eliminamos las meta-información del elementos
+		view.get().removeAttr("data-view").removeAttr("data-type");
+
+		//hidratamos la vista con los datos especificados.
+		view._hydrate(data);
+
 		//Notificamos que la vista fue creada.
 		view.onCreate();
 
 		view.show();
 
-		//Eliminamos las meta-información del elementos
-		view.get().removeAttr("data-view").removeAttr("data-type");
-		//hidratamos la vista con los datos especificados.
-		view._hydrate(data);
-		
 		return view;
 	};
 
@@ -181,6 +182,7 @@ var View = (function(_super,$,environment){
 	View.prototype.hide = function(remove,callback) {
 
 		if (this.isVisible()) {
+			var self = this;
 			this.onBeforeHide();
 			if(this.animations && this.animations.animationOut){
 				console.log("Ocultando la vista");
@@ -191,9 +193,10 @@ var View = (function(_super,$,environment){
 					$this.removeClass(animation);
 					remove ? $this.remove() : $this.detach();
 					typeof(callback) == "function" && callback();
+					self.onAfterHide();
 				});
 			}
-			this.onAfterHide();
+			
 		};
 		
 	};
@@ -227,6 +230,10 @@ var View = (function(_super,$,environment){
 	View.prototype.isVisible = function() {
 		return this.el.is(":visible");
 	};
+	//Comprueba si tiene algún descendiente.
+	View.prototype.isEmpty = function() {
+		return $.isEmptyObject(this.views);
+	};
 	//Coloca el scroll la vista al final.
 	View.prototype.scrollToLast = function() {
 		var pos = this.el.children().height();
@@ -237,6 +244,10 @@ var View = (function(_super,$,environment){
 		if (pos && !isNaN(parseInt(pos))) {
 			this.el.scrollTop(pos);
 		};
+	};
+
+	View.prototype.scrollToTop = function() {
+		this.scrollAt(0);
 	};
 
 	View.prototype.scrollAtChild = function(id) {
@@ -271,13 +282,23 @@ var View = (function(_super,$,environment){
 		var pattern = new RegExp("("+pattern+")","i");
 		$.each(this.views,function(key,view){
 			if(view.match(pattern)){
-				console.log("La")
 				this.show();
 			}else{
 				this.hide(false);
 			}
 			
 		});
+	};
+
+	View.prototype.findChildsByClass = function(className) {
+		var result = [];
+		for(var view in this.views){
+			var view = this.views[view];
+			if (view.get().hasClass(className)) {
+				result.push(view);
+			}
+		}
+		return result;
 	};
 
 	View.prototype.getView = function(key){

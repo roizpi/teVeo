@@ -229,7 +229,7 @@ var DashboardActivity = (function(environment,$){
                     currentWallpaper = wallpaper;
                     $main.children("img.wallpaper:eq(0)").replaceWith(wallpaper.el);
                     changeWallpaper();
-                },25000);
+                },55000);
             })
 
         }
@@ -247,8 +247,7 @@ var DashboardActivity = (function(environment,$){
 
     }
 
-
-	DashboardActivity.prototype.run = function() {
+	DashboardActivity.prototype.onResume = function() {
         //Obtenemos la información del usuario.
         var user = sessionManager.getUser();
         //Aplicamos animaciones.
@@ -272,6 +271,21 @@ var DashboardActivity = (function(environment,$){
         });
         //Iniciamos el configurador de wallpapers.
         startWallpaperConfigurator();
+
+        //Notifica al usuario la existencia de mensajes que no ha leído
+        this.modules["conversation"].getPendingMessages().done(function(messages){
+            if(messages.length){
+                $.ionSound.play("acceptYourApplication");
+                //lanzamos notificación
+                self.modules["notificator"].dialog.alert({
+                    title:"Tienes " + messages.length + " nuevos mensajes",
+                    text:"Acuda a mensajes pendientes para verlos",
+                    level:"info"
+                });
+            }
+        });
+        
+
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();

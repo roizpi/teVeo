@@ -142,9 +142,6 @@ var Contacts = (function(_super,$,environment){
             container.filterChild(val);
         }).focus();
 
-        //mostramos cada contacto.
-        userContacts.forEach(showContact);
-
     };
 
 
@@ -495,7 +492,14 @@ var Contacts = (function(_super,$,environment){
                 name:"contacts",
                 category:"MODULE_VIEWS",
                 handlers:{
-                    onCreate:onCreateViewContacts
+                    onCreate:onCreateViewContacts,
+                    onAfterShow:function(view){
+                        if (!view.isEmpty()) {
+                            //mostramos cada contacto.
+                            userContacts.forEach(showContact);
+                        };
+                       
+                    }
                 }
             },function(){
                 typeof(callback) == "function" && callback.call(this);

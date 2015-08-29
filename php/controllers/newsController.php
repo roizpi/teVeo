@@ -8,13 +8,13 @@ class newsController extends baseController{
 
 	private function getFeed($type){
 		
-		if(gethostbyname($type)){
-			return simplexml_load_string(file_get_contents($type));
+		$content = @file_get_contents($type);
+		if (isset($http_response_header) && strpos($http_response_header[0],'200')){
+			$content = simplexml_load_string($content);
 		}else{
-			echo "No existe";
+			throw new Exception(error_get_last()["message"]);
 		}
-		
-		
+		return $content;
 	}
 
 	private function documentProcessing($feed){
@@ -25,8 +25,8 @@ class newsController extends baseController{
 			@$doc->loadHTML($new->description);
  			//Obtenemos el SRC.
 			$images = $doc->getElementsByTagName('img');
-			
 			foreach ($images as $image) {
+
 			    $alt   = $image->getAttribute('alt');
 			    $src   = $image->getAttribute('src');
 			    $title = $image->getAttribute('title');
@@ -63,7 +63,7 @@ class newsController extends baseController{
 	            )
 	       	);
 		} catch (Exception $e) {
-			echo "Excepción producida";
+			echo $e->message;
 		}
 		
 
