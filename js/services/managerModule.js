@@ -10,17 +10,6 @@ var ManagerModule = (function(_super,$,environment){
         this.debug = debug;  
 	}
 
-    /*
-        //Si todos los módulos se han cargado pasamos el testigo a la siguiente función.
-                            Object.keys(modules).filter(function(module){
-                                return modulesRequired.indexOf(module) >= 0;
-                            }).map(function(module){
-                                return modules[module].loaded;
-                            }).indexOf(undefined) == -1; 
-    
-    */
-
-
     var extractingModules = function(names){
         //Retornamos los módulos que corresponden con los nombres.
         var extractedModules =  names.map(function(module){
@@ -42,13 +31,7 @@ var ManagerModule = (function(_super,$,environment){
 
             //Módulo Descargado.
             module.loaded = true;
-            self.debug.log("MÓDULO: " + module.className + " ha sido descargado","LOG");
-            //Antes del Orden.
-            //console.log("Antes del Orden");
-            //console.log(modulesLoaded);
-            //console.log("Después del Orden");
-            //console.log(utilitis.orderByInsercionBinariaAsc(modulesLoaded,"order"));// && deferred.resolve(modulesLoaded);
-                                                
+            self.debug.log("MÓDULO: " + module.className + " ha sido descargado","LOG");                          
         }).fail(function(jqxhr, settings, exception){
                 console.log(exception);
                 self.debug.log("ERROR al cargar Módulo : " + module.className,"ERROR");
@@ -112,9 +95,13 @@ var ManagerModule = (function(_super,$,environment){
             downloadModules(modules).done(function(){
                 console.log("INSTANCIANDO MÓDULOS ...");
                 var dependencesManager = environment.getService("DEPENDENCES_MANAGER");
-                var instances = dependencesManager.getInstances(modules);
-                //resolvemos la promise pasando instancias de módulos.
-                deferred.resolve(instances);
+                dependencesManager.getInstances(modules,function(instances){
+                    console.log("Me ha devuelto las instancias");
+                    console.log(instances);
+                    //resolvemos la promise pasando instancias de módulos.
+                    deferred.resolve(instances);
+                });
+                
             }); 
 
         };

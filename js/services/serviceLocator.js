@@ -405,13 +405,22 @@ var ServiceLocator = (function(_super,environment){
         });    
     }
 
-    //Obtiene todos los mensajes de una conversación
-    ServiceLocator.prototype.getMessages = function(idConver){
+    //Obtiene mensajes de una conversación.
+    ServiceLocator.prototype.getMessages = function(data){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_MESSAGES",
             params:{
-                idConver:idConver
+                idConver:data.id,
+                filter:{
+                    field:self.utils.urlencode(data.field),
+                    pattern:self.utils.urlencode(data.value)
+                },
+                limit:{
+                    start:data.start || 0,
+                    count:data.count
+                },
+                exclusions:data.exclusions || []
             }
         });
     }

@@ -77,7 +77,7 @@ var View = (function(_super,$,environment){
 		//Notificamos que la vista fue creada.
 		view.onCreate();
 
-		view.show();
+		view.show(true);
 
 		return view;
 	};
@@ -112,7 +112,7 @@ var View = (function(_super,$,environment){
 							view.el.css("background-image","url("+value+")");
 							break;
 						case 'HIDDEN':
-							view.el.data("id",value);
+							view.el.data(view.name,value);
 							break;
 						case 'DATA':
 							view.el.attr("data-"+view.name,value);
@@ -137,6 +137,10 @@ var View = (function(_super,$,environment){
 
 	View.prototype.onBeforeShow = function() {
 		this.handlers && typeof(this.handlers.onBeforeShow) == "function" && this.handlers.onBeforeShow(this);
+	};
+
+	View.prototype.onAfterFirstShow = function() {
+		this.handlers && typeof(this.handlers.onAfterFirstShow) == "function" && this.handlers.onAfterFirstShow(this);
 	};
 
 	View.prototype.onAfterShow = function() {
@@ -201,7 +205,7 @@ var View = (function(_super,$,environment){
 		
 	};
 	
-	View.prototype.show = function(callback) {
+	View.prototype.show = function(first,callback) {
 		var self = this;
 		if (!this.isVisible()) {
 			this.onBeforeShow();
@@ -218,6 +222,7 @@ var View = (function(_super,$,environment){
 				this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
 					$(this).removeClass(animation);
 					typeof(callback) == "function" && callback();
+					first == true && self.onAfterFirstShow();
 					self.onAfterShow();
 				}).appendTo(target);
 				
@@ -233,6 +238,16 @@ var View = (function(_super,$,environment){
 	//Comprueba si tiene algún descendiente.
 	View.prototype.isEmpty = function() {
 		return $.isEmptyObject(this.views);
+	};
+	//Comprueba si esta vista tiene el valor especificado.
+	View.prototype.hasContent = function(value) {
+		var result = false;
+		switch(this.type.toUpperCase()){
+			case 'CLASS':
+				result = this.el.hasClass(value);
+				break;
+		}
+		return result;
 	};
 	//Coloca el scroll la vista al final.
 	View.prototype.scrollToLast = function() {
@@ -301,13 +316,26 @@ var View = (function(_super,$,environment){
 		return result;
 	};
 
+	View.prototype.findChildsWhere = function(viewName,value) {
+		var result = [];
+		if (viewName && value) {
+			for(var view in this.views){
+				var view = this.views[view];
+				if (view.getView(viewName).hasContent(value)) {
+					result.push(view);
+				}
+			}
+		};
+		return result;
+	};
+
 	View.prototype.getView = function(key){
 
 		var result = null;
 		if(this.views && this.views.constructor.toString().match(/object/i)){
 			for(var view in this.views){
 				var currentView = this.views[view];
-				if(currentView.getId() == key || currentView.getName() === key){
+				if(currentView.getId() === key || currentView.getName() === key){
 					result = currentView;
 					break;
 				}else{
@@ -486,14 +514,16 @@ var TemplateManager = (function(_super,$,environment){
 	var showView = function(view,callback){
 		//la vista ya se creó
 		var currentActiveView = getCurrentActiveView(view.category,view.target);
+		console.log("ESTA es la vista actual");
+		console.log(currentActiveView);
 		if(currentActiveView){
 			currentActiveView.hide(false,function(){
 				//mostramos la vista
-				view.show();
+				view.show(false);
 				typeof(callback) == "function" && callback(view);
 			});
 		}else{
-			view.show();
+			view.show(false);
 			typeof(callback) == "function" && callback(view);
 		}
 	}

@@ -3,11 +3,17 @@ var Conversation = (function(_super,$,environment){
 
     __extends(Conversation, _super);
 
+    //Número máximo de mensajes por conversación
+    const MAX_MESSAGES_BY_CONV = 20;
+    const MIN_MESSAGES_BY_CONV = 10;
+    const MESSAGES_STEPS = 5;
+
     var self;
     //Mensajes pendientes.
     var pendingMessages = [];
     var templating;
     var serviceLocator;
+    var loaderData;
     var viewConversations;
     var userConnected;
     var utils;
@@ -33,10 +39,6 @@ var Conversation = (function(_super,$,environment){
             "VIEWED_POST":[],
             "START_CONVERSATION":[]
         }
-
-        //Configuramos los manejadores generales
-        attachHandlers();
-
 
     }
 
@@ -97,10 +99,14 @@ var Conversation = (function(_super,$,environment){
                     var conv = container.getView(response.convs[i]);
                     console.log(conv);
                     if (conv) {
-                        var mensajes = conv.findChildsByClass("emisor");
-                        console.log(mensajes);
+                        //Obtenemos todos los mensajes no vistos.
+                        var mensajes = conv.findChildsWhere("status","fa-eye-slash");;
                         $.each(mensajes,function(idx,message){
-                            message.getView("status").get().removeClass("fa-eye-slash").addClass("fa-eye");
+                            //Si es un mensaje escrito por este usuario, lo marcamos como leído.
+                            if (message.get().hasClass("emisor")) {
+                                 message.getView("status").get().removeClass("fa-eye-slash").addClass("fa-eye");
+                            };
+                           
                         });
                     };
                 }
@@ -110,6 +116,7 @@ var Conversation = (function(_super,$,environment){
             
 
     }
+
 
     var onCreateViewConversations = function(view){
         viewConversations = view;
@@ -135,7 +142,9 @@ var Conversation = (function(_super,$,environment){
             e.preventDefault();
             var text = this.search.value.trim().replace(/\s+/ig,"");
             var container = viewConversations.getView("conversationListContainer");
-            container.getView(currentConv.user).filterChild(text);
+            var convList = container.getView(currentConv.user);
+            convList.get().find("[data-body]").slideUp();
+            convList.filterChild(text);
             //Colocamos el scroll en el primer resultado.
             container.scrollToTop();
     
@@ -148,6 +157,8 @@ var Conversation = (function(_super,$,environment){
             this.message.value = "";
             var container = viewConversations.getView("conversationContainer");
             //Creamos el mensaje.
+            console.log("Conversación Actual");
+            console.log(currentConv);
             serviceLocator
             .createMessage(currentConv.id,userConnected.id,currentConv.user,text)
             .done(function(message){
@@ -171,9 +182,11 @@ var Conversation = (function(_super,$,environment){
             var action = this.dataset.action.toUpperCase();
             switch(action){
                 case 'RESTORECONVERSATION':
-                    var convId = $this.parent().data("id");
+                    var conversation = $this.parent().data("info");
+                    console.log("Esta es la info de la conversación");
+                    console.log(conversation);
                     //Iniciamos la conversación.
-                    initConversation(convId);
+                    initConversation(JSON.parse(conversation));
                     break;
                 case 'SHOWBODY':
                     $this.find("[data-body]").slideDown(500).end().siblings().find("[data-body]").slideUp(500)
@@ -181,6 +194,22 @@ var Conversation = (function(_super,$,environment){
             }
         });
 
+        var container = viewConversations.getView("conversationContainer");
+        container.get().on("scroll",function(){
+            console.log("Evento Scroll Producido");
+            var $this = $(this);
+            if ($this.scrollTop() == 0) {
+                console.log("Cargando más resultados");
+            };
+        });
+
+
+        var loaderDataManager = environment.getService("LOADER_DATA_MANAGER");
+        loaderData = loaderDataManager.createLoader({
+            minResultShown:MIN_MESSAGES_BY_CONV,
+            dataStepts:MESSAGES_STEPS,
+            service:"getMessages"
+        });
  
     }
 
@@ -188,8 +217,8 @@ var Conversation = (function(_super,$,environment){
     var showItemConversation = function(conversation){
         //Obtenemos una referencia al contenedor del listado de conversaciones.
         var container = viewConversations.getView("conversationListContainer");
-        var key = conversation.userOne.id == userConnected.id ? conversation.userTwo.id : conversation.userOne.id;
-        var convListView = container.getView(key);
+        var idUser = conversation.userOne.id == userConnected.id ? conversation.userTwo.id : conversation.userOne.id;
+        var convListView = container.getView(idUser);
         if(convListView){
             var enviados = 0,recibidos = 0;
             //Si trae información sobre el número de mensajes enviado por cada usuario
@@ -199,8 +228,15 @@ var Conversation = (function(_super,$,environment){
                 recibidos = conversation.userOne.id == userConnected.id ? conversation.userTwo.mensajes : conversation.userOne.mensajes;
             }
 
+            var info = {
+                id:conversation.id,
+                name:conversation.name,
+                user:idUser
+            }
+
             convListView.createView("conversationItem",{
                 id:conversation.id,
+                info:JSON.stringify(info),
                 convName:conversation.name,
                 creation:conversation.creacion,
                 countmsg:conversation.mensajes,
@@ -297,32 +333,60 @@ var Conversation = (function(_super,$,environment){
         
     }
 
-    var initConversation = function(id){
-
-        /*var title = viewConversations.getView("title");
-        title.get().text(conversation.name);*/
+    var initConversation = function(conversation){
+        currentConv = conversation;
+        var title = viewConversations.getView("title");
+        title.get().text(conversation.name);
         //Obtenemos una referencia al contenedor de conversaciones.
         var container = viewConversations.getView("conversationContainer");
         //Intentamos mostrar la conversación
-        container.hideAllChild(false).showChild(id,function(){
-            console.log("Conversación Mostrada");
-        },function(){
+        container.hideAllChild(false).showChild(conversation.id,
+        function(){
+            console.log("Conversación ya cargada");
+        },
+        function(){
             //Creamos la vista para esta conversación.
             container.createView("conversation",{
-                id:id
+                id:conversation.id
             },{
                 handlers:{
-                    onAfterShow:function(view){
+                    onAfterFirstShow:function(view){
 
                         //Obtenemos los mensajes para esta conversación.
-                        serviceLocator
-                        .getMessages(id)
+                        loaderData.setContainer(view);
+
+                        loaderData.load({
+                            type:"RESET",
+                            id:conversation.id,
+                            callbacks:{
+                                onDataLoaded:function(messages){
+                                    //Mostramos cada mensaje.
+                                    messages.forEach(function(message){
+                                        showMessage(message);
+                                    });
+
+                                    container.scrollAt(view.getHeight());
+                                },
+                                onNoDataFound:function(){
+                                    self.notificator.dialog.alert({
+                                        title:"Ningún mensaje encontrado",
+                                        text:"Esta conversación no tiene mensajes",
+                                        level:"info"
+                                    });
+                                }
+                            }
+                        });
+
+
+                        
+
+                        /*serviceLocator
+                        .getMessages(id,0,MIN_MESSAGES_BY_CONV)
                         .done(function(messages){
-                            //Mostramos cada mensaje.
-                            messages.forEach(function(message){
-                                showMessage(message);
-                            });
-                            container.scrollAt(view.getHeight());
+
+                            console.log("NÚMERO DE MENSAJES OBTENIDOS....");
+                            console.log(messages.length);
+                            
 
                             //Recogemos los mensajes que hemos recibido y que no hemos visto
                             var msgNoVistos = messages.filter(function(msg){
@@ -358,7 +422,11 @@ var Conversation = (function(_super,$,environment){
                                     });
                             }  
                         })
-                        .fail();
+                        .fail();*/
+                    },
+                    onAfterShow:function(view){
+                        console.log("Colocando Scroll al final...");
+                        container.scrollAt(view.getHeight());
                     }
                 }
             });
@@ -392,37 +460,26 @@ var Conversation = (function(_super,$,environment){
                     //Iniciamos por defecto la primera conversación(la más reciente)
                     var conversation = conversations[0];
                 }
-
+                //Iniciamos el listado de conversaciones
                 initConversationList({
                     idUser:idUser,
                     conversations:conversations
                 });
+                //Iniciamos la conversación.
+                initConversation(conversation);
 
-                initConversation(conversation.id);
-
-                currentConv = {
-                    id:conversation.id,
-                    name:conversation.name,
-                    user:idUser
-                }
+                
             }
                 
         });
             
     }
 
-    //Método para la restauración de un entorno.
-    var restoreEnviroment = function(idUser,idConv,callback){
-
-        //viewConversations
-        
-
-    }
-
     // API Pública
 
-    //Devuelve el número de mensajes no leídos.
-    Conversation.prototype.getPendingMessages = function() {
+    Conversation.prototype.onCreate = function() {
+        //Configuramos los manejadores generales
+        attachHandlers();
         return serviceLocator
         .getPendingMessages(userConnected.id)
         .done(function(messages){
@@ -430,6 +487,12 @@ var Conversation = (function(_super,$,environment){
         })
         .fail(function(error){
         });
+        
+    };
+
+    //Devuelve el número de mensajes no leídos.
+    Conversation.prototype.getPendingMessages = function() {
+        return pendingMessages.length;
     };
 
 

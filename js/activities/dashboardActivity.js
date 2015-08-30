@@ -21,6 +21,8 @@ var DashboardActivity = (function(environment,$){
 		attachHandlers();
         //Configuramos la vista.
         configureView();
+        console.log("Estos son los modulos");
+        console.log(modules);
 		
 	}
 
@@ -50,11 +52,11 @@ var DashboardActivity = (function(environment,$){
             else if(document[visibilityState] == "visible")
                 document.title = "TeVeo!";
                 
-        });/*.delegate("[data-action]","click",function(e){
+        }).delegate("[data-action]","click",function(e){
+            var $this = $(this);
             $("[data-action]").removeClass("active");
-            $(this).addClass("active");
-        });*/
-
+            $this.addClass("active");
+        });
 
         var $el = $("[data-notifications]","#tasks");
         //Implementamos manejador para el evento "NOTIFICATION_ELIMINATED".
@@ -70,7 +72,7 @@ var DashboardActivity = (function(environment,$){
         
         //Implementamos manejador para el evento "NOT_FOUND_NOTIFICATIONS".
         self.modules["notificator"].addEventListener("NOT_FOUND_NOTIFICATIONS",function(){
-            self.modules['metro'].showApps();
+            $("#tasks").find("[data-action=goHome]").trigger("click");
         });
 
         var $panelMenu = self.view.getView("panelMenu").get();
@@ -91,7 +93,6 @@ var DashboardActivity = (function(environment,$){
         $("#tasks").delegate("[data-action]","click",function(e){
             
             e.preventDefault();
-            e.stopPropagation();
             console.log("Realizando acción...");
             var $this = $(this);
             if(!$this.hasClass("active")){
@@ -131,10 +132,7 @@ var DashboardActivity = (function(environment,$){
                             .fail()
                             break;
                     }
-                        
-                    $("[data-actionsMenu]").find("[data-action].active").removeClass("active");
-                    //Marcamos como activo al elemento actual.
-                    $this.addClass("active");
+                    
                     
                 }catch(e){
                     
@@ -258,6 +256,8 @@ var DashboardActivity = (function(environment,$){
 
         //Notificamos el inicio de sesión a todos nuestro contactos.
         var ids = this.modules["contacts"].getContactsIds();
+        console.log("================IDs de los contactos=============");
+        console.log(ids);
         sessionManager.notifyInitSession(ids);
         //Solicitamos permiso para mostrar notificaciones.
         this.modules["notificator"].requestPermission();
@@ -273,19 +273,20 @@ var DashboardActivity = (function(environment,$){
         startWallpaperConfigurator();
 
         //Notifica al usuario la existencia de mensajes que no ha leído
-        this.modules["conversation"].getPendingMessages().done(function(messages){
-            if(messages.length){
-                $.ionSound.play("acceptYourApplication");
-                //lanzamos notificación
-                self.modules["notificator"].dialog.alert({
-                    title:"Tienes " + messages.length + " nuevos mensajes",
-                    text:"Acuda a mensajes pendientes para verlos",
-                    level:"info"
-                });
-            }
-        });
-        
+        var messages = this.modules["conversation"].getPendingMessages();
+        console.log("Número de mensajes pendientes");
+        console.log(messages);
+        if(messages.length){
+            $.ionSound.play("acceptYourApplication");
+            //lanzamos notificación
+            self.modules["notificator"].dialog.alert({
+                title:"Tienes " + messages.length + " nuevos mensajes",
+                text:"Acuda a mensajes pendientes para verlos",
+                level:"info"
+            });
+        }
 
+    
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();

@@ -2308,7 +2308,8 @@ DESC: Distribuidores de contenidos.
   transition:all .5s;
 }
 
-.actionbar .actions .action > a:hover{
+.actionbar .actions .action > a:hover,
+.actionbar .actions .action.active > a{
   text-shadow:#fff 0px 0px 10px;
   font-size: 1.6rem;
 }

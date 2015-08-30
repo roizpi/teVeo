@@ -70,10 +70,11 @@ var DependencesManager = (function(_super,$,environment){
         return o;
     }
 
-    DependencesManager.prototype.getInstances = function(components) {
+    DependencesManager.prototype.getInstances = function(components,callback) {
         
         source = {};
         var instances = {};
+        var promises = [];
         for (var i = 0; i < components.length; i++) {
             source[components[i].name] = components[i];
         }
@@ -84,15 +85,23 @@ var DependencesManager = (function(_super,$,environment){
             //Comprobamos si el componente no está ya instanciado.
             if (!current.instance) {
                 //instanciamos el componente.
-                current.instance = create(window[current.className]);
+                var instance = create(window[current.className]);
+                if (instance.__proto__.hasOwnProperty("onCreate")) {
+                    promises.push(instance.onCreate());
+                }
+                current.instance = instance;
             }
             //guardamos la instancia.
-            instances[current.name] = current.instance;
+            instances[current.name] = current.instance
             //Eliminamos la referencia a la clase del contexto.
             delete window[current.className];
+            
         }
-        //Devolvemos las instancias obtenidas.
-        return instances;
+
+        //Devolvemos las instancias obtenidas..
+        return promises.length ? $.when.apply($, promises).done(function(){
+           typeof(callback) == "function" && callback(instances);
+        }) : typeof(callback) == "function" && callback(instances);
     
     };
 

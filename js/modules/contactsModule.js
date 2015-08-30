@@ -26,11 +26,7 @@ var Contacts = (function(_super,$,environment){
             "NEW_CONTACT":[],
             "CONTACT_DROPED":[]
         }
-        //configuration handlers
-        attachHandlers();
-        //Obtenemos datos necesarios para el funcionamiento del módulo.
-        getData();
-    
+        
     }
 
     /*
@@ -218,6 +214,7 @@ var Contacts = (function(_super,$,environment){
         //Un nuevo usuario que pertenece a la lista de contactos de este usuario
         // se ha conectado.
         serviceLocator.addEventListener("USER_CONNECTED",function(user){
+            console.log("Uusario conectado.");
             //reproducimos sonido.
             $.ionSound.play("userConnected");
             //lanzamos notificación
@@ -304,27 +301,6 @@ var Contacts = (function(_super,$,environment){
             //notificamos nuestro estado.
             self.serviceLocator.notifyStatus(userConnected.id,users,userConnected.status);
         });*/
-    }
-
-    var getData = function(){
-        var serviceLocator = environment.getService("SERVICE_LOCATOR");
-        //Obtenemos los contactos del usuario.
-        serviceLocator.getAllContacts(userConnected.id)
-            .done(function(contacts){
-            
-                //Guardamos los contactos.
-                userContacts = contacts.map(function(contact){
-                    //Por defecto todos los contactos desconectados.
-                    contact.status = "disconnected";
-                    return contact;
-                });
-
-                //Notificamos que los contactos, ya están disponibles.
-                self.triggerEvent("CONTACTS_AVALIABLE");
-
-            }).fail(function(error){
-                console.log(error);
-            });
     }
 
     //Función para añadir contacto a la lista.
@@ -445,6 +421,28 @@ var Contacts = (function(_super,$,environment){
         Métodos Públicos
         ***********************
     */
+
+    Contacts.prototype.onCreate = function() {
+        //configuration handlers
+        attachHandlers();
+        
+        var serviceLocator = environment.getService("SERVICE_LOCATOR");
+        //Obtenemos los contactos del usuario.
+        return serviceLocator.getAllContacts(userConnected.id)
+        .done(function(contacts){
+            //Guardamos los contactos.
+            userContacts = contacts.map(function(contact){
+                //Por defecto todos los contactos desconectados.
+                contact.status = "disconnected";
+                return contact;
+            });
+
+        }).fail(function(error){
+            console.log(error);
+        });
+
+        
+    };
 
     Contacts.prototype.getContactPhoto = function(idUser) {
         var contact = this.getContactById(idUser);

@@ -126,14 +126,18 @@ class conversationController extends baseController{
     }
     
     //Obtiene todos los mensajes de una conversación.
-    public function getMessages($idConversation){
+    public function getMessages($idConv,$filter,$limit,$exclusions){
         
+        $query = 'SELECT * FROM MENSAJES_VIEW WHERE idConv = :idConv ORDER BY creacion DESC LIMIT :start,:count';
         //Preparamos la sentencia
-        $sql = $this->conn->prepare('SELECT * FROM MENSAJES_VIEW WHERE idConv = :idConv');
-        //La ejecutamos bindeando los datos.
-        $sql->execute(array("idConv" => $idConversation));
+        $stmt = $this->conn->prepare($query);
+        //Bindeamos los datos.
+        $stmt->bindParam(':idConv',$idConv, PDO::PARAM_INT); 
+        $stmt->bindParam(':start',$limit->start, PDO::PARAM_INT); 
+        $stmt->bindParam(':count',$limit->count, PDO::PARAM_INT); 
+        $stmt->execute();
         //Extraemos los resultados
-        $mensajes = $sql->fetchAll(PDO::FETCH_ASSOC);
+        $mensajes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         for($i = 0; $i < sizeof($mensajes); $i++)
             $mensajes[$i] = array_map("utf8_encode",$mensajes[$i]);
         return array("response_message" =>array("type" => "RESPONSE","name" => "MENSAJES_ENCONTRADOS","data" => array("error" => false,"msg" => $mensajes)));

@@ -45,6 +45,8 @@
             </form>
         </article>
         <article class='flex-block flex-block-y-full flex-direction-column'>
+            <!-- Título de la Conversación -->
+            <h2>Conversaciones con Elisabeth</h2>
             <form action="" class="search-form  y-large" data-view="searchConversations" autocomplete="off">
                 <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..." required/>
                 <button type="submit"><span class="fa fa-search"></span></button>
@@ -58,7 +60,7 @@
                                 <span class="fa fa-weixin"></span>
                                 <span data-view="convName" data-mark data-type='text'></span>
                             </div>
-                            <div class="actions" data-view="id" data-type='hidden'>
+                            <div class="actions" data-view='info' data-type='hidden'>
                                 <a class="action" data-action="restoreConversation" title="Restaurar conversación" href="#"><span class="fa fa-play-circle"></span></a> 
                                 <a class="action" data-action="dropConversation" title="Borrar conversación" href="#"><span class="fa fa-trash-o"></span></a>
                             </div>

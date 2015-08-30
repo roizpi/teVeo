@@ -23,6 +23,8 @@ var Component = (function (){
                 this.events[event][i].apply(this,[data]);
     }
 
+    Component.prototype.onCreate = function() {};
+
     return Component;
 })();
 
@@ -112,6 +114,16 @@ var Environment = (function(){
 			file:"serviceLocator.js",
 			type:"application",
 			dependences:["UTILS","DEBUG"],
+			loaded:false,
+			auto:true,
+			instance:null
+		},
+		LOADER_DATA_MANAGER:{
+			name:"loaderDataManager",
+			className:"LoaderDataManager",
+			file:"loaderDataManager.js",
+			type:"application",
+			dependences:["SERVICE_LOCATOR"],
 			loaded:false,
 			auto:true,
 			instance:null
