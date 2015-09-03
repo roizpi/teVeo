@@ -133,12 +133,20 @@
         "dependences":null,
         "templates":{}
     },
+    "MOVIEDB":{
+        "name":"movieDB",
+        "className":"MovieDB",
+        "file":"movieDBModule.js",
+        "order":12,
+        "dependences":null,
+        "templates":{}
+    },
     "METRO":{
         "name":"metro",
         "className":"Metro",
         "file":"metroModule.js",
-        "order":12,
-        "dependences":null,
+        "order":13,
+        "dependences":["MOVIEDB"],
         "templates":{
             "metro":{
                 "DASHBOARD":{
@@ -156,7 +164,7 @@
         "name":"conversation",
         "className":"Conversation",
         "file":"conversationModule.js",
-        "order":13,
+        "order":14,
         "dependences":["WEB_SPEECH","NOTIFICATOR","CONTACTS"],
         "templates":{
             "conversations":{

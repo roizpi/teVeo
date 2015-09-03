@@ -60,7 +60,8 @@
 			"CONTACTS",
 			"GEO_LOCATION",
 			"METRO",
-			"CONVERSATION"
+			"CONVERSATION",
+			"MOVIEDB"
 		],
 		"templates":{
 			"gui":{

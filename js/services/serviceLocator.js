@@ -83,7 +83,7 @@ var ServiceLocator = (function(_super,environment){
     //Manejador de Mensajes del Servidor WebSocket
     var handlerMessage = function(e){
         //Parseamos la respuesta.
-        console.log(e.data);
+        //console.log(e.data);
         var response = JSON.parse(e.data);
         self.debug.log(response,"log");
         if(response.type == "EVENT"){
