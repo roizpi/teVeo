@@ -49,6 +49,14 @@ class ServerSocket extends WebSocketServer {
                 "token_required" => true,
                 "throw_event" => false
             ),
+            "GET_LATEST_VIDEOGAMES_NEWS" => array(
+                "controller" => array(
+                    "controller_name" => "newsController",
+                    "action_name" => "getLatestVideoGamesNews"
+                ),
+                "token_required" => true,
+                "throw_event" => false
+            ),
             "NOTIFY_INIT_SESSION" => array(
                 "controller" => array(
                     "controller_name" => "contactosController",

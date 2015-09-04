@@ -614,29 +614,49 @@ var ServiceLocator = (function(_super,environment){
         });
     }
 
-    ServiceLocator.prototype.getLatestSportsNews = function() {
+    ServiceLocator.prototype.getLatestSportsNews = function(count,lastDate) {
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_LATEST_SPORTS_NEWS",
-            params:{}
+            params:{
+                count:count,
+                lastDate:lastDate || null
+            }
         });
     };
 
-    ServiceLocator.prototype.getLatestTechnologyNews = function() {
+    ServiceLocator.prototype.getLatestTechnologyNews = function(count,lastDate) {
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_LATEST_TECHNOLOGY_NEWS",
-            params:{}
+            params:{
+                count:count,
+                lastDate:lastDate || null
+            }
         });
     };
 
-    ServiceLocator.prototype.getGeneralNewsToday = function(){
+    ServiceLocator.prototype.getGeneralNewsToday = function(count,lastDate){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_LATEST_GENERAL_NEWS",
-            params:{}
+            params:{
+                count:count,
+                lastDate:lastDate || null
+            }
         });
     }
+
+    ServiceLocator.prototype.getLatestVideoGamesNews = function(count,lastDate) {
+        return enqueueRequest({
+            token:self.sessionManager.getToken(),
+            service:"GET_LATEST_VIDEOGAMES_NEWS",
+            params:{
+                count:count,
+                lastDate:lastDate || null
+            }
+        });
+    };
     
     ServiceLocator.prototype.logout = function(){
         return enqueueRequest({

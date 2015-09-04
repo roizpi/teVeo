@@ -403,14 +403,23 @@ var View = (function(_super,$,environment){
 	};
 
 	View.prototype.showAllChild = function() {
-		// body...
+		
+	};
+
+	View.prototype.updateChilds = function(data) {
+		if (data && data.length) {
+			for (var i = 0; i < data.length; i++) {
+				for(var key in data[i]){
+					this.setChildValue(key,data[i][key]);
+				}
+			};
+			
+		};
 	};
 
 	View.prototype.setChildValue = function(id,value) {
 		if (id && value) {
 			var view = this.getView(id);
-			console.log("Esta es la vista obtenida");
-			console.log(view);
 			//recogemos el tipo.
 			var type = view.type &&  view.type.toUpperCase();
 			switch(type){
