@@ -227,7 +227,7 @@ var DashboardActivity = (function(environment,$){
                     currentWallpaper = wallpaper;
                     $main.children("img.wallpaper:eq(0)").replaceWith(wallpaper.el);
                     changeWallpaper();
-                },55000);
+                },95000);
             })
 
         }

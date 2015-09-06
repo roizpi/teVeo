@@ -7,9 +7,10 @@ var Metro = (function(_super,$,environment){
 	var utils;
 	var self;
 
-	function Metro(movieDB){
+	function Metro(movieDB,conversation){
 		self = this;
 		this.movieDB = movieDB;
+		this.conversation = conversation;
 		templating = environment.getService("TEMPLATE_MANAGER");
 		serviceLocator = environment.getService("SERVICE_LOCATOR");
 		utils = environment.getService("UTILS");
@@ -62,6 +63,9 @@ var Metro = (function(_super,$,environment){
 				case 'VIDEOGAMENEWS':
 					service = serviceLocator.getLatestVideoGamesNews;
 					break;
+				case 'LASTMESSAGES':
+					service = self.conversation.getPendingMessagesThumbnails;
+					break;
 
 			}
 
@@ -81,7 +85,7 @@ var Metro = (function(_super,$,environment){
 									typeof(config.onUpdated) == "function" && config.onUpdated(data);
 								}
 							});
-						},15000);
+						},150000);
 					};
 					
 				}else{
@@ -96,10 +100,27 @@ var Metro = (function(_super,$,environment){
 
 	var onCreate = function(view){
 
+		view.get().delegate("[data-action]","click",function(e){
+			e.preventDefault();
+			var action = this.dataset.action.toUpperCase();
+			try{
+				switch(action){
+					case 'SHOW_NEW_MESSAGES':
+						self.conversation.showPendingMessages();
+						break;
+				}
+
+			}catch(e){
+				
+			}
+			
+		});
+
 		var tiles = {
 
 			LAST_MESSAGES:{
 				name:"lastmessages",
+				action:"show_new_messages",
 				size:"tile-wide",
 				colors:"fg-white bg-lighterBlue",
 				icon:"mif-bubbles",
@@ -175,6 +196,7 @@ var Metro = (function(_super,$,environment){
 								onCreate:function(view){
 									//Configuramos el tamaño del tile.
 									view.get().addClass(tile.size);
+									tile.action && view.get().attr("data-action",tile.action);
 									tileContent = view.getView("tileContent");
 									for(var j = 0; j < data.length; j++){
 										var element = data[j];

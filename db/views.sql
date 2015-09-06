@@ -88,13 +88,14 @@ AS
             )) AS userName,
             text,
             status,
-            DATE_FORMAT(M.creacion,"%d/%m/%Y %h:%i:%s") AS creacion,
+            M.creacion AS creacion,
             user AS userId,
             M.conversacion AS idConv,
             URLENCODE(C.name) AS convName,
             user_one,
             user_two
-    FROM USUARIOS U JOIN MENSAJES M ON(U.id = M.user) JOIN CONVERSACIONES C ON (M.conversacion=C.id) JOIN CONVERSACIONES_NORMALES CN ON(C.id = CN.id);
+    FROM USUARIOS U JOIN MENSAJES M ON(U.id = M.user) JOIN CONVERSACIONES C ON (M.conversacion=C.id) JOIN CONVERSACIONES_NORMALES CN ON(C.id = CN.id)
+    ORDER BY creacion DESC;
 
 
 

@@ -128,16 +128,29 @@ class conversationController extends baseController{
     //Obtiene todos los mensajes de una conversación.
     public function getMessages($idConv,$filter,$limit,$exclusions){
         
-        $query = 'SELECT * FROM MENSAJES_VIEW WHERE idConv = :idConv ORDER BY creacion DESC LIMIT :start,:count';
+        $query = 'SELECT * FROM MENSAJES_VIEW WHERE idConv = :idConv AND UPPER(text) LIKE UPPER(:text)';
+        $params = array(
+            'idConv' => $idConv,
+            'text' => "%".$filter->pattern."%"
+        );
+        //Validamos las exclusiones.
+        if (is_array($exclusions) && sizeof($exclusions)) {
+            $query .= ' AND id NOT IN :exclusions';
+            $params['exclusions'] = "(".join(",",$exclusions).")";
+        }
+
+        //Validamos el Limit
+        if (is_int($limit->start) && is_int($limit->count)) {
+            $query .= " LIMIT {$limit->start},{$limit->count}";
+        }
+
+        echo "Query : $query";
         //Preparamos la sentencia
         $stmt = $this->conn->prepare($query);
-        //Bindeamos los datos.
-        $stmt->bindParam(':idConv',$idConv, PDO::PARAM_INT); 
-        $stmt->bindParam(':start',$limit->start, PDO::PARAM_INT); 
-        $stmt->bindParam(':count',$limit->count, PDO::PARAM_INT); 
-        $stmt->execute();
+        $stmt->execute($params);
         //Extraemos los resultados
         $mensajes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
         for($i = 0; $i < sizeof($mensajes); $i++)
             $mensajes[$i] = array_map("utf8_encode",$mensajes[$i]);
         return array("response_message" =>array("type" => "RESPONSE","name" => "MENSAJES_ENCONTRADOS","data" => array("error" => false,"msg" => $mensajes)));

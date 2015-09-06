@@ -1,18 +1,19 @@
 var View = (function(_super,$,environment){
 
 
-	function View(el,id,type,category,name,animations,handlers,target){
+	function View(el,id,type,category,name,animations,handlers,target,direction){
 
 		this.el = el;
 		this.id = id;
 		this.type = type;
 		this.category = category;
 		this.name = name;
-		this.views = {};
-		this.templates={};
 		this.animations = animations;
 		this.handlers = handlers;
 		this.target = target;
+		this.direction = direction;
+		this.views = {};
+		this.templates={};
 		this.timestamp = new Date().getTime();
 
 	}
@@ -41,8 +42,9 @@ var View = (function(_super,$,environment){
 		var handlers = options && (options.handlers || {});
 		//Obtenemos el target (lugar donde se insertará la vista).
 		var target = $element.get(0).dataset.target || options.target || "body";
+		var direction = options.direction;
 		$element.data("id",id);
-		var view = new View($element,id,type,category,name,animations,handlers,target);
+		var view = new View($element,id,type,category,name,animations,handlers,target,direction);
 		//los handlers se configuran mediante la API.
 		//mediante método setOnCreate
 		//Procesamos todos los componentes que contiene el elemento
@@ -224,7 +226,7 @@ var View = (function(_super,$,environment){
 					typeof(callback) == "function" && callback();
 					first == true && self.onAfterFirstShow();
 					self.onAfterShow();
-				}).appendTo(target);
+				})[self.direction == "ASC" ? "prependTo" : "appendTo"](target);
 				
 			}	
 			
@@ -352,13 +354,22 @@ var View = (function(_super,$,environment){
 
 	View.prototype.removeChild = function(id) {
 		
-		var view = views && views[id];
+		var view = this.views && this.views[id];
 		if(view instanceof View){
 			//Eliminamos el Nodo DOM.
 			view.get().remove();
 			//Lo eliminamos del array de vistas.
-			delete views[id];
+			delete this.views[id];
 		}
+	};
+
+	View.prototype.removeNthChilds = function(n) {
+		if (n && !isNaN(parseInt(n))) {
+			var self = this;
+			Object.keys(this.views).slice(0,n).forEach(function(view){
+				self.removeChild(view);
+			});
+		};
 	};
 
 	View.prototype.hideChild = function(id,remove) {

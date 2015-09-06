@@ -141,12 +141,41 @@
         "dependences":null,
         "templates":{}
     },
+    "CONVERSATION":{
+        "name":"conversation",
+        "className":"Conversation",
+        "file":"conversationModule.js",
+        "order":13,
+        "dependences":["WEB_SPEECH","NOTIFICATOR","CONTACTS"],
+        "templates":{
+            "conversations":{
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"conversations.html",
+                    "animations":{
+                        "animationIn":"bounceInLeft",
+                        "animationOut":"bounceOutRight"
+                    }
+                }  
+            },
+            "pending_messages":{
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"pendingMessages.html",
+                    "animations":{
+                        "animationIn":"bounceInLeft",
+                        "animationOut":"bounceOutRight"
+                    }
+                }
+            }
+        }
+    },
     "METRO":{
         "name":"metro",
         "className":"Metro",
         "file":"metroModule.js",
-        "order":13,
-        "dependences":["MOVIEDB"],
+        "order":14,
+        "dependences":["MOVIEDB","CONVERSATION"],
         "templates":{
             "metro":{
                 "DASHBOARD":{
@@ -159,24 +188,6 @@
                 }  
             }
         }
-    },
-    "CONVERSATION":{
-        "name":"conversation",
-        "className":"Conversation",
-        "file":"conversationModule.js",
-        "order":14,
-        "dependences":["WEB_SPEECH","NOTIFICATOR","CONTACTS"],
-        "templates":{
-            "conversations":{
-                "DASHBOARD":{
-                    "region":"action",
-                    "file":"conversations.html",
-                    "animations":{
-                        "animationIn":"bounceInLeft",
-                        "animationOut":"bounceOutRight"
-                    }
-                }  
-            }
-        }
     }
+    
 }

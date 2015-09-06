@@ -1056,12 +1056,10 @@ DESC: Distribuidores de contenidos.
   width:0;
 }
 
-.search-form-type2 .input-group:hover{
-  border-radius: 15px;
-}
-
-.search-form-type2 .input-group:hover .form-control{
+.search-form-type2 .input-group:hover .form-control,
+.search-form-type2 .input-group .form-control:focus{
   width: 176px;
+  border-radius: 15px;
 }
 
 .search-form-type2 .input-group:hover .input-group-btn .submit > .fa{
@@ -3575,19 +3573,6 @@ table.resume tr th{
 
 
 
-
-/*
-    Mensajes pendientes
-*/
-
-.newMessagesContainer{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
-    padding: 20px;
-}
-
 .newMessagesContainer .message{
     background-color: rgba(255,255,255,0.9);
     border-radius: 15px;
@@ -3651,7 +3636,7 @@ table.resume tr th{
     overflow: hidden;
 }
 
-.newMessagesContainer .message header .userPhoto{
+.newMessagesContainer .message header .photo{
     width: 25%;
     position: relative;
 }
@@ -3665,23 +3650,23 @@ table.resume tr th{
     text-transform: capitalize;
 }
 
-.newMessagesContainer .message header hgroup .convName,
+.newMessagesContainer .message header hgroup .conversation,
 .newMessagesContainer .message .date{
     font-weight: 900;
     
 }
 
-.newMessagesContainer .message header hgroup .userName{
+.newMessagesContainer .message header hgroup .user-name{
     font-weight: 400;
 }
 
-.newMessagesContainer .message header .userPhoto img,
+.newMessagesContainer .message header .photo img,
 .newMessagesContainer .message .date{
     position: absolute;
     left: 7px;
 }
 
-.newMessagesContainer .message header .userPhoto img{
+.newMessagesContainer .message header .photo img{
     margin: 0;
     left:calc(50% - (84px / 2));
     top:calc(50% - (84px / 2));
