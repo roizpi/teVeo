@@ -1,9 +1,9 @@
 <div class="viewContainer" data-view="conversations" data-type='main'>
     <h2 class="view-tittle">Conversaciones</h2>
     
-    <div class="view-content flex-block flex-block-full flex-liquid-content">
+    <div id='convPanel' class="view-content flex-block flex-block-full flex-liquid-content">
         <article class="flex-block flex-block-y-full flex-direction-column flex-liquid-content">
-            <header class="flex-block">
+            <header class="header flex-block">
                 <!-- Título de la Conversación -->
                 <h2 data-view="title" data-type="text"></h2>
                 <!--Buscador-->
@@ -44,44 +44,47 @@
                 <button type="submit" class='btn btn-normal btn-action'>Enviar</button>
             </form>
         </article>
-        <article class='flex-block flex-block-y-full flex-direction-column'>
-            <!-- Título de la Conversación -->
-            <h2>Conversaciones con Elisabeth</h2>
+        <article class='flex-block flex-block-y-full flex-direction-column flex-liquid-content'>
+            <header class="header flex-block">
+                <h2>Conversaciones con Elisabeth</h2>
+            </header>
             <form action="" class="search-form  y-large" data-view="searchConversations" autocomplete="off">
-                <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..." required/>
-                <button type="submit"><span class="fa fa-search"></span></button>
+                <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..."/>
+                <button type="submit">
+                    <span class="fa fa-search"></span>
+                </button>
                 <span data-view="microphone" class="fa"></span>
             </form>
             <div class='conversation-list-wrapper' data-view='conversationListContainer'>
-                <ul class="conversation-list animateView" data-view='conversationList' data-type='template' data-animationin="zoomInUp" data-animationout="zoomOutDown">
+                <ul class="list conversation-list animateView" data-view='conversationList' data-type='template' data-animationin="zoomInUp" data-animationout="zoomOutDown">
                     <li class="conversation-item animateView" data-action="showBody" data-view="conversationItem" data-type='template' data-animationin="slideInLeft" data-animationout="slideOutLeft">
                         <div class="conversation-item-header" >
                             <div class="data singleLine" data-newmessages="0">
                                 <span class="fa fa-weixin"></span>
                                 <span data-view="convName" data-mark data-type='text'></span>
                             </div>
-                            <div class="actions" data-view='info' data-type='hidden'>
+                            <div class="actions flex-block flex-direction-column flex-liquid-content" data-view='info' data-type='hidden'>
                                 <a class="action" data-action="restoreConversation" title="Restaurar conversación" href="#"><span class="fa fa-play-circle"></span></a> 
                                 <a class="action" data-action="dropConversation" title="Borrar conversación" href="#"><span class="fa fa-trash-o"></span></a>
                             </div>
                         </div>
-                        <div class="conversation-item-body" data-body>
+                        <div class="conversation-item-body" data-body data-view='body'>
                             <table>
                                 <caption>Detalle Conversación</caption>
                                 <tr>
-                                    <th>Nombre:</th><td data-view="convName" data-type='text'></td>
+                                    <th>Nombre</th><td data-view="convName" data-type='text'></td>
                                 </tr>
                                 <tr>
-                                    <th>Creación:</th><td data-view="creation" data-type='text'></td>
+                                    <th>Creación</th><td data-view="creation" data-type='text'></td>
                                 </tr>
                                 <tr>
-                                    <th>Mensajes:</th><td data-view="countmsg" data-type='text'></td>
+                                    <th>Mensajes</th><td data-view="messages" data-type='text'></td>
                                 </tr>
                                 <tr>
-                                    <th>Enviados:</th><td data-view="countmensajesenviados" data-type='text'></td>
+                                    <th>Enviados</th><td data-view="messagesSent" data-type='text'></td>
                                 </tr>
                                 <tr>
-                                    <th>Recibidos:</th><td data-view="countmensajesrecibidos" data-type='text'></td>
+                                    <th>Recibidos</th><td data-view="receivedMessages" data-type='text'></td>
                                 </tr>
                             </table>
                         </div>

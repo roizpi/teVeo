@@ -88,6 +88,8 @@ var Conversation = (function(_super,$,environment){
             }
 
             showMessage(message);
+            //Actualizamos número de mensajes para la conversación
+            updateNumberMessages(message.idConv,message.userId,false);
            
         });
 
@@ -218,10 +220,10 @@ var Conversation = (function(_super,$,environment){
                 container.scrollToLast();
                 $.ionSound.play("acceptYourApplication");
                 //Actualizamos número de mensajes para la conversación
-                //updateConvCountMsg(idConv,idUser,"ENVIADO");
+                updateNumberMessages(currentConv.id,currentConv.user,true);
             })
             .fail(function(){
-                //fallo al enviar el mesanje.
+                //fallo al enviar el mensaje.
             });
         });
 
@@ -233,13 +235,11 @@ var Conversation = (function(_super,$,environment){
             switch(action){
                 case 'RESTORECONVERSATION':
                     var conversation = $this.parent().data("info");
-                    console.log("Esta es la info de la conversación");
-                    console.log(conversation);
                     //Iniciamos la conversación.
                     initConversation(JSON.parse(conversation));
                     break;
                 case 'SHOWBODY':
-                    $this.find("[data-body]").slideDown(500).end().siblings().find("[data-body]").slideUp(500)
+                    $this.find("[data-body]").slideDown(500).end().siblings().find("[data-body]").slideUp(500);
                     break;
             }
         });
@@ -286,6 +286,23 @@ var Conversation = (function(_super,$,environment){
 
     }
 
+    //Actualiza número de mensajes.
+    var updateNumberMessages = function(idConv,idUser,sent){
+        var container = viewConversations.getView("conversationListContainer");
+        var convListView = container.getView(idUser);
+        //Obtenemos el item de conversación.
+        var conv = convListView.getView(idConv);
+        //Actualizamos número total de mensajes de la conversación.
+        var messages = conv.getView("messages").get();
+        messages.text(parseInt(messages.text()) + 1); 
+        if (sent) {
+            var el = conv.getView("messagesSent").get();
+        }else{
+            var el = conv.getView("receivedMessages").get();
+        }
+        el.text(parseInt(el.text()) + 1); 
+    }
+
     //Función para crear la vista de cada uno de los item de conversación
     var showItemConversation = function(conversation){
         //Obtenemos una referencia al contenedor del listado de conversaciones.
@@ -312,9 +329,9 @@ var Conversation = (function(_super,$,environment){
                 info:JSON.stringify(info),
                 convName:conversation.name,
                 creation:conversation.creacion,
-                countmsg:conversation.mensajes,
-                countmensajesenviados:enviados,
-                countmensajesrecibidos:recibidos
+                messages:conversation.mensajes,
+                messagesSent:enviados,
+                receivedMessages:recibidos
             });
 
         }
@@ -438,8 +455,12 @@ var Conversation = (function(_super,$,environment){
                 id:data.idUser
             },{
                 handlers:{
-                    onAfterShow:function(view){
+                    onAfterFirstShow:function(view){
                         data.conversations && data.conversations.forEach(showItemConversation);
+                    },
+                    onAfterShow:function(view){
+                        var conv = view.getView(data.active);
+                        conv.addClass("active").getView('body').get().slideDown(500);
                     }
                 }
             });
@@ -477,7 +498,6 @@ var Conversation = (function(_super,$,environment){
                     onAfterFirstShow:function(view){
 
                         loaderData.load({
-                            type:"RESET",
                             id:conversation.id,
                             filter:{
                                 value:"",
@@ -493,6 +513,39 @@ var Conversation = (function(_super,$,environment){
                                     });
 
                                     container.scrollAt(view.getHeight());
+
+                                    //Recogemos los mensajes que hemos recibido y que no hemos visto
+                                    var unseenMessages = messages.filter(function(message){
+                                        if(message.status == "NOLEIDO" && message.userId !== userConnected.id){
+                                            return true;
+                                        }else{
+                                            return false;
+                                        }
+                                    });
+                                    console.log("Mensajes no vistos");
+                                    console.log(unseenMessages);
+                                    //Comprobamos si hemos encontrado alguno.
+                                    if(unseenMessages.length){
+                                        //Actualizamos los mensajes "NOLEIDOS" a "LEIDOS"
+                                        serviceLocator
+                                        .updateMessagesStatus(currentConv.user,unseenMessages.map(function(message){
+                                            return {
+                                                id:message.id,
+                                                emisor:message.userId,
+                                                idConv:message.idConv
+                                            };
+                                        })).done(function(ids){
+                                            pendingMessages = pendingMessages.filter(function(message){
+                                                if(ids.indexOf(message.id) == -1){
+                                                    return true;
+                                                }else{
+                                                    return false;   
+                                                }
+                                            });
+                                            //Notificamos que el usuario acaba de ver mensajes nuevos.
+                                            self.triggerEvent("VIEWED_POST");
+                                        });
+                                    }  
                                 },
                                 onNoDataFound:function(){
                                     self.notificator.dialog.alert({
@@ -504,52 +557,6 @@ var Conversation = (function(_super,$,environment){
                             }
                         });
 
-
-                        
-
-                        /*serviceLocator
-                        .getMessages(id,0,MIN_MESSAGES_BY_CONV)
-                        .done(function(messages){
-
-                            console.log("NÚMERO DE MENSAJES OBTENIDOS....");
-                            console.log(messages.length);
-                            
-
-                            //Recogemos los mensajes que hemos recibido y que no hemos visto
-                            var msgNoVistos = messages.filter(function(msg){
-                                if(msg.status == "NOLEIDO" && msg.userId != userConnected.id){
-                                    return true;
-                                }else{
-                                    return false;
-                                }
-                            });
-                            console.log("Mensajes no vistos");
-                            console.log(msgNoVistos);
-                            //Comprobamos si hemos encontrado alguno.
-                            if(msgNoVistos.length){
-                                //Actualizamos los mensajes "NOLEIDOS" a "LEIDOS"
-                                serviceLocator
-                                    .updateMessagesStatus(userConnected.id,msgNoVistos.map(function(msg){
-                                        return {
-                                            id:msg.id,
-                                            emisor:msg.userId,
-                                            idConv:msg.idConv
-                                        };
-                                    })).done(function(ids){
-                                        pendingMessages = pendingMessages.filter(function(message){
-                                            if(ids.indexOf(message.id) == -1){
-                                                return true;
-                                            }else{
-                                                return false;   
-                                            }
-                                        });
-                                        
-                                        //Notificamos que el usuario acaba de ver mensajes nuevos.
-                                        self.triggerEvent("VIEWED_POST");
-                                    });
-                            }  
-                        })
-                        .fail();*/
                     },
                     onAfterShow:function(view){
                         container.scrollAt(view.getHeight());
@@ -601,7 +608,8 @@ var Conversation = (function(_super,$,environment){
                 //Iniciamos el listado de conversaciones
                 initConversationList({
                     idUser:idUser,
-                    conversations:conversations
+                    conversations:conversations,
+                    active:conversation.id
                 });
                 //Iniciamos la conversación.
                 initConversation({
@@ -702,12 +710,8 @@ var Conversation = (function(_super,$,environment){
             }
 
         }).done(function(view){
-
-           createEnvironmentFor(idUser,idConv).done(function(){
-
-           }).fail(function(){
-
-           });
+            //Creamos el entorno.
+           createEnvironmentFor(idUser,idConv);
 
         });
     }

@@ -135,8 +135,8 @@ class conversationController extends baseController{
         );
         //Validamos las exclusiones.
         if (is_array($exclusions) && sizeof($exclusions)) {
-            $query .= ' AND id NOT IN :exclusions';
-            $params['exclusions'] = "(".join(",",$exclusions).")";
+            $query .= ' AND id NOT IN (:exclusions)';
+            $params['exclusions'] = join(",",$exclusions);
         }
 
         //Validamos el Limit

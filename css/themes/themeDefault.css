@@ -80,22 +80,22 @@
     color: #4353FF;
 }
 
-.contact-list .contact .content .actions .action2:nth-child(even){
+.list .actions .action:nth-child(even){
   background-color: #00aff0;
 }
 
-.contact-list .contact .content .actions .action2:nth-child(odd){
+.list .actions .action:nth-child(odd){
   background-color: #4353FF;
 }
 
-.contact-list .contact .content .actions .action2.active:nth-child(even),
-.contact-list .contact .content .actions .action2:nth-child(even):hover{
-  color: #00aff0;
+.list .actions .action.active:nth-child(even),
+.list .actions .action:nth-child(even):hover{
+  color: #00aff0 !important;
   background-color: #fff;
 }
 
-.contact-list .contact .content .actions .action2:nth-child(odd):hover{
-  color: #4353FF;
+.list .actions .action:nth-child(odd):hover{
+  color: #4353FF !important;
   background-color: #fff;
 }
 /*

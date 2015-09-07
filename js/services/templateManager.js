@@ -294,6 +294,11 @@ var View = (function(_super,$,environment){
 		}
 	};
 
+	View.prototype.addClass = function(classNames) {
+		this.el.addClass(classNames);
+		return this;
+	};
+
 	View.prototype.filterChild = function(pattern) {
 		
 		var pattern = new RegExp("("+pattern+")","i");

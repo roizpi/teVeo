@@ -453,6 +453,28 @@ DESC: Distribuidores de contenidos.
 }
 
 /*
+  Encabezados
+  ==================
+*/
+
+.header{
+  width: 100%;
+  min-height: 60px;
+  max-height: 60px !important;
+  overflow: hidden;
+  background-color: rgba(0, 175, 240, 0.4);
+
+}
+
+
+.header h2{
+  color: #fff;
+  font-weight: bold;
+  text-shadow:#000 4px 4px 5px;
+  text-transform: capitalize;
+}
+
+/*
   
   Cuadros de Ayuda y Mensajes de Confirmación
   ===========================================
@@ -1019,18 +1041,14 @@ DESC: Distribuidores de contenidos.
 
 .search-form-type2{
   display: inline-block;
-  float: right;
-  height: 100%;
-  margin-top: 10px;
   position: relative;
-    
 }
 
 .search-form-type2 .input-group{
   height: 50px;
-  border-radius: 100%;
   line-height: 1;
   background-color: #008abd;
+  border-radius: 15px;
 }
 
 .search-form-type2 .input-group > *{
@@ -1059,19 +1077,20 @@ DESC: Distribuidores de contenidos.
 .search-form-type2 .input-group:hover .form-control,
 .search-form-type2 .input-group .form-control:focus{
   width: 176px;
-  border-radius: 15px;
 }
 
-.search-form-type2 .input-group:hover .input-group-btn .submit > .fa{
+.search-form-type2 .input-group .form-control + .input-group-btn{
+  width: 50px;
+}
+
+
+
+.search-form-type2 .input-group .form-control + .input-group-btn .submit > .fa{
   font-size: 1.2rem;
   text-shadow: #fff 0px 0px 4px;
 }
 
-.search-form-type2 .input-group .input-group-btn{
-  width: 50px;
-}
-
-.search-form-type2 .input-group-btn .submit {
+.search-form-type2 .input-group .form-control + .input-group-btn .submit {
   display: block;
   background-color: transparent;
   border: none;
@@ -1083,7 +1102,7 @@ DESC: Distribuidores de contenidos.
 }
 
 .search-form-type2 .input-group .form-control,
-.search-form-type2 .input-group-btn .submit > .fa{
+.search-form-type2 .input-group .form-control + .input-group-btn .submit > .fa{
   color: #fff;
   line-height: 50px;
   font-size: .9rem;
@@ -1138,6 +1157,26 @@ DESC: Distribuidores de contenidos.
     Listas
 
 */
+
+.list .actions{
+  width: 20%;
+}
+
+.list .actions .action{
+  display: block;
+  width: 100%;
+  font-size: 1.2rem;
+  padding: .5rem 0;
+  color: #fff;
+  text-align: center;
+  -webkit-transition:all .5s;
+  transition:all .5s;
+}
+
+
+
+
+
 
 /*
   Nombre: Contact List.
@@ -1215,11 +1254,6 @@ DESC: Distribuidores de contenidos.
   width: 80%;
 }
 
-.contact-list .contact .content .actions{
-  width: 20%;
-}
-
-
 .contact-list .contact .content .info p{
   margin: 5px auto;
   width: 80%;
@@ -1269,36 +1303,26 @@ DESC: Distribuidores de contenidos.
 .conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header{
   color: #fff;
   height: 70px;
-  line-height: 70px;
+  overflow: hidden;
 }
 
 .conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header > *{
   float: left;
+  height: 100%;
 }
 
 .conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header .data{
   padding-left: 1rem;
   width: 80%;
-  overflow: hidden;
+  line-height: 70px;
   text-transform: capitalize;
-}
-
-.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header .actions{
-  width: 20%;
 }
 
 .conversation-list-wrapper .conversation-list .conversation-item .conversation-item-body{
   display: none;
+  background-color: #fff;
 }
 
-.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-body table{
-  table-layout: fixed;
-  margin: 0 auto;
-  text-align: left;
-  height:0;
-  border-collapse: separate;
-  border-spacing: 4px;
-}
 
 .conversation-list-wrapper .conversation-list .conversation-item:nth-child(odd){
   background-color: #00AFF0;
@@ -1316,26 +1340,48 @@ DESC: Distribuidores de contenidos.
   background: linear-gradient(bottom right,rgba(255, 255, 255, 0.7), rgba(67, 83, 255, 1)); /* Standard syntax (must be last)*/
 }
 
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-body table{
+  margin: 0 auto;
+  text-align: left;
+  height:0;
+  padding: .7rem;
+  width: 100%;
+  text-transform: capitalize;
+}
 
-/**/
-.contact-list .contact .content .actions .action2,
-.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header .actions .action{
-  display: block;
-  font-size: 1.2rem;
-  color: #fff;
+
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-body table caption{
+  color: #4353FF;
+  font-weight: bold;
+  padding: 1rem 0;
+}
+
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-body table th{
   text-align: center;
-  -webkit-transition:all .5s;
-  transition:all .5s;
+  color: #fff;
 }
 
-.contact-list .contact .content .actions .action2{
-  height: 33.33%;
-  padding-top: 5px;
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-body table th,
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-body table td{
+  padding: .7rem;
 }
-.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header .actions .action{
-  height: 50%;
-  line-height: 35px;
+
+.conversation-list-wrapper .conversation-list .conversation-item:nth-child(odd) .conversation-item-body table th{
+  background-color: #00AFF0;
 }
+
+.conversation-list-wrapper .conversation-list .conversation-item:nth-child(odd) .conversation-item-body table td{
+  color:#00AFF0;
+}
+
+.conversation-list-wrapper .conversation-list .conversation-item:nth-child(even) .conversation-item-body table th{
+  background-color: #4353FF;
+}
+
+.conversation-list-wrapper .conversation-list .conversation-item:nth-child(even) .conversation-item-body table td{
+  color:#4353FF;
+}
+
 
 
 /*
@@ -1911,7 +1957,8 @@ DESC: Distribuidores de contenidos.
 .conversation-wrapper{
   width: 100%;
   height: 70%;
-  overflow: auto;
+  overflow-x:hidden;
+  overflow-y:auto;
   /*-ms-overflow-style: none;
   overflow: -moz-scrollbars-none;*/
   position: relative;
@@ -1964,7 +2011,7 @@ DESC: Distribuidores de contenidos.
   min-height: 40px;
   width: 60%;
   margin: 0 10.66667px;
-  max-width:350px;
+  max-width:300px;
   box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
   font-weight: 300;
   position: relative;
@@ -2078,15 +2125,13 @@ DESC: Distribuidores de contenidos.
   vertical-align: top;
 }
 
-.conversation-wrapper + .conversation-sendmessage *{
-  height: 100%;
-}
 
 .conversation-wrapper + .conversation-sendmessage .text{
   width: 90%;
   background-color: #fff;
   overflow: hidden; /*clear fix hack*/
   position: relative;
+  height: 100%;
 }
 
 .conversation-wrapper + .conversation-sendmessage .text > *{
@@ -2109,7 +2154,7 @@ DESC: Distribuidores de contenidos.
 }
 
 .conversation-wrapper + .conversation-sendmessage .text input[type=text] ~ label{
-  width: 10%;
+  width: 8%;
   line-height: 50px;
   text-align: center;
   color: #4353FF;
@@ -2121,7 +2166,7 @@ DESC: Distribuidores de contenidos.
 }
 
 .conversation-wrapper + .conversation-sendmessage .text input[type=text]:focus ~ label > .fa{
-  font-size: 1.3em;
+  font-size: 1.1em;
   text-shadow:#4353FF 0px 0px 5px;
 }
 
@@ -3281,51 +3326,6 @@ DESC: Distribuidores de contenidos.
     width: 55%;
 }
 
-.header{
-    overflow: hidden;
-    height: 70px;
-    color: #fff;
-}
-
-.header.contentInline > *{
-    display: inline-block;
-    vertical-align: middle;
-    height: 100%;
-    line-height: 70px;
-    text-transform: capitalize;
-}
-
-.header.contentInline > h2,
-.header.contentInline > h3{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-shadow:#000 2px -2px 5px;
-}
-
-
-.header .h2{
-    margin: 0;
-    line-height: 70px;
-    
-}
-
-.header.contentInline h2{
-    float: left;
-    margin: 0;
-    max-width: 55%;
-}
-
-.header:not(.contentInline) h2.textCenter,
-.header:not(.contentInline) h3.textCenter{
-    text-align: center;
-}
-
-.header h3{
-    float: right;
-    margin: 0 10px 0px 0px;
-    max-width: 45%;
-}
 
 
 
@@ -6309,4 +6309,13 @@ span.css-emoticon.nintendo-controller {
   font-size: 1.5rem;
   margin:0 1rem;
 }
+
+
+/* Estilos customizados para los paneles de conversaciones*/
+
+#convPanel{
+  max-width: 950px !important;
+  margin: 0 auto;
+}
+
 
