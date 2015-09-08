@@ -90,6 +90,8 @@ var Conversation = (function(_super,$,environment){
             showMessage(message);
             //Actualizamos número de mensajes para la conversación
             updateNumberMessages(message.idConv,message.userId,false);
+            var container = viewConversations.getView("conversationContainer");
+            container.scrollToLast();
            
         });
 
@@ -584,9 +586,8 @@ var Conversation = (function(_super,$,environment){
 
     //Inicia la conversación especificada.
     var createEnvironmentFor = function(idUser,idConv){
-       
         //Obtenemos todas las conversaciones entre estos usuarios.
-        return serviceLocator
+        serviceLocator
         .getConversations(userConnected.id,idUser)
         .done(function(conversations){
             if(conversations.length){
@@ -621,7 +622,7 @@ var Conversation = (function(_super,$,environment){
             }
                 
         });
-            
+       
     }
 
     // API Pública
@@ -710,8 +711,14 @@ var Conversation = (function(_super,$,environment){
             }
 
         }).done(function(view){
-            //Creamos el entorno.
-           createEnvironmentFor(idUser,idConv);
+
+            var container = view.getView("conversationListContainer");
+            if (!container.hasView(idUser)) {
+                //Creamos el entorno.
+               createEnvironmentFor(idUser,idConv);
+            }else{
+                console.log("Y existe entorno");
+            }
 
         });
     }

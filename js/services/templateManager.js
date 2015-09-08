@@ -463,6 +463,10 @@ var View = (function(_super,$,environment){
 		};
 	};
 
+	View.prototype.hasView = function(id) {
+		return this.views[id] ? true : false;
+	};
+
 
 	View.prototype.createView = function(name,data,options) {
 		//Obtenemos la template.

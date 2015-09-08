@@ -42,18 +42,32 @@
         <div class="padding20" role="dialog" data-role="dialog" data-overlay="true" data-overlay-color="overlay" data-width="800px" id="confirm">
             <h1 data-title></h1>
             <div data-content>
-                <div class="dataGrid">
-                    <div class="row">
-                        <div class="column column-12x x-center y-center">
-                            <p data-text></p>
-                        </div>
+                <div class="flex-block flex-block-full flex-direction-column">
+                    <div class="flex-block flex-x-content-center">
+                        <p data-text></p>
                     </div>
-                    <div class="row">
-                        <div class="column column-12x x-end y-center">
-                            <a href="#" data-action="success" class="button success">Aceptar</a>
-                            <a href="#" data-action="cancel" class="button danger">Cancelar</a>
-                        </div>
+                    <div class="flex-block flex-x-content-end">
+                        <a href="#" data-action="success" class="button success">Aceptar</a>
+                        <a href="#" data-action="cancel" class="button danger">Cancelar</a>
                     </div>
+                </div>
+            </div>
+        </div>
+        <!-- Prompt -->
+        <div class="padding20" role="dialog" data-role="dialog" data-overlay="true" data-overlay-color="overlay" data-width="800px" id="prompt">
+            <h1 data-title></h1>
+            <div data-content>
+                <div class="flex-block">
+                    <div class="input-control modern text">
+                        <input type="text">
+                        <span class="label" data-label></span>
+                        <span class="informer" data-informer></span>
+                        <span class="placeholder" data-placeholder></span>
+                    </div>
+                </div>
+                <div class="flex-block flex-x-content-end">
+                    <a href="#" data-action="success" class="button success">Aceptar</a>
+                    <a href="#" data-action="cancel" class="button danger">Cancelar</a>
                 </div>
             </div>
         </div>

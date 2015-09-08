@@ -256,8 +256,6 @@ var DashboardActivity = (function(environment,$){
 
         //Notificamos el inicio de sesión a todos nuestro contactos.
         var ids = this.modules["contacts"].getContactsIds();
-        console.log("================IDs de los contactos=============");
-        console.log(ids);
         sessionManager.notifyInitSession(ids);
         //Solicitamos permiso para mostrar notificaciones.
         this.modules["notificator"].requestPermission();
@@ -273,18 +271,28 @@ var DashboardActivity = (function(environment,$){
         startWallpaperConfigurator();
 
         //Notifica al usuario la existencia de mensajes que no ha leído
-        var messages = this.modules["conversation"].getPendingMessages();
-        console.log("Número de mensajes pendientes");
-        console.log(messages);
-        if(messages.length){
+        var pendingMessages = this.modules["conversation"].getPendingMessages();
+        if(pendingMessages){
             $.ionSound.play("acceptYourApplication");
             //lanzamos notificación
             self.modules["notificator"].dialog.alert({
-                title:"Tienes " + messages.length + " nuevos mensajes",
+                title:"Tienes " + pendingMessages + " nuevos mensajes",
                 text:"Acuda a mensajes pendientes para verlos",
                 level:"info"
             });
         }
+
+
+         self.modules["notificator"].dialog.prompt({
+            title:"prompt de prueba",
+            label:"Nombre de la Conversación",
+            informer:"Introduce un nombre para la nueva conversación",
+            placeholder:"conversación",
+            onSuccess:function(text){
+                alert("Has escrito : " + text);
+            }
+
+         });;
 
     
 		//Comprobamos actividad del usuario, para notificar a otros 

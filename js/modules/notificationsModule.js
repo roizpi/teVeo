@@ -11,12 +11,13 @@ var Notificator = (function(_super,$,environment){
     //Muestra cuadros de diálogo.
     var Dialog = (function(){
 
-        var $alert,$confirm;
+        var $alert,$confirm,$prompt;
 
         function Dialog(){
 
             $alert = $("#alert").data('dialog');
             $confirm = $("#confirm").data('dialog');
+            $prompt = $("#prompt").data('dialog');
 
             $confirm.element.on("click","[data-action]",function(e){
                 e.preventDefault();
@@ -27,6 +28,19 @@ var Notificator = (function(_super,$,environment){
                 else if(action == "cancel")
                     typeof($confirm.onCancel) == "function" && $confirm.onCancel();
                 $confirm.close();
+            });
+
+            $prompt.element.on("click","[data-action]",function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                var action = this.dataset.action;
+                if(action == "success"){
+                    var text = $prompt.element.find("input[type='text']").val();
+                    typeof($prompt.onSuccess) == "function" && $prompt.onSuccess(text);
+                }else if(action == "cancel"){
+                    typeof($prompt.onCancel) == "function" && $prompt.onCancel();
+                }
+                $prompt.close();
             });
         }
 
@@ -46,10 +60,26 @@ var Notificator = (function(_super,$,environment){
             $confirm.onCancel = cancel;
             //Establecemos el título de la alerta
             $confirm.element.find("[data-title]").text(data.title);
-            //Establecemos el texto de la alerta.
+            //Establecemos el texto
             $confirm.element.find("[data-text]").text(data.text);
             //Abrimos diálogo de confirmación.
             $confirm.open();
+        };
+
+        Dialog.prototype.prompt = function(data) {
+            //Establecemos el título de la alerta
+            $prompt.element.find("[data-title]").text(data.title);
+            ///Establecemos el label
+            $prompt.element.find("[data-label]").text(data.label);
+            //Establecemos el informer
+            $prompt.element.find("[data-informer]").text(data.informer);
+            //Establecemos el placeholder
+            $prompt.element.find("[data-placeholder]").text(data.placeholder);
+            //Manejador onSuccess
+            if(data.onSuccess) $prompt.onSuccess = data.onSuccess;
+            //Manejador onCancel
+            if(data.onCancel) $prompt.onCancel = data.onSuccess;
+            $prompt.open();
         };
 
         return Dialog;
