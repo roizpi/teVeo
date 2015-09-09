@@ -123,7 +123,6 @@ var View = (function(_super,$,environment){
 							view.el.addClass(value);
 							break;
 						case 'TOGGLE':
-							console.log("Valor para el toggle : " + value);
 							if(value == 'off') view.remove();
 							break;
 						default:
@@ -465,8 +464,6 @@ var View = (function(_super,$,environment){
 					view.el.attr("data-"+view.name,value);
 					break;
 				case 'TOGGLE':
-					console.log("Este es el valor para toggle: " + value);
-					alert("Este es el valor para toggle: " + value);
 					value === 'on' ? view.el.show() : view.el.hide();
 					break;
 					default:

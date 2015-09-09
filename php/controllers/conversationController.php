@@ -272,4 +272,24 @@ class conversationController extends baseController{
             "event_message" => array("type" => "EVENT","name" => "MENSAJES_LEIDOS","targets" => $targets)
         );
     }
+
+    public function notifyConversationCurrentlyViewing($receptor,$idConv){
+        return array(
+            "response_message" => array(
+                "type" => "RESPONSE",
+                "name" => "CONVERSATION_CURRENTLY_VIEWING_NOTIFIED",
+                "data" => array(
+                    "error" => false,
+                    "msg" => $receptor
+                )
+            ),
+            "event_message" => array(
+                "type" => "EVENT",
+                "name" => "TALK_USER_CHANGES",
+                "targets" => array(
+                    array("id" => $receptor, "data" => $idConv)
+                )
+            )
+        );
+    }
 }

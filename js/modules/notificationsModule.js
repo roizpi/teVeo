@@ -55,13 +55,15 @@ var Notificator = (function(_super,$,environment){
             $alert.open();
         };
 
-        Dialog.prototype.confirm = function(data,success,cancel) {
-            $confirm.onSuccess = success;
-            $confirm.onCancel = cancel;
+        Dialog.prototype.confirm = function(data) {
             //Establecemos el título de la alerta
             $confirm.element.find("[data-title]").text(data.title);
             //Establecemos el texto
             $confirm.element.find("[data-text]").text(data.text);
+            //Manejador onSuccess
+            if(data.onSuccess) $confirm.onSuccess = data.onSuccess;
+            //Manejador onCancel
+            if(data.onCancel) $confirm.onCancel = data.onSuccess;
             //Abrimos diálogo de confirmación.
             $confirm.open();
         };

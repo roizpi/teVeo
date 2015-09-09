@@ -186,6 +186,14 @@ class ServerSocket extends WebSocketServer {
                 ),
                 "throw_event" => true
             ),
+            "CONVERSATION_CURRENTLY_VIEWING" => array(
+                "controller" => array(
+                    "controller_name" => "conversationController",
+                    "action_name" => "notifyConversationCurrentlyViewing"
+                ),
+                "token_required" => true,
+                "throw_event" => true
+            ),
             "DROP_CONVERSATION" => array(
                 "controller" => array(
                     "controller_name" => "conversationController",

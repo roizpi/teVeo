@@ -31,6 +31,7 @@ var ServiceLocator = (function(_super,environment){
             "DROP_CONVERSATION":[],
             "DROP_ALL_CONVERSATION":[],
             "NEW_MESSAGE":[],
+            "TALK_USER_CHANGES":[],
             "MENSAJES_LEIDOS":[],
             "OFFER_RECEIVED":[],
             "OFFER_SDP_CHUNK_RECEIVED":[],
@@ -371,13 +372,13 @@ var ServiceLocator = (function(_super,environment){
     }
 
     //Borra una conversación cuyo id, es el pasado como argumento
-    ServiceLocator.prototype.dropConversation = function(idConv,otherUser){
+    ServiceLocator.prototype.dropConversation = function(idConv,receptor){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"DROP_CONVERSATION",
             params:{
                 idConv:idConv,
-                otherUser:otherUser
+                receptor:receptor
             }
         });
     }
@@ -473,8 +474,18 @@ var ServiceLocator = (function(_super,environment){
         });
     }
     
-    
-    
+    //Notifica a otro usuario la conversación que está visualizando.
+    ServiceLocator.prototype.notifyChangeOfConversation = function(receptor,idConv) {
+        return enqueueRequest({
+            token:self.sessionManager.getToken(),
+            service:"CONVERSATION_CURRENTLY_VIEWING",
+            params:{
+                receptor:receptor,
+                idConv:idConv
+            }
+        });
+        
+    };
     
     
     

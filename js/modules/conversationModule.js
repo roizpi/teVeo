@@ -8,6 +8,10 @@ var Conversation = (function(_super,$,environment){
     const MIN_MESSAGES_BY_CONV = 10;
     const MESSAGES_STEPS = 5;
 
+    const MESSAGE_SENT = 1;
+    const MESSAGE_RECEIVED = 2;
+    const MESSAGE_DELETED = 3;
+
     var self;
     //Mensajes pendientes.
     var pendingMessages = [];
@@ -89,10 +93,17 @@ var Conversation = (function(_super,$,environment){
 
             showMessage(message);
             //Actualizamos número de mensajes para la conversación
-            updateNumberMessages(message.idConv,message.userId,false);
+            updateNumberMessages(message.idConv,message.userId,MESSAGE_RECEIVED);
             var container = viewConversations.getView("conversationContainer");
             container.scrollToLast();
            
+        });
+
+        //Manejador para el evento TALK_USER_CHANGES
+        //Este Evento se produce cuando un usuario cambia de conversación
+        serviceLocator.addEventListener("TALK_USER_CHANGES",function(response){
+            console.log("TALK_USER_CHANGES : ");
+            console.log(response);
         });
 
         //Manejador para el evento NEW_MESSAGE.
@@ -110,7 +121,8 @@ var Conversation = (function(_super,$,environment){
                         $.each(mensajes,function(idx,message){
                             //Si es un mensaje escrito por este usuario, lo marcamos como leído.
                             if (message.get().hasClass("emisor")) {
-                                 message.getView("status").get().removeClass("fa-eye-slash").addClass("fa-eye");
+                                message.getView("status").get().removeClass("fa-eye-slash").addClass("fa-eye");
+                                message.setChildValue("close","off");
                             };
                            
                         });
@@ -222,15 +234,15 @@ var Conversation = (function(_super,$,environment){
                 container.scrollToLast();
                 $.ionSound.play("acceptYourApplication");
                 //Actualizamos número de mensajes para la conversación
-                updateNumberMessages(currentConv.id,currentConv.user,true);
+                updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_SENT);
             })
             .fail(function(){
                 //fallo al enviar el mensaje.
             });
         });
 
-        var convList = viewConversations.getView("conversationListContainer");
-        convList.get().delegate("[data-action]","click",function(e){
+        var convListContainer = viewConversations.getView("conversationListContainer");
+        convListContainer.get().delegate("[data-action]","click",function(e){
             e.preventDefault();
             var $this = $(this);
             var action = this.dataset.action.toUpperCase();
@@ -240,6 +252,17 @@ var Conversation = (function(_super,$,environment){
                     //Iniciamos la conversación.
                     initConversation(JSON.parse(conversation));
                     break;
+                case 'DROPCONVERSATION':
+                    var info = $this.parent().data("info");
+                    var conversation = JSON.parse(info);
+                    //Pedimos confirmación.
+                    self.notificator.dialog.confirm({
+                        title:"Eliminar Conversación " + conversation.name,
+                        text:"¿Estás seguro que deseas eliminar esta conversación?. Todos sus mensajes serán eliminados",
+                        onSuccess:function(){
+                            dropConversation(conversation);
+                        }
+                    });
                 case 'SHOWBODY':
                     $this.find("[data-body]").slideDown(500).end().siblings().find("[data-body]").slideUp(500);
                     break;
@@ -296,6 +319,8 @@ var Conversation = (function(_super,$,environment){
             .done(function(){
                 console.log("Borrado Mensaje con id : " + id);
                 container.getView(id).hide(true);
+                //Actualizamo el contandor de mensajes.
+                updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_DELETED);
             }).fail(function(){
                 self.notificator.dialog.alert({
                     title:"Mensaje no borrado",
@@ -309,21 +334,51 @@ var Conversation = (function(_super,$,environment){
 
     }
 
+    var dropConversation = function(conversation){
+        console.log("Conversación a borrar : ");
+        console.log(conversation);
+        serviceLocator
+        .dropConversation(conversation.id,conversation.user)
+        .done(function(){
+            self.notificator.dialog.alert({
+                title:"Conversación Borrada",
+                text:"La conversación " + conversation.name + " fue borrada con éxito",
+                level:"info"
+            });
+
+            var convListContainer = viewConversations.getView("conversationListContainer");
+            var convList = convListContainer.getView(conversation.user);
+            //Comprobamos si disponemos de más conversaciones.
+            if (convList.size()) {
+
+            }else{
+                //Notificamos que no quedan conversaciones.
+                self.triggerEvent("ANY_CONVERSATION_FOUND");                  
+            }
+        });
+                  
+    }
+
     //Actualiza número de mensajes.
-    var updateNumberMessages = function(idConv,idUser,sent){
+    var updateNumberMessages = function(idConv,idUser,type){
         var container = viewConversations.getView("conversationListContainer");
         var convListView = container.getView(idUser);
         //Obtenemos el item de conversación.
         var conv = convListView.getView(idConv);
-        //Actualizamos número total de mensajes de la conversación.
         var messages = conv.getView("messages").get();
-        messages.text(parseInt(messages.text()) + 1); 
-        if (sent) {
+
+        if ((type == MESSAGE_RECEIVED) || (type == MESSAGE_SENT) ) {
+            messages.text(parseInt(messages.text()) + 1);
+            var el = type == MESSAGE_RECEIVED ? conv.getView("receivedMessages").get() : conv.getView("messagesSent").get();
+            el.text(parseInt(el.text()) + 1);
+        }else if(type == MESSAGE_DELETED){
+            messages.text(parseInt(messages.text()) - 1);
             var el = conv.getView("messagesSent").get();
-        }else{
-            var el = conv.getView("receivedMessages").get();
+            el.text(parseInt(el.text()) - 1);
         }
-        el.text(parseInt(el.text()) + 1); 
+        
+
+        
     }
 
     //Función para crear la vista de cada uno de los item de conversación
@@ -490,6 +545,9 @@ var Conversation = (function(_super,$,environment){
 
     var initConversation = function(conversation){
         currentConv = conversation;
+        //Notificamos el cambio de conversación.
+        serviceLocator.notifyChangeOfConversation(currentConv.user,currentConv.id);
+        
         if (loaderManager.existsLoader(currentConv.id)) {
             loaderData = loaderManager.getLoader(currentConv.id);
         }else{
@@ -499,7 +557,7 @@ var Conversation = (function(_super,$,environment){
                 service:"getMessages"
             });
         }
-        console.log(loaderData);
+        
         var title = viewConversations.getView("title");
         title.get().text(conversation.name);
         //Obtenemos una referencia al contenedor de conversaciones.

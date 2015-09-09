@@ -1978,6 +1978,8 @@ DESC: Distribuidores de contenidos.
   position: relative;
   overflow: hidden;
   width: 100%;
+  min-width: 100%;
+  min-width: -moz-available;/*el ancho del contenedor menos el margen horizontal, borde y padding*/
   padding: 1rem 0;
 }
 

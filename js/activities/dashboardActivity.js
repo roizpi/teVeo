@@ -75,6 +75,12 @@ var DashboardActivity = (function(environment,$){
             $("#tasks").find("[data-action=goHome]").trigger("click");
         });
 
+        self.modules["conversation"].addEventListener("ANY_CONVERSATION_FOUND",function(){
+            $("#tasks").find("[data-action=goHome]").trigger("click");
+        });
+
+        
+
         var $panelMenu = self.view.getView("panelMenu").get();
         //Icono para ocultar menú de acceso rápido.
         $("#navIcon").on("click",function(){
