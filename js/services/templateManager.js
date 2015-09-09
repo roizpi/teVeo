@@ -118,8 +118,14 @@ var View = (function(_super,$,environment){
 							break;
 						case 'DATA':
 							view.el.attr("data-"+view.name,value);
+							break;
 						case "CLASS":
 							view.el.addClass(value);
+							break;
+						case 'TOGGLE':
+							console.log("Valor para el toggle : " + value);
+							if(value == 'off') view.remove();
+							break;
 						default:
 							console.log("Valor no conocido");
 					}
@@ -457,6 +463,12 @@ var View = (function(_super,$,environment){
 					break;
 				case 'DATA':
 					view.el.attr("data-"+view.name,value);
+					break;
+				case 'TOGGLE':
+					console.log("Este es el valor para toggle: " + value);
+					alert("Este es el valor para toggle: " + value);
+					value === 'on' ? view.el.show() : view.el.hide();
+					break;
 					default:
 				console.log("Valor no conocido");
 			}

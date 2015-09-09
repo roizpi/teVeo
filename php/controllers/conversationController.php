@@ -206,6 +206,40 @@ class conversationController extends baseController{
         }
     
     }
+
+    public function deleteMessage($id){
+
+        $response = null;
+        $query = 'SELECT status FROM MENSAJES_VIEW WHERE id = :id';
+        //Preparamos la sentencia.                             
+        $stmt = $this->conn->prepare($query);
+        //Bindeamos los datos.
+        $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+        //Ejecutamos la sentencia.                                     
+        $exito = $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (strtoupper($result['status']) === 'NOLEIDO') {
+            $dml = 'DELETE FROM MENSAJES WHERE id = :id';
+            //Preparamos la sentencia.                             
+            $stmt = $this->conn->prepare($dml);
+            //Bindeamos los datos.
+            $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+            //Ejecutamos la sentencia.                                     
+            $exito = $stmt->execute();
+            $response = array(
+                "response_message" => array(
+                    "type" => "RESPONSE",
+                    "name" => "MESSAGE_DROPED",
+                    "data" => array(
+                        "error" => false,
+                        "msg" => $id
+                    )
+                )
+            );
+        }
+
+        return $response;
+    }
     
     //Actualiza los mensajes "NOLEIDOS" a "LEIDOS"
     public function updateMessagesStatus($receptor,$messages){

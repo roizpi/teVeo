@@ -449,6 +449,18 @@ var ServiceLocator = (function(_super,environment){
             }
         });
     }
+
+    //Elimina un mensaje enviado y que no ha sido leido.
+    ServiceLocator.prototype.deleteMessage = function(idMessage) {
+        return enqueueRequest({
+            token:self.sessionManager.getToken(),
+            service:"DELETE_MESSAGE",
+            params:{
+                idMessage:idMessage
+            }
+        });
+    };
+
     //Actualiza el estado de los mensajes "NOLEIDOS"
     ServiceLocator.prototype.updateMessagesStatus = function(receptor,messages){
         return enqueueRequest({

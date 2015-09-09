@@ -283,18 +283,6 @@ var DashboardActivity = (function(environment,$){
         }
 
 
-         self.modules["notificator"].dialog.prompt({
-            title:"prompt de prueba",
-            label:"Nombre de la Conversación",
-            informer:"Introduce un nombre para la nueva conversación",
-            placeholder:"conversación",
-            onSuccess:function(text){
-                alert("Has escrito : " + text);
-            }
-
-         });;
-
-    
 		//Comprobamos actividad del usuario, para notificar a otros 
         //usuarios si este está asente.
         //checkStatus();

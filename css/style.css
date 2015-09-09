@@ -2030,11 +2030,32 @@ DESC: Distribuidores de contenidos.
 .conversation-wrapper .conversation .message-wrapper .text-wrapper header{
   padding:.5rem 1.2rem;
   font-size: .9rem;
+  position: relative;
+}
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper header .delete{
+  position: absolute;
+  top: 0;right: 0;
+  width: 32px;height: 32px;
+  text-align: center;
+  line-height: 33px;
+  border-radius: 50%;
+  background-color: #fff;
+  font-size: 1.1rem;
+  color: #4353FF;
+  -webkit-transition:all .5s;
+  transition:all .5s;
+}
+
+.conversation-wrapper .conversation .message-wrapper .text-wrapper header .delete:hover,
+.conversation-wrapper .conversation .message-wrapper .text-wrapper header .delete:active{
+  text-shadow:#4353FF 0px 0px 4px;
 }
 
 .conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper header{
   flex-direction:row-reverse;
 }
+
 
 .conversation-wrapper .conversation .message-wrapper .text-wrapper .text{
   margin: 0;

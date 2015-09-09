@@ -285,6 +285,27 @@ var Conversation = (function(_super,$,environment){
                 e.preventDefault();
             }
         });
+        
+        //Manejador para el borrado de mensajes.
+        container.get().on("click","[data-action='deleteMessage']",function(e){
+            e.preventDefault();
+            var $this = $(this);
+            var id = $this.parents(".message-wrapper").data("id");
+            //Borramos el mensaje.
+            serviceLocator.deleteMessage(id)
+            .done(function(){
+                console.log("Borrado Mensaje con id : " + id);
+                container.getView(id).hide(true);
+            }).fail(function(){
+                self.notificator.dialog.alert({
+                    title:"Mensaje no borrado",
+                    text:"No pudo borrarse el mensaje, inténtelo más tarde",
+                    level:"warning"
+                });
+            });
+            
+        });
+        
 
     }
 
@@ -350,9 +371,16 @@ var Conversation = (function(_super,$,environment){
         if(convView){
 
             var status = "fa-eye-slash";
+            
             if(message.status == "LEIDO" || (message.status == "NOLEIDO"  && message.userId != userConnected.id)){
                 status = "fa-eye";
             }
+
+            var closeStatus = 'off';
+            if(message.status == "NOLEIDO" && message.userId == userConnected.id){
+                closeStatus = 'on';
+            }
+
 
             var photo,animationin,animationout;
             if (message.userId == userConnected.id) {
@@ -373,6 +401,7 @@ var Conversation = (function(_super,$,environment){
                 authorName:utils.urldecode(message.userName),
                 creation:message.creacion,
                 status:status,
+                close:closeStatus,
                 text:utils.utf8_encode(message.text)
             },{
                 handlers:{
@@ -433,18 +462,7 @@ var Conversation = (function(_super,$,environment){
             
     }
 
-    //Método para la creación de conversaciones
-    var createConversation = function(name,idUser,callbackSuccess,callbackError){
-        //Creamos una conversación con ese nombre.
-        serviceLocator
-        .createConversation(userConnected.id,idUser,name)
-        .done(function(conversation){
-            
-        })
-        .fail();
-           
-    }
-
+   
     var initConversationList = function(data){
         //Obtenemos una referencia al contenedor de conversaciones.
         var container = viewConversations.getView("conversationListContainer");
@@ -583,9 +601,10 @@ var Conversation = (function(_super,$,environment){
 
     }
 
+    //Obtiene la información de las conversaciones entre estos usuarios.
+    var getConversationsFor = function(idUser,idConv){
 
-    //Inicia la conversación especificada.
-    var createEnvironmentFor = function(idUser,idConv){
+        var deferred = $.Deferred();
         //Obtenemos todas las conversaciones entre estos usuarios.
         serviceLocator
         .getConversations(userConnected.id,idUser)
@@ -606,23 +625,40 @@ var Conversation = (function(_super,$,environment){
                     //Iniciamos por defecto la primera conversación(la más reciente)
                     var conversation = conversations[0];
                 }
-                //Iniciamos el listado de conversaciones
-                initConversationList({
-                    idUser:idUser,
-                    conversations:conversations,
-                    active:conversation.id
-                });
-                //Iniciamos la conversación.
-                initConversation({
-                    id:conversation.id,
-                    name:conversation.name,
-                    user:idUser
-                });
+                console.log("Resolviendo esta promise de hay conversaciones");
+                deferred.resolve(conversations,conversation);
+                
+            }else{
 
+                self.notificator.dialog.prompt({
+                    title:"No tienes conversaciones con este usuario, debes proporcionar un nombre para crear una",
+                    label:"Crear nueva conversación",
+                    informer:"Introduce un nombre",
+                    placeholder:"conversación",
+                    onSuccess:function(name){
+                    
+                        serviceLocator
+                            .createConversation(userConnected.id,idUser,name)
+                            .done(function(conversation){
+                                console.log(conversation);
+                                deferred.resolve([conversation],conversation);
+                            })
+                            .fail(function(){
+                                deferred.reject();
+                            });
+
+                    },
+                    onCancel:function(){
+                        deferred.reject();
+                    }
+
+                });
             }
                 
         });
-       
+
+        return deferred.promise();
+            
     }
 
     // API Pública
@@ -634,8 +670,6 @@ var Conversation = (function(_super,$,environment){
         .getPendingMessages(userConnected.id)
         .done(function(messages){
             pendingMessages = messages;
-            console.log("MENSAJES PENDIENTES");
-            console.log(pendingMessages);
         })
         .fail(function(error){
         });
@@ -691,9 +725,6 @@ var Conversation = (function(_super,$,environment){
                     }
                 }
 
-            }).done(function(view){
-
-
             });
 
         }else{
@@ -709,13 +740,26 @@ var Conversation = (function(_super,$,environment){
             handlers:{
                 onCreate:onCreateViewConversations
             }
-
         }).done(function(view){
 
             var container = view.getView("conversationListContainer");
             if (!container.hasView(idUser)) {
-                //Creamos el entorno.
-               createEnvironmentFor(idUser,idConv);
+                //Obtenemos las conversaciones y la conversación a iniciar.
+                getConversationsFor(idUser,idConv).done(function(conversations,conversation){
+                    //Iniciamos el listado de conversaciones
+                    initConversationList({
+                        idUser:idUser,
+                        conversations:conversations,
+                        active:conversation.id
+                    });
+                    //Iniciamos la conversación.
+                    initConversation({
+                        id:conversation.id,
+                        name:conversation.name,
+                        user:idUser
+                    });
+                });
+
             }else{
                 console.log("Y existe entorno");
             }
