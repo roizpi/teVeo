@@ -22,7 +22,7 @@ class conversationController extends baseController{
             $sql->execute(array("idConv" => $conversations[$i]['id'],"idUser" => $idUserOne));
             $result = $sql->fetch(PDO::FETCH_ASSOC);
             $result["id"] = $idUserOne;
-            $conversations[$i]["userOne"] = $result;
+            $conversations[$i]["user_one"] = $result;
             //Obtenemos número de mensajes realizados por el user_two
             $sql = $this->conn->prepare('SELECT COUNT(*) AS mensajes
                                          FROM CONVERSACIONES C NATURAL JOIN CONVERSACIONES_NORMALES LEFT OUTER JOIN MENSAJES M ON(C.id = M.conversacion)
@@ -31,7 +31,7 @@ class conversationController extends baseController{
             $sql->execute(array("idConv" => $conversations[$i]['id'],"idUser" => $idUserTwo));
             $result = $sql->fetch(PDO::FETCH_ASSOC);
             $result["id"] = $idUserTwo;
-            $conversations[$i]["userTwo"] = $result;
+            $conversations[$i]["user_two"] = $result;
         }
         return array("response_message" =>array("type" => "RESPONSE","name" => "CONVERSACIONES_ENCONTRADAS","data" => array("error" => false,"msg" => $conversations)));
     }
@@ -51,26 +51,47 @@ class conversationController extends baseController{
         
         if($exito){
             $idConv = $this->conn->lastInsertId();
-            $sql = "INSERT INTO CONVERSACIONES_NORMALES (id,user_one,user_two)
-                    VALUES($idConv,:user_one,:user_two)";
-            //Preparamos la sentencia.                             
-            $stmt = $this->conn->prepare($sql);
-            //Bindeamos los datos.
-            $stmt->bindParam(':user_one',$idUserOne, PDO::PARAM_INT); 
-            $stmt->bindParam(':user_two',$idUserTwo, PDO::PARAM_INT); 
-            //Ejecutamos la sentencia.                                     
-            $exito = $stmt->execute();
-            if ($exito) {
-                //Consultamos datos de la conversación recién creada.
-                $resultConv = $this->conn->query("SELECT * FROM CONVERSACIONES_NORMALES_VIEW WHERE id = $idConv");    
-                $conversacion = $resultConv->fetch(PDO::FETCH_ASSOC);
-                $conversacion = array_map("utf8_encode",$conversacion);
-                return array(
-                    "response_message" => array("type" => "RESPONSE","name" => "CONVERSATION_CREATED","data" => array("error" => false,"msg" => $conversacion)),
-                     "event_message" => array("type" => "EVENT","name" => "NEW_CONVERSATION","targets" => array(array("id" => $idUserTwo, "data" => $conversacion)))
-                );
-            }
+            echo "Id de la conversación : $idConv" . PHP_EOL;
+            //Preparamos la sentencia
+            $sql = $this->conn->prepare('SELECT id,creacion,name,mensajes FROM CONVERSACIONES_NORMALES_VIEW WHERE id = :id');
+            //La ejecutamos bindeando los datos.
+            $sql->execute(array("id" => $idConv));
+            //Extraemos los resultados
+            $conversation = $sql->fetchAll(PDO::FETCH_ASSOC);
+            print_r($conversation);
+            $conversation = array_map("utf8_encode",$conversation);
+            $conversation["user_one"] = array(
+                "id" => $idUserOne,
+                "mensajes" => 0
+            );
+
+            $conversation["user_two"] = array(
+                "id" => $idUserTwo,
+                "mensajes" => 0
+            );
+
+            print_r($conversation);
+
+            $response =  array(
+                "response_message" => array(
+                    "type" => "RESPONSE",
+                    "name" => "CONVERSATION_CREATED",
+                    "data" => array(
+                        "error" => false,
+                        "msg" => $conversation
+                    )
+                ),
+                "event_message" => array(
+                    "type" => "EVENT",
+                    "name" => "NEW_CONVERSATION",
+                    "targets" => array(
+                        array("id" => $idUserTwo, "data" => $conversation)
+                    )
+                )
+            );
         }
+
+        return $response;
         
     }
     

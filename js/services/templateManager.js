@@ -382,18 +382,13 @@ var View = (function(_super,$,environment){
 		};
 	};
 
-	View.prototype.hideChild = function(id,remove) {
+	View.prototype.hideChild = function(id,remove,callback) {
 		var view = this.views && this.views[id];
 		if(view){
-			var self = this;
-			view.onBeforeHide();
-			//Ocultará elemento mediante animación configurada en animationout.
-			//si queremos eliminar el componente
-			view.hide(remove);
+			view.hide(remove,callback);
 			if (remove) {
 				delete this.views[id];
 			};
-			view.onAfterHide();
 		}
 	};
 

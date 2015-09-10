@@ -1,4 +1,3 @@
-
 var Conversation = (function(_super,$,environment){
 
     __extends(Conversation, _super);
@@ -94,6 +93,7 @@ var Conversation = (function(_super,$,environment){
             showMessage(message);
             //Actualizamos número de mensajes para la conversación
             updateNumberMessages(message.idConv,message.userId,MESSAGE_RECEIVED);
+            //Colocamos el scroll al final del contenedor.
             var container = viewConversations.getView("conversationContainer");
             container.scrollToLast();
            
@@ -241,6 +241,7 @@ var Conversation = (function(_super,$,environment){
             });
         });
 
+        //Manejadores para el panel de conversaciones.
         var convListContainer = viewConversations.getView("conversationListContainer");
         convListContainer.get().delegate("[data-action]","click",function(e){
             e.preventDefault();
@@ -260,7 +261,40 @@ var Conversation = (function(_super,$,environment){
                         title:"Eliminar Conversación " + conversation.name,
                         text:"¿Estás seguro que deseas eliminar esta conversación?. Todos sus mensajes serán eliminados",
                         onSuccess:function(){
-                            dropConversation(conversation);
+                            //Borramos la conversación.
+                            dropConversation(conversation,function(){
+
+                                var convList = convListContainer.getView(conversation.user);
+                                //Ocultamos el item de conversación.
+                                convList.hideChild(conversation.id,true,function(){
+                                    //Comprobamos si disponemos de más conversaciones.
+                                    if (convList.size()) {
+                                        console.log("Estas son las vistas...");
+                                        console.log(convList.getViews());
+                                    }else{
+                                        //Preguntamos al usuario si quiere crear nueva conversación.
+                                        self.notificator.dialog.confirm({
+                                            title:"Crear Nueva Conversación",
+                                            text:"No existen más conversaciones con este usuario, ¿Deseas crear una nueva?",
+                                            onSuccess:function(){
+                                                //Creamos nueva conversación.
+                                                createConversation(conversation.user,function(conversation){
+                                                    showItemConversation(conversation);
+                                                },function(){
+                                                    console.log("Fallo al crear conversación");
+                                                });
+                                            },
+                                            onCancel:function(){
+                                                //Notificamos que no quedan conversaciones.
+                                                self.triggerEvent("ANY_CONVERSATION_FOUND");
+                                            }
+                                        });
+                                                          
+                                    }
+
+                                });
+                                
+                            });
                         }
                     });
                 case 'SHOWBODY':
@@ -334,27 +368,50 @@ var Conversation = (function(_super,$,environment){
 
     }
 
-    var dropConversation = function(conversation){
-        console.log("Conversación a borrar : ");
-        console.log(conversation);
+    //Crea una nueva conversación.
+    //Solicita un nombre de conversación y procede a crearla.
+    //Adicionalmente recibe dos manejadores ejecutados en caso de éxito o error.
+    var createConversation = function(user,success,fail){
+
+        self.notificator.dialog.prompt({
+            title:"No tienes conversaciones con este usuario, debes proporcionar un nombre para crear una",
+            label:"Crear nueva conversación",
+            informer:"Introduce un nombre",
+            placeholder:"conversación",
+            onSuccess:function(name){
+                    
+                serviceLocator
+                    .createConversation(userConnected.id,user,name)
+                    .done(function(conversation){
+                        typeof(success) == "function" && success(conversation);
+                    })
+                    .fail(function(){
+                        typeof(fail) == "function" && fail();        
+                    });
+
+            },
+            onCancel:function(){
+                typeof(fail) == "function" && fail();
+            }
+
+        });
+
+    }
+    //Elimina una conversación especificada.
+    var dropConversation = function(conversation,callback){
+        //Utilizamos el servicio dropConversation para borrar la conversación y notificarlo al otro usuario.
         serviceLocator
         .dropConversation(conversation.id,conversation.user)
         .done(function(){
+            //Mostramos alerta de información en caso de éxito.
             self.notificator.dialog.alert({
                 title:"Conversación Borrada",
                 text:"La conversación " + conversation.name + " fue borrada con éxito",
                 level:"info"
             });
 
-            var convListContainer = viewConversations.getView("conversationListContainer");
-            var convList = convListContainer.getView(conversation.user);
-            //Comprobamos si disponemos de más conversaciones.
-            if (convList.size()) {
+            typeof(callback) == "function" && callback();
 
-            }else{
-                //Notificamos que no quedan conversaciones.
-                self.triggerEvent("ANY_CONVERSATION_FOUND");                  
-            }
         });
                   
     }
@@ -383,17 +440,23 @@ var Conversation = (function(_super,$,environment){
 
     //Función para crear la vista de cada uno de los item de conversación
     var showItemConversation = function(conversation){
+        console.log("Mostrando conversación");
+        console.log(conversation);
         //Obtenemos una referencia al contenedor del listado de conversaciones.
         var container = viewConversations.getView("conversationListContainer");
-        var idUser = conversation.userOne.id == userConnected.id ? conversation.userTwo.id : conversation.userOne.id;
+        var idUser = conversation.user_one.id == userConnected.id ? conversation.user_two.id : conversation.user_one.id;
+        console.log("Id del usuario : " + idUser);
         var convListView = container.getView(idUser);
+        console.log(convListView);
+        
         if(convListView){
+            console.log("Lis View Encontrado ....");
             var enviados = 0,recibidos = 0;
             //Si trae información sobre el número de mensajes enviado por cada usuario
             // lo recojemos, sino los consideramos como 0.
-            if(conversation.userOne && conversation.userTwo){
-                enviados = conversation.userOne.id == userConnected.id ? conversation.userOne.mensajes : conversation.userTwo.mensajes;
-                recibidos = conversation.userOne.id == userConnected.id ? conversation.userTwo.mensajes : conversation.userOne.mensajes;
+            if(conversation.user_one && conversation.user_two){
+                enviados = conversation.user_one.id == userConnected.id ? conversation.user_one.mensajes : conversation.user_two.mensajes;
+                recibidos = conversation.user_one.id == userConnected.id ? conversation.user_two.mensajes : conversation.user_one.mensajes;
             }
 
             var info = {
@@ -410,6 +473,14 @@ var Conversation = (function(_super,$,environment){
                 messages:conversation.mensajes,
                 messagesSent:enviados,
                 receivedMessages:recibidos
+            },{
+                handlers:{
+                    onAfterShow:function(view){
+                        if (conversation.active) {
+                            view.get().find("[data-body]").slideDown(500);
+                        };
+                    }
+                }
             });
 
         }
@@ -517,7 +588,7 @@ var Conversation = (function(_super,$,environment){
             
     }
 
-   
+    //Inicializa el panel de conversaciones.
     var initConversationList = function(data){
         //Obtenemos una referencia al contenedor de conversaciones.
         var container = viewConversations.getView("conversationListContainer");
@@ -531,18 +602,16 @@ var Conversation = (function(_super,$,environment){
             },{
                 handlers:{
                     onAfterFirstShow:function(view){
+                        console.log("Data a mostrar : ");
+                        console.log(data);
                         data.conversations && data.conversations.forEach(showItemConversation);
-                    },
-                    onAfterShow:function(view){
-                        var conv = view.getView(data.active);
-                        conv.addClass("active").getView('body').get().slideDown(500);
                     }
                 }
             });
         });
         
     }
-
+    //Inicia el panel de la conversación.
     var initConversation = function(conversation){
         currentConv = conversation;
         //Notificamos el cambio de conversación.
@@ -668,9 +737,10 @@ var Conversation = (function(_super,$,environment){
         .getConversations(userConnected.id,idUser)
         .done(function(conversations){
             if(conversations.length){
+                var idx = 0;
                 //Obtenemos la conversación a iniciar
                 if(idConv){
-                    var idx = conversations.map(function(conversation){
+                    idx = conversations.map(function(conversation){
                         return conversation.id;
                     }).indexOf(idConv);
                             
@@ -683,34 +753,22 @@ var Conversation = (function(_super,$,environment){
                     //Iniciamos por defecto la primera conversación(la más reciente)
                     var conversation = conversations[0];
                 }
+                //Marcamos la conversación activa.
+                conversations[(idx != -1 ? idx : 0)].active = true;
                 console.log("Resolviendo esta promise de hay conversaciones");
                 deferred.resolve(conversations,conversation);
                 
             }else{
 
-                self.notificator.dialog.prompt({
-                    title:"No tienes conversaciones con este usuario, debes proporcionar un nombre para crear una",
-                    label:"Crear nueva conversación",
-                    informer:"Introduce un nombre",
-                    placeholder:"conversación",
-                    onSuccess:function(name){
-                    
-                        serviceLocator
-                            .createConversation(userConnected.id,idUser,name)
-                            .done(function(conversation){
-                                console.log(conversation);
-                                deferred.resolve([conversation],conversation);
-                            })
-                            .fail(function(){
-                                deferred.reject();
-                            });
-
-                    },
-                    onCancel:function(){
-                        deferred.reject();
-                    }
-
+                createConversation(idUser,function(conversation){
+                    console.log("Conversación");
+                    console.log(conversation);
+                    deferred.resolve([conversation],conversation);
+                },function(){
+                    deferred.reject();
                 });
+
+                
             }
                 
         });
@@ -804,11 +862,11 @@ var Conversation = (function(_super,$,environment){
             if (!container.hasView(idUser)) {
                 //Obtenemos las conversaciones y la conversación a iniciar.
                 getConversationsFor(idUser,idConv).done(function(conversations,conversation){
+                    console.log("Iniciando paneles.....");
                     //Iniciamos el listado de conversaciones
                     initConversationList({
                         idUser:idUser,
-                        conversations:conversations,
-                        active:conversation.id
+                        conversations:conversations
                     });
                     //Iniciamos la conversación.
                     initConversation({
