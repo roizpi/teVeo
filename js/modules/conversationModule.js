@@ -277,14 +277,26 @@ var Conversation = (function(_super,$,environment){
                                             title:"Crear Nueva Conversación",
                                             text:"No existen más conversaciones con este usuario, ¿Deseas crear una nueva?",
                                             onSuccess:function(){
+                                                var remoteUser = conversation.user;
                                                 //Creamos nueva conversación.
-                                                createConversation(conversation.user,function(conversation){
+                                                createConversation(remoteUser,function(conversation){
+
+                                                    //La marcamos como activa.
+                                                    conversation.active = true;
                                                     showItemConversation(conversation);
+                                                    //Iniciamos esta conversación.
+                                                    initConversation({
+                                                        id:conversation.id,
+                                                        name:conversation.name,
+                                                        user:remoteUser
+                                                    });
+
                                                 },function(){
                                                     console.log("Fallo al crear conversación");
                                                 });
                                             },
                                             onCancel:function(){
+
                                                 //Notificamos que no quedan conversaciones.
                                                 self.triggerEvent("ANY_CONVERSATION_FOUND");
                                             }
@@ -295,6 +307,11 @@ var Conversation = (function(_super,$,environment){
                                 });
                                 
                             });
+                        },
+                        onCancel:function(){
+                            alert("Operación cancelada");
+                            //Notificamos que no quedan conversaciones.
+                            self.triggerEvent("ANY_CONVERSATION_FOUND");
                         }
                     });
                 case 'SHOWBODY':
@@ -477,8 +494,17 @@ var Conversation = (function(_super,$,environment){
                 handlers:{
                     onAfterShow:function(view){
                         if (conversation.active) {
-                            view.get().find("[data-body]").slideDown(500);
+                            view.get()
+                                .find("[data-action='restoreConversation']")
+                                .addClass("active")
+                                .end()
+                                .find("[data-body]")
+                                .slideDown(500);
+
                         };
+                    },
+                    onBeforeHide:function(view){
+                        view.get().find("[data-body]").slideUp();
                     }
                 }
             });
@@ -763,6 +789,7 @@ var Conversation = (function(_super,$,environment){
                 createConversation(idUser,function(conversation){
                     console.log("Conversación");
                     console.log(conversation);
+                    conversation.active = true;
                     deferred.resolve([conversation],conversation);
                 },function(){
                     deferred.reject();
@@ -862,7 +889,7 @@ var Conversation = (function(_super,$,environment){
             if (!container.hasView(idUser)) {
                 //Obtenemos las conversaciones y la conversación a iniciar.
                 getConversationsFor(idUser,idConv).done(function(conversations,conversation){
-                    console.log("Iniciando paneles.....");
+                    
                     //Iniciamos el listado de conversaciones
                     initConversationList({
                         idUser:idUser,
