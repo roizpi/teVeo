@@ -35,8 +35,9 @@ var Notificator = (function(_super,$,environment){
                 e.stopPropagation();
                 var action = this.dataset.action;
                 if(action == "success"){
-                    var text = $prompt.element.find("input[type='text']").val();
-                    typeof($prompt.onSuccess) == "function" && $prompt.onSuccess(text);
+                    var input = $prompt.element.find("input[type='text']");
+                    typeof($prompt.onSuccess) == "function" && $prompt.onSuccess(input.val());
+                    input.val("");
                 }else if(action == "cancel"){
                     typeof($prompt.onCancel) == "function" && $prompt.onCancel();
                 }
@@ -63,7 +64,7 @@ var Notificator = (function(_super,$,environment){
             //Manejador onSuccess
             if(data.onSuccess) $confirm.onSuccess = data.onSuccess;
             //Manejador onCancel
-            if(data.onCancel) $confirm.onCancel = data.onSuccess;
+            if(data.onCancel) $confirm.onCancel = data.onCancel;
             //Abrimos diálogo de confirmación.
             $confirm.open();
         };
@@ -80,7 +81,7 @@ var Notificator = (function(_super,$,environment){
             //Manejador onSuccess
             if(data.onSuccess) $prompt.onSuccess = data.onSuccess;
             //Manejador onCancel
-            if(data.onCancel) $prompt.onCancel = data.onSuccess;
+            if(data.onCancel) $prompt.onCancel = data.onCancel;
             $prompt.open();
         };
 

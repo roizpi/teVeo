@@ -101,11 +101,11 @@ var LoaderDataManager = (function(_super,$,environment){
 			var self = this;
 			//Resolvemos la petición
 			getData(request).done(function(data){
-
+				self.countRequest += 1;
 				if($.isPlainObject(request.callbacks) && !$.isEmptyObject(request.callbacks)){
                     
                     if (data && data.length) {
-                    	self.countRequest += 1;
+                    	
                     	request.callbacks.onDataLoaded(data);
                     }else{
                     	//Ningún resultado encontrado.

@@ -337,6 +337,10 @@ DESC: Distribuidores de contenidos.
   height: 100%;
 }
 
+.flex-block.flex-block-x-full{
+  width: 100%;
+}
+
 .flex-block.flex-liquid-content > *{
   flex:1 1 auto;
   max-height: 100%;
@@ -1292,6 +1296,8 @@ DESC: Distribuidores de contenidos.
 
 .conversation-list-wrapper .conversation-list{
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
   min-height: 100%;
 }
 
@@ -1956,6 +1962,8 @@ DESC: Distribuidores de contenidos.
 
 .conversation-wrapper{
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
   height: 70%;
   overflow-x:hidden;
   overflow-y:auto;
@@ -2013,6 +2021,7 @@ DESC: Distribuidores de contenidos.
   min-height: 40px;
   width: 60%;
   margin: 0 10.66667px;
+  min-width: 200px;
   max-width:300px;
   box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
   font-weight: 300;
@@ -2140,12 +2149,14 @@ DESC: Distribuidores de contenidos.
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  min-height: 50px;
   max-height: 50px;
 }
 
 .conversation-wrapper + .conversation-sendmessage > *{
   display: inline-block;
   vertical-align: top;
+  height: 50px;
 }
 
 
@@ -2154,11 +2165,12 @@ DESC: Distribuidores de contenidos.
   background-color: #fff;
   overflow: hidden; /*clear fix hack*/
   position: relative;
-  height: 100%;
 }
 
 .conversation-wrapper + .conversation-sendmessage .text > *{
   float: right;
+  display: inline-block;
+  height: 100%;
 }
 
 .conversation-wrapper + .conversation-sendmessage .text input[type=text]{
@@ -2173,11 +2185,10 @@ DESC: Distribuidores de contenidos.
 
 .conversation-wrapper + .conversation-sendmessage .text input[type=text]:focus{
   box-shadow: #4353FF 0px 0px 10px inset;
-  outline:1px solid #4353FF;
 }
 
 .conversation-wrapper + .conversation-sendmessage .text input[type=text] ~ label{
-  width: 8%;
+  width: 10%;
   line-height: 50px;
   text-align: center;
   color: #4353FF;
@@ -2572,7 +2583,7 @@ DESC: Distribuidores de contenidos.
 
 .sidenav{
   width: 40%;
-  max-width: 600px;
+  max-width: 450px;
   position: relative;
   will-change: transform;/*Hacking overflow hidden*/
 }
@@ -6333,12 +6344,5 @@ span.css-emoticon.nintendo-controller {
   margin:0 1rem;
 }
 
-
-/* Estilos customizados para los paneles de conversaciones*/
-
-#convPanel{
-  max-width: 1000px !important;
-  margin: 0 auto;
-}
 
 

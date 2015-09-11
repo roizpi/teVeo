@@ -1,7 +1,7 @@
 <div class="viewContainer" data-view="conversations" data-type='main'>
     <h2 class="view-tittle">Conversaciones</h2>
     
-    <div id='convPanel' class="view-content flex-block flex-block-full flex-liquid-content">
+    <div class="view-content flex-block flex-block-full flex-liquid-content">
         <article class="flex-block flex-block-y-full flex-direction-column flex-liquid-content">
             <header class="header flex-block">
                 <!-- Título de la Conversación -->
@@ -67,7 +67,7 @@
                                 <span data-view="convName" data-mark data-type='text'></span>
                             </div>
                             <div class="actions flex-block flex-direction-column flex-liquid-content" data-view='info' data-type='hidden'>
-                                <a class="action" data-action="restoreConversation" title="Restaurar conversación" href="#"><span class="fa fa-play-circle"></span></a> 
+                                <a class="action" data-view='restore' data-type='class' data-action="restoreConversation" title="Restaurar conversación" href="#"><span class="fa fa-play-circle"></span></a> 
                                 <a class="action" data-action="dropConversation" title="Borrar conversación" href="#"><span class="fa fa-trash-o"></span></a>
                             </div>
                         </div>
@@ -93,6 +93,11 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+
+            <div class="flex-block flex-block-x-full flex-direction-row flex-liquid-content">
+                <a href="#" data-view="createConv" title="Crear nueva conversación"  class="btn  btn-large  btn-action  invert">Crear</a>
+                <a href="#" data-view="drop_all_conversation" title="Borrar todas las conversaciones con este usuario" class="btn  btn-veryLarge  btn-action  invert">Borrar Todas</a>
             </div>
         </article>
     </div>

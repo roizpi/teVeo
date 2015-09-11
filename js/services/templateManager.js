@@ -186,29 +186,29 @@ var View = (function(_super,$,environment){
 		return this.views;
 	};
 
+	View.prototype.getViewIds = function() {
+		return Object.keys(this.views);
+	};
+
 	View.prototype.size = function() {
 		return Object.keys(this.views).length;
 	};
 	//Oculta y opcionalmente elimina un elemento.
 	View.prototype.hide = function(remove,callback) {
-
-		if (this.isVisible()) {
-			var self = this;
-			this.onBeforeHide();
-			if(this.animations && this.animations.animationOut){
-				console.log("Ocultando la vista");
-				console.log(this);
-				var animation = this.animations.animationOut;
-				this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
-					var $this = $(this);
-					$this.removeClass(animation);
-					remove ? $this.remove() : $this.detach();
-					typeof(callback) == "function" && callback();
-					self.onAfterHide();
-				});
-			}
-			
-		};
+		var deferred = $.Deferred();
+		var self = this;
+		this.onBeforeHide();
+		if(this.animations && this.animations.animationOut){
+			var animation = this.animations.animationOut;
+			this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
+				var $this = $(this);
+				$this.removeClass(animation);
+				remove ? $this.remove() : $this.detach();
+				deferred.resolve();
+				self.onAfterHide();
+			});
+		}
+		return deferred.promise();
 		
 	};
 	
@@ -385,7 +385,7 @@ var View = (function(_super,$,environment){
 	View.prototype.hideChild = function(id,remove,callback) {
 		var view = this.views && this.views[id];
 		if(view){
-			view.hide(remove,callback);
+			view.hide(remove).done(callback);
 			if (remove) {
 				delete this.views[id];
 			};
@@ -393,10 +393,18 @@ var View = (function(_super,$,environment){
 	};
 
 	View.prototype.hideAllChild = function(remove) {
+		var promises = [];
 		for(var view in this.views){
-			this.views[view].hide(remove);
+			var currentView = this.views[view];
+			if (currentView.isVisible()){
+				promises.push(currentView.hide(remove));
+			}
+			
 		};
-		return this;
+
+		//Sincronizamos todas las promises.
+        return $.when.apply($, promises);
+
 	};
 
 	View.prototype.hideChildsByFilter = function(remove,filter) {
@@ -432,6 +440,11 @@ var View = (function(_super,$,environment){
 			
 		};
 	};
+
+	View.prototype.dispatch = function(event) {
+		this.el.trigger(event);
+	};
+	
 
 	View.prototype.setChildValue = function(id,value) {
 		if (id && value) {
@@ -531,7 +544,7 @@ var TemplateManager = (function(_super,$,environment){
 
 		var currentActiveView = getCurrentActiveView(data.category,options.target);
 		if(currentActiveView){
-			currentActiveView.hide(false,function(){
+			currentActiveView.hide(false).done(function(){
 				//creamos la vista
 				var view = View.create(template,data,options);
 				typeof(callback) == "function" && callback(view);
@@ -550,7 +563,7 @@ var TemplateManager = (function(_super,$,environment){
 		console.log("ESTA es la vista actual");
 		console.log(currentActiveView);
 		if(currentActiveView){
-			currentActiveView.hide(false,function(){
+			currentActiveView.hide(false).done(function(){
 				//mostramos la vista
 				view.show(false);
 				typeof(callback) == "function" && callback(view);

@@ -94,6 +94,7 @@
   background-color: #fff;
 }
 
+.list .actions .action.active:nth-child(odd),
 .list .actions .action:nth-child(odd):hover{
   color: #4353FF !important;
   background-color: #fff;
