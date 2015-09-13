@@ -1,7 +1,7 @@
 var View = (function(_super,$,environment){
 
 
-	function View(el,id,type,category,name,animations,handlers,target,direction){
+	function View(el,id,type,category,name,animations,handlers,target,exclusions,direction){
 
 		this.el = el;
 		this.id = id;
@@ -11,6 +11,7 @@ var View = (function(_super,$,environment){
 		this.animations = animations;
 		this.handlers = handlers;
 		this.target = target;
+		this.exclusions = exclusions != null ? new RegExp(exclusions,"ig") : null;
 		this.direction = direction;
 		this.views = {};
 		this.templates={};
@@ -42,9 +43,11 @@ var View = (function(_super,$,environment){
 		var handlers = options && (options.handlers || {});
 		//Obtenemos el target (lugar donde se insertará la vista).
 		var target = $element.get(0).dataset.target || options.target || "body";
+		//Obtenemos las exclusiones.
+		var exclusions = $element.get(0).dataset.exclusions || options.exclusions || null;
 		var direction = options.direction;
 		$element.data("id",id);
-		var view = new View($element,id,type,category,name,animations,handlers,target,direction);
+		var view = new View($element,id,type,category,name,animations,handlers,target,exclusions,direction);
 		//los handlers se configuran mediante la API.
 		//mediante método setOnCreate
 		//Procesamos todos los componentes que contiene el elemento
@@ -94,44 +97,50 @@ var View = (function(_super,$,environment){
 				var view = this.views[key];
 				//recogemos el valor.
 				var value = data[view.name];
-				//recogemos el tipo.
-				var type = view.type &&  view.type.toUpperCase();
-				//Si se ha encontrado valor.
-				if (value && type) {
+	
+				if (value && (!this.exclusions || value.match(this.exclusions))) {
 
-					switch(type){
+					//recogemos el tipo.
+					var type = view.type &&  view.type.toUpperCase();
+					//Si se ha encontrado valor.
+					if (value && type) {
 
-						case 'IMG':
-							view.el.attr("src",value);
-							break;
-						case 'TEXT':
-							view.el.text(value);
-							break;
-						case 'HTML':
-							view.el.html(value);
-							break;
-						case 'BACKGROUND':
-							view.el.css("background-image","url("+value+")");
-							break;
-						case 'HIDDEN':
-							view.el.data(view.name,value);
-							break;
-						case 'DATA':
-							view.el.attr("data-"+view.name,value);
-							break;
-						case "CLASS":
-							view.el.addClass(value);
-							break;
-						case 'TOGGLE':
-							if(value == 'off') view.remove();
-							break;
-						default:
-							console.log("Valor no conocido");
-					}
-						
+						switch(type){
+
+							case 'IMG':
+								view.el.attr("src",value);
+								break;
+							case 'TEXT':
+								view.el.text(value);
+								break;
+							case 'HTML':
+								view.el.html(value);
+								break;
+							case 'BACKGROUND':
+								view.el.css("background-image","url("+value+")");
+								break;
+							case 'HIDDEN':
+								view.el.data(view.name,value);
+								break;
+							case 'DATA':
+								view.el.attr("data-"+view.name,value);
+								break;
+							case "CLASS":
+								view.el.addClass(value);
+								break;
+							case 'TOGGLE':
+								if(value == 'off') view.remove();
+								break;
+							default:
+								console.log("Valor no conocido");
+						}
+							
+					};
+
 				};
 
 				view._hydrate(data);
+					
 			}
 
 		}
@@ -213,8 +222,9 @@ var View = (function(_super,$,environment){
 	};
 	
 	View.prototype.show = function(first,callback) {
-		var self = this;
+		
 		if (!this.isVisible()) {
+			var self = this;
 			this.onBeforeShow();
 			if(this.animations && this.animations.animationIn){
 				var animation = this.animations.animationIn;
@@ -304,17 +314,20 @@ var View = (function(_super,$,environment){
 		return this;
 	};
 
-	View.prototype.filterChild = function(pattern) {
-		
+	View.prototype.filterChild = function(pattern,remove) {
+		var matches = [];
 		var pattern = new RegExp("("+pattern+")","i");
+		var self = this;
 		$.each(this.views,function(key,view){
 			if(view.match(pattern)){
-				this.show();
+				matches.push(view.getId());
+				!view.isVisible() && view.show();
 			}else{
-				this.hide(false);
+				view.isVisible() && self.hideChild(key,remove || false);
 			}
 			
 		});
+		return matches;
 	};
 
 	View.prototype.findChildsByClass = function(className) {
@@ -333,7 +346,8 @@ var View = (function(_super,$,environment){
 		if (viewName && value) {
 			for(var view in this.views){
 				var view = this.views[view];
-				if (view.getView(viewName).hasContent(value)) {
+				var child = view.getView(viewName);
+				if (child && child.hasContent(value)) {
 					result.push(view);
 				}
 			}
@@ -373,11 +387,28 @@ var View = (function(_super,$,environment){
 		}
 	};
 
-	View.prototype.removeNthChilds = function(n) {
+	View.prototype.removeNthFirstChilds = function(n) {
 		if (n && !isNaN(parseInt(n))) {
 			var self = this;
-			Object.keys(this.views).slice(0,n).forEach(function(view){
-				self.removeChild(view);
+			var utils = environment.getService("UTILS");
+			var keys = Object.keys(this.views).map(function(key){
+				return parseInt(key);
+			});
+			console.log("Claves antes de ordenar : " + keys);
+			var keys = utils.orderByBubbleShortAsc(keys);
+			console.log("Claves después de ordenar ");
+			console.log(keys);
+			keys.slice(0,n).forEach(function(key){
+				self.removeChild(key);
+			});
+		};
+	};
+
+	View.prototype.removeNthLastChilds = function(n) {
+		if (n && !isNaN(parseInt(n))) {
+			var self = this;
+			Object.keys(this.views).reverse().slice(0,n).forEach(function(key){
+				self.removeChild(key);
 			});
 		};
 	};
@@ -478,6 +509,13 @@ var View = (function(_super,$,environment){
 				console.log("Valor no conocido");
 			}
 		};
+	};
+
+	View.prototype.removeChildValue = function(id) {
+		var view = this.getView(id);
+		//recogemos el tipo.
+		var type = view.type &&  view.type.toUpperCase();
+		view.el.text("");
 	};
 
 	View.prototype.hasView = function(id) {

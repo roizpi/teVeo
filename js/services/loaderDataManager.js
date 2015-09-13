@@ -18,9 +18,9 @@ var LoaderDataManager = (function(_super,$,environment){
 
 		function LoaderData(config){
 			self = this;
-			this.countRequest;
-			this.lastFilterValue;
-			this.lastFilterField;
+			this.countData;
+			this.filterValue;
+			this.filterField;
 			this.minResultShown = config.minResultShown;
 			this.dataStepts = config.dataStepts;
 			this.service = config.service;
@@ -49,26 +49,26 @@ var LoaderDataManager = (function(_super,$,environment){
 
             if(config.filter){
             	request.filterText = config.filter.value;
-            	this.lastFilterValue = config.filter.value;
+            	this.filterValue = config.filter.value;
             	request.filterField = config.filter.field;
-                this.lastFilterField = config.filter.field;
+                this.filterField = config.filter.field;
                 isUpdateRequired = true;
             }else{
-            	request.filterText = this.lastFilterValue;
-            	request.filterField = this.lastFilterField;
+            	request.filterText = this.filterValue;
+            	request.filterField = this.filterField;
             }
 
             if(isUpdateRequired){
-				this.countRequest = 0;
+				this.countData = 0;
 				request.start = 0;
 				request.count = this.minResultShown;
 				
 			}else{
-				request.start = self.minResultShown * this.countRequest;
+				request.start = this.countData ;
 				if (config.limit) {
 					request.count = config.limit.count;
 				}else{
-					request.count = self.dataStepts;
+					request.count = this.dataStepts;
 				}
 				
 			}
@@ -101,12 +101,12 @@ var LoaderDataManager = (function(_super,$,environment){
 			var self = this;
 			//Resolvemos la petición
 			getData(request).done(function(data){
-				self.countRequest += 1;
+				
 				if($.isPlainObject(request.callbacks) && !$.isEmptyObject(request.callbacks)){
                     
                     if (data && data.length) {
-                    	
-                    	request.callbacks.onDataLoaded(data);
+                    	self.countData += data.length;
+                    	request.callbacks.onDataLoaded.apply(self,[data]);
                     }else{
                     	//Ningún resultado encontrado.
                     	request.callbacks.onNoDataFound();
@@ -118,7 +118,7 @@ var LoaderDataManager = (function(_super,$,environment){
 		};
 
 		LoaderData.prototype.resetTo = function(val) {
-			this.countRequest = val;
+			this.countData = val;
 		};
 
 

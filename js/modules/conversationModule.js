@@ -84,7 +84,11 @@ var Conversation = (function(_super,$,environment){
                     icon:photo,
                     body:"Acuda al tema " + utils.urldecode(message.convName)
                 });
-
+                //Obtenemos número de mensajes pendientes.
+                var count = pendingMessages.filter(function(pendingMessage){
+                    return pendingMessage.idConv == message.idConv ? true : false;
+                }).length;
+                updateNumberPendingMessages(message.userId,message.idConv,count);
                 //Notificamos que hay un nuevo mensaje no visto.
                 self.triggerEvent("NEW_PENDING_MESSAGE");
                     
@@ -99,17 +103,12 @@ var Conversation = (function(_super,$,environment){
            
         });
 
-        //Manejador para el evento TALK_USER_CHANGES
-        //Este Evento se produce cuando un usuario cambia de conversación
-        serviceLocator.addEventListener("TALK_USER_CHANGES",function(response){
-            console.log("TALK_USER_CHANGES : ");
-            console.log(response);
-        });
-
-        //Manejador para el evento NEW_MESSAGE.
+        //Manejador para el evento MENSAJES_LEIDOS.
         //Este Evento se produce cuando un usuario ha visto un mensaje escrito
         // por este usuario.
         serviceLocator.addEventListener("MENSAJES_LEIDOS",function(response){
+            console.log("Mensajes leidos");
+            console.log(response);
             if(viewConversations){
                 var container = viewConversations.getView("conversationContainer");
                 for(var i = 0,len = response.convs.length; i < len; i++){
@@ -131,8 +130,50 @@ var Conversation = (function(_super,$,environment){
             }
             
         });
-            
 
+        //Manejador para el evento TALK_USER_CHANGES
+        //Este Evento se produce cuando un usuario cambia de conversación
+        serviceLocator.addEventListener("TALK_USER_CHANGES",function(response){
+            console.log("TALK_USER_CHANGES");
+            console.log(response);
+            var conv = getConversationItem(response.idUser,response.idConv);
+            if (conv) {
+                conv.setChildValue("visible","on");
+            };
+        });
+
+        //Manejador para el evento NEW_CONVERSATION
+        //Un usuario de su lista de contacto quiere iniciar una nueva conversación
+        serviceLocator.addEventListener("NEW_CONVERSATION",function(conversation){
+            console.log("Nueva conversación recibida");
+            console.log(conversation);
+            var idUser = userConnected.id == conversation.user_one.id ? conversation.user_two.id : conversation.user_one.id;
+            var user = self.contacts.getContactById(idUser);
+            //Reproducimos sonido
+            $.ionSound.play("acceptYourApplication");
+            self.notificator.throwNotification({
+                title:"Nueva Conversación iniciada",
+                icon:user.data.foto,
+                body:user.data.name + " quiere hablar contigo sobre : " + conversation.name
+            });
+            //Mostramos el item de conversación.
+            showItemConversation(conversation);
+        });
+
+        //Manejador para el evento DROP_CONVERSATION.
+        //Un usuario a borrado eliminado un tema.
+        serviceLocator.addEventListener("DROP_CONVERSATION",function(conversation){
+            var idUser = userConnected.id == conversation.user_one ? conversation.user_two : conversation.user_one;
+            var user = self.contacts.getContactById(idUser);
+            //Reproducimos sonido
+            $.ionSound.play("acceptYourApplication");
+            self.notificator.throwNotification({
+                title:"Conversación Borrada",
+                icon:user.data.foto,
+                body:user.data.name + " ha borrado la conversación : " + conversation.name
+            });
+        });
+        
     }
 
 
@@ -149,21 +190,10 @@ var Conversation = (function(_super,$,environment){
                 var container = viewConversations.getView("conversationContainer");
                 //obtenemos una referencia a la conversación actual.
                 var conv =  container.getView(currentConv.id);
-                var exclusions = [];
-                //Creamos la expresión regular especificando el valor como una captura.
-                var regExp = new RegExp("(" + text + ")","i");
-                //Recorremos los mensajes actuales en el DOM si existen.
-                conv.hideChildsByFilter(true,function(message){
-                    if (message.getView("text").get().text().match(regExp)) {
-                        exclusions.push(message.getId());
-                        return false; 
-                    }else{
-                        return true;
-                    }
-                });
+                var exclusions = conv.filterChild(text,true);
                 console.log("Estas son las exclusiones");
                 console.log(exclusions);
-
+                console.log(conv.size());
                 if (conv.size() < MIN_MESSAGES_BY_CONV) {
                     //Obtenemos la diferencia.
                     var diff = MIN_MESSAGES_BY_CONV - conv.size();
@@ -186,8 +216,10 @@ var Conversation = (function(_super,$,environment){
                                     showMessage(message,{
                                         direction:"asc"
                                     });
-                                    container.scrollAt(view.getHeight());
                                 });
+
+                                //Colocamos el scroll al final.
+                                container.scrollToLast();
                             },
                             onNoDataFound:function(){
                                 self.notificator.dialog.alert({
@@ -331,6 +363,7 @@ var Conversation = (function(_super,$,environment){
                     id:currentConv.id,
                     callbacks:{
                         onDataLoaded:function(messages){
+                            console.log("Filtro actual : " + this.filterValue);
                             //Mostramos cada mensaje.
                             messages.forEach(function(message){
                                 showMessage(message,{
@@ -396,6 +429,36 @@ var Conversation = (function(_super,$,environment){
 
     }
 
+
+    var getConversationPanel = function(idUser){
+        //Obtenemos el contenedor del panel de conversación.
+        var container = viewConversations.getView("conversationListContainer");
+        //Obtenemos el panel del usuario con el id especificado.
+        var convListView = container.getView(idUser);
+        return convListView;
+    }
+
+    var getConversationItem = function(idUser,idConv){
+        var conv = null;
+        //Obtenemos el contenedor del panel de conversación.
+        var container = viewConversations.getView("conversationListContainer");
+        //Obtenemos el panel del usuario con el id especificado.
+        var convListView = container.getView(idUser);
+        if (convListView) {
+            conv = convListView.getView(idConv);
+        }
+        return conv;
+    }
+
+    var getConversation = function(idConv){
+        //Obtenemos una referencia al contenedor de conversaciones.
+        var container = viewConversations.getView("conversationContainer");
+        var conv = container.getView(idConv);
+        return conv;
+    }
+
+
+
     //Crea una nueva conversación.
     //Solicita un nombre de conversación y procede a crearla.
     //Adicionalmente recibe dos manejadores ejecutados en caso de éxito o error.
@@ -444,12 +507,25 @@ var Conversation = (function(_super,$,environment){
                   
     }
 
+    //Actualiza contador de número de mensajes pendientes.
+    var updateNumberPendingMessages = function(idUser,idConv,value){
+        //Obtenemos el item de conversación.
+        var conv = getConversationItem(idUser,idConv);
+        if (conv) {
+            if (value) {
+                conv.setChildValue("pending",value);
+            }else{
+                conv.removeChildValue("pending");
+            }
+            
+        };
+
+    }
+
     //Actualiza número de mensajes.
     var updateNumberMessages = function(idConv,idUser,type){
-        var container = viewConversations.getView("conversationListContainer");
-        var convListView = container.getView(idUser);
         //Obtenemos el item de conversación.
-        var conv = convListView.getView(idConv);
+        var conv = getConversationItem(idUser,idConv);
         var messages = conv.getView("messages").get();
 
         if ((type == MESSAGE_RECEIVED) || (type == MESSAGE_SENT) ) {
@@ -462,21 +538,13 @@ var Conversation = (function(_super,$,environment){
             el.text(parseInt(el.text()) - 1);
         }
         
-
-        
     }
 
     //Función para crear la vista de cada uno de los item de conversación
     var showItemConversation = function(conversation){
-        console.log("Mostrando conversación");
-        console.log(conversation);
-        //Obtenemos una referencia al contenedor del listado de conversaciones.
-        var container = viewConversations.getView("conversationListContainer");
         var idUser = conversation.user_one.id == userConnected.id ? conversation.user_two.id : conversation.user_one.id;
-        console.log("Id del usuario : " + idUser);
-        var convListView = container.getView(idUser);
-        console.log(convListView);
-        
+        var convListView = getConversationPanel(idUser);
+
         if(convListView){
             var enviados = 0,recibidos = 0;
             //Si trae información sobre el número de mensajes enviado por cada usuario
@@ -485,6 +553,12 @@ var Conversation = (function(_super,$,environment){
                 enviados = conversation.user_one.id == userConnected.id ? conversation.user_one.mensajes : conversation.user_two.mensajes;
                 recibidos = conversation.user_one.id == userConnected.id ? conversation.user_two.mensajes : conversation.user_one.mensajes;
             }
+
+            //Obtenemos número de mensajes pendientes.
+            var pending = pendingMessages.filter(function(message){
+                return message.idConv == conversation.id ? true : false;
+            }).length;
+
 
             var info = {
                 id:conversation.id,
@@ -499,7 +573,9 @@ var Conversation = (function(_super,$,environment){
                 creation:conversation.creacion,
                 messages:conversation.mensajes,
                 messagesSent:enviados,
-                receivedMessages:recibidos
+                receivedMessages:recibidos,
+                pending:pending,
+                visible:'off'
             },{
                 handlers:{
                     onAfterShow:function(view){
@@ -520,11 +596,8 @@ var Conversation = (function(_super,$,environment){
 
     //Función para insertar mensajes en el DOM.
     var showMessage = function(message,options){
-
-        //Obtenemos una referencia al contenedor de conversaciones.
-        var container = viewConversations.getView("conversationContainer");
-        var convView = container.getView(message.idConv);
-        if(convView){
+        var conv = getConversation(message.idConv)
+        if(conv){
 
             var status = "fa-eye-slash";
             
@@ -551,14 +624,14 @@ var Conversation = (function(_super,$,environment){
 
             var direction = (options && options.direction && options.direction.toUpperCase() == "ASC" ) ? "ASC" : "DESC";
 
-            convView.createView("message",{
+            conv.createView("message",{
                 id:message.id,
                 photo:photo,
                 authorName:utils.urldecode(message.userName),
                 creation:message.creacion,
                 status:status,
                 close:closeStatus,
-                text:utils.utf8_encode(message.text)
+                text:message.text
             },{
                 handlers:{
                     onCreate:function(view){
@@ -645,7 +718,7 @@ var Conversation = (function(_super,$,environment){
     var initConversation = function(conversation){
         currentConv = conversation;
         //Notificamos el cambio de conversación.
-        serviceLocator.notifyChangeOfConversation(currentConv.user,currentConv.id);
+        serviceLocator.notifyChangeOfConversation(userConnected.id,currentConv.user,currentConv.id);
         
         if (loaderManager.existsLoader(currentConv.id)) {
             loaderData = loaderManager.getLoader(currentConv.id);
@@ -672,7 +745,8 @@ var Conversation = (function(_super,$,environment){
                 },{
                     handlers:{
                         onAfterFirstShow:function(view){
-
+                            console.log("Conversación....");
+                            console.log(view);
                             loaderData.load({
                                 id:conversation.id,
                                 filter:{
@@ -688,40 +762,7 @@ var Conversation = (function(_super,$,environment){
                                             });
                                         });
 
-                                        container.scrollAt(view.getHeight());
-
-                                        //Recogemos los mensajes que hemos recibido y que no hemos visto
-                                        var unseenMessages = messages.filter(function(message){
-                                            if(message.status == "NOLEIDO" && message.userId !== userConnected.id){
-                                                return true;
-                                            }else{
-                                                return false;
-                                            }
-                                        });
-                                        console.log("Mensajes no vistos");
-                                        console.log(unseenMessages);
-                                        //Comprobamos si hemos encontrado alguno.
-                                        if(unseenMessages.length){
-                                            //Actualizamos los mensajes "NOLEIDOS" a "LEIDOS"
-                                            serviceLocator
-                                            .updateMessagesStatus(currentConv.user,unseenMessages.map(function(message){
-                                                return {
-                                                    id:message.id,
-                                                    emisor:message.userId,
-                                                    idConv:message.idConv
-                                                };
-                                            })).done(function(ids){
-                                                pendingMessages = pendingMessages.filter(function(message){
-                                                    if(ids.indexOf(message.id) == -1){
-                                                        return true;
-                                                    }else{
-                                                        return false;   
-                                                    }
-                                                });
-                                                //Notificamos que el usuario acaba de ver mensajes nuevos.
-                                                self.triggerEvent("VIEWED_POST");
-                                            });
-                                        }  
+                                        container.scrollAt(view.getHeight()); 
                                     },
                                     onNoDataFound:function(){
                                         self.notificator.dialog.alert({
@@ -736,15 +777,51 @@ var Conversation = (function(_super,$,environment){
                         },
                         onAfterShow:function(view){
                             container.scrollAt(view.getHeight());
+                            
+                            //Recogemos los mensajes que hemos recibido y que no hemos visto
+                            var unseenMessages = pendingMessages.filter(function(message){
+                                if(message.idConv == currentConv.id && message.status == "NOLEIDO" && message.userId !== userConnected.id){
+                                    return true;
+                                }else{
+                                    return false;
+                                }
+                            });
+                            
+                            console.log("Mensajes no vistos");
+                            console.log(unseenMessages);
+                            //Comprobamos si hemos encontrado alguno.
+                            if(unseenMessages.length){
+                                updateNumberPendingMessages(currentConv.user,currentConv.id,"");
+                                //Actualizamos los mensajes "NOLEIDOS" a "LEIDOS"
+                                serviceLocator
+                                    .updateMessagesStatus(currentConv.user,unseenMessages.map(function(message){
+                                        return {
+                                            id:message.id,
+                                            emisor:message.userId,
+                                            idConv:message.idConv
+                                        };
+                                    })).done(function(ids){
+                                        pendingMessages = pendingMessages.filter(function(message){
+                                            return ids.indexOf(message.id) >= 0 ? false : true;
+                                        });
+                                        //Notificamos que el usuario acaba de ver mensajes nuevos.
+                                        self.triggerEvent("VIEWED_POST");
+                                    });
+                            }  
+
+                            
                         },
                         onBeforeHide:function(view){
                             container.scrollAt(view.getHeight());
+                            console.log(view);
+                            console.log("Número de mensajes de la conv : " + view.size());
                             if (view.size() > MAX_MESSAGES_BY_CONV) {
                                 var diff = view.size() - MAX_MESSAGES_BY_CONV;
-                                view.removeNthChilds(diff);
-                                var pos = (MAX_MESSAGES_BY_CONV - MIN_MESSAGES_BY_CONV) / MESSAGES_STEPS + 1;
-                                console.log("Posición a la que se reseteará : " + pos + " la conversacion : " + view.getId());
-                                loaderManager.resetLoaderTo(view.getId(),pos);
+                                console.log("Esta es la diferencia :");
+                                console.log(diff);
+                                view.removeNthFirstChilds(diff);
+                                console.log("Valor a resetear : " + view.size());
+                                loaderManager.resetLoaderTo(view.getId(),MAX_MESSAGES_BY_CONV);
                             };   
                         }
                     }
@@ -808,6 +885,9 @@ var Conversation = (function(_super,$,environment){
     Conversation.prototype.onCreate = function() {
         //Configuramos los manejadores generales
         attachHandlers();
+        /*Retornamos la promise del servicio getPendingMessages
+        para que el administrador de módulos espere a que estén
+        los mensajes pendientes cargados*/
         return serviceLocator
         .getPendingMessages(userConnected.id)
         .done(function(messages){
@@ -895,12 +975,7 @@ var Conversation = (function(_super,$,environment){
                         idUser:idUser,
                         conversations:conversations
                     });
-                    //Iniciamos la conversación.
-                    initConversation({
-                        id:conversation.id,
-                        name:conversation.name,
-                        user:idUser
-                    });
+    
                 });
 
             }else{

@@ -5,9 +5,8 @@ class conversationController extends baseController{
     //Obtiene todas las conversaciones en las que participa estos usuarios.
     public function getConversations($idUserOne,$idUserTwo){
         //Preparamos la sentencia
-        $sql = $this->conn->prepare('SELECT id,creacion,name,mensajes FROM CONVERSACIONES_NORMALES_VIEW 
-                                        WHERE (user_one = :idUserOne AND user_two = :idUserTwo) OR (user_one = :idUserTwo AND user_two = :idUserOne)
-                                        ORDER BY creacion DESC');
+        $sql = $this->conn->prepare('SELECT id,DATE_FORMAT(creacion,"%d/%m/%Y %h:%i:%s") as creacion,name,mensajes FROM CONVERSACIONES_NORMALES_VIEW 
+                                        WHERE (user_one = :idUserOne AND user_two = :idUserTwo) OR (user_one = :idUserTwo AND user_two = :idUserOne)');
         //La ejecutamos bindeando los datos.
         $sql->execute(array("idUserOne" => $idUserOne,"idUserTwo" => $idUserTwo));
         //Extraemos los resultados
@@ -303,7 +302,7 @@ class conversationController extends baseController{
         );
     }
 
-    public function notifyConversationCurrentlyViewing($receptor,$idConv){
+    public function notifyConversationCurrentlyViewing($emisor,$receptor,$idConv){
         return array(
             "response_message" => array(
                 "type" => "RESPONSE",
@@ -317,7 +316,7 @@ class conversationController extends baseController{
                 "type" => "EVENT",
                 "name" => "TALK_USER_CHANGES",
                 "targets" => array(
-                    array("id" => $receptor, "data" => $idConv)
+                    array("id" => $receptor, "data" => array('idUser' => $emisor,'idConv' => $idConv ))
                 )
             )
         );

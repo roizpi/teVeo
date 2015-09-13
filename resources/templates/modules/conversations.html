@@ -62,9 +62,11 @@
                 <ul class="list conversation-list animateView" data-view='conversationList' data-type='template' data-animationin="zoomInUp" data-animationout="zoomOutDown">
                     <li class="conversation-item animateView" data-action="showBody" data-view="conversationItem" data-type='template' data-animationin="slideInLeft" data-animationout="slideOutLeft">
                         <div class="conversation-item-header" >
-                            <div class="data singleLine" data-newmessages="0">
+                            <div class="data singleLine">
                                 <span class="fa fa-weixin"></span>
                                 <span data-view="convName" data-mark data-type='text'></span>
+                                <span class='fa fa-eye visible' data-view='visible' data-type='toggle'></span>
+                                <span class='pending' data-view='pending' data-type='text' data-exclusions='0'></span>
                             </div>
                             <div class="actions flex-block flex-direction-column flex-liquid-content" data-view='info' data-type='hidden'>
                                 <a class="action" data-view='restore' data-type='class' data-action="restoreConversation" title="Restaurar conversación" href="#"><span class="fa fa-play-circle"></span></a> 

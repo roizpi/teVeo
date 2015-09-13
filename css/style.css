@@ -1322,7 +1322,37 @@ DESC: Distribuidores de contenidos.
   width: 80%;
   line-height: 70px;
   text-transform: capitalize;
+  position: relative;
 }
+
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header .data .visible,
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header .data .pending:not(:empty){
+  position: absolute;
+  top: 20%;bottom:20%;right: 5%;
+  font-size: .7em;
+  font-weight: 900;
+  padding: .8rem 1.5rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header .data .pending:not(:empty){
+  color: #000;
+  background-color: yellow;
+  -webkit-animation-name: pending;
+  animation-name: pending;
+  -webkit-animation-duration:.5s;
+  animation-duration: .5s;
+  -webkit-animation-iteration-count:infinite;
+  animation-iteration-count: infinite;
+}
+
+.conversation-list-wrapper .conversation-list .conversation-item .conversation-item-header .data .visible{
+  background-color: #fff;
+  color: #4353FF;
+  font-size: 1.5em;
+}
+
 
 .conversation-list-wrapper .conversation-list .conversation-item .conversation-item-body{
   display: none;
@@ -6039,7 +6069,7 @@ span.css-emoticon.nintendo-controller {
 
 
 
-@-webkit-keyframes newMessages{
+@-webkit-keyframes pending{
     0%{
         box-shadow: none;
     }
@@ -6048,7 +6078,7 @@ span.css-emoticon.nintendo-controller {
     }
 }
 
-@keyframes newMessages{
+@keyframes pending{
     0%{
         box-shadow: none;
     }

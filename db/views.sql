@@ -60,9 +60,10 @@ AS
 
 CREATE VIEW CONVERSACIONES_NORMALES_VIEW
 AS
-    SELECT C.id AS id,DATE_FORMAT(C.creacion,"%d/%m/%Y %h:%i:%s") AS creacion,name,user_one,user_two,COUNT(M.id) AS MENSAJES
+    SELECT C.id AS id,M.creacion as creacion,name,user_one,user_two,COUNT(M.id) AS MENSAJES
     FROM CONVERSACIONES C NATURAL JOIN CONVERSACIONES_NORMALES LEFT OUTER JOIN MENSAJES M ON(C.id = M.conversacion)
-    GROUP BY C.id;
+    GROUP BY C.id
+    ORDER BY creacion DESC;
 
 
 CREATE VIEW CONVERSACIONES_GRUPALES_VIEW

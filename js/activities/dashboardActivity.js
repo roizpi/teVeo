@@ -254,8 +254,11 @@ var DashboardActivity = (function(environment,$){
 	DashboardActivity.prototype.onResume = function() {
         //Obtenemos la información del usuario.
         var user = sessionManager.getUser();
+        console.log("Infomración del usuario");
+        console.log(user);
         //Aplicamos animaciones.
         var panelMenu = self.view.getView("panelMenu");
+        panelMenu.setChildValue("name",user.name);
         panelMenu.get().removeClass("slideOutLeft").addClass("slideInLeft").one("Webkitanimationend animationend",function(){
             panelMenu.getView("userImage").get().attr("src",user.foto).addClass("cutEffect-visible");
         });
@@ -278,6 +281,8 @@ var DashboardActivity = (function(environment,$){
 
         //Notifica al usuario la existencia de mensajes que no ha leído
         var pendingMessages = this.modules["conversation"].getPendingMessages();
+        console.log("Mensajes pendientes");
+        console.log(pendingMessages);
         if(pendingMessages){
             $.ionSound.play("acceptYourApplication");
             //lanzamos notificación
