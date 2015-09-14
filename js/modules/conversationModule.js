@@ -22,6 +22,8 @@ var Conversation = (function(_super,$,environment){
     var userConnected;
     var utils;
     var currentConv;
+    var currentTalksRemoteUsers = {};
+    var current
     var title;
 
     function Conversation(webSpeech,notificator,contacts){
@@ -102,7 +104,26 @@ var Conversation = (function(_super,$,environment){
             container.scrollToLast();
            
         });
+        
+        //Manejador para el evento DELETE_MESSAGE.
+        //Evento producido cuando el usuario borra un mensaje que este usuario todavía no ha visualizado.
+        serviceLocator.addEventListener("DELETE_MESSAGE",function(message){
+            console.log("DELETE_MESSAGE...");
+            console.log(message);
+            var conv = getConversation(message.conv);
+            conv && conv.removeChild(message.id);
+            //Eliminamos el mensaje de la lista de mensajes pendientes.
+            var idx = pendingMessages.map(function(pendingMessage){
+                return pendingMessage.id;
+            }).indexOf(message.id);
+            
+            pendingMessages = pendingMessages.splice(idx,1);
+            //Obtenemos total de mensajes.
+            var count = self.getPendingMessagesByConv(message.conv);
+            updateNumberPendingMessages(message.user,message.conv,count);
 
+        });
+        
         //Manejador para el evento MENSAJES_LEIDOS.
         //Este Evento se produce cuando un usuario ha visto un mensaje escrito
         // por este usuario.
@@ -134,12 +155,28 @@ var Conversation = (function(_super,$,environment){
         //Manejador para el evento TALK_USER_CHANGES
         //Este Evento se produce cuando un usuario cambia de conversación
         serviceLocator.addEventListener("TALK_USER_CHANGES",function(response){
-            console.log("TALK_USER_CHANGES");
-            console.log(response);
-            var conv = getConversationItem(response.idUser,response.idConv);
-            if (conv) {
-                conv.setChildValue("visible","on");
-            };
+
+            if (!currentTalksRemoteUsers[response.idUser]) {
+                //Notificamos el cambio de conversación.
+                serviceLocator.notifyChangeOfConversation(userConnected.id,currentConv.user,currentConv.id);
+                //Guardamos como activa esta conversación para el usuario remoto.
+                currentTalksRemoteUsers[response.idUser] = response.idConv;
+                var conv = getConversationItem(response.idUser,response.idConv);
+                conv && conv.setChildValue("visible","on");
+            }else{
+
+                if (currentTalksRemoteUsers[response.idUser] != response.idConv) {
+                    var lastConv = getConversationItem(response.idUser,currentTalksRemoteUsers[response.idUser]);
+                    lastConv && lastConv.setChildValue("visible","off");
+                    //Guardamos como activa esta conversación para el usuario remoto.
+                    currentTalksRemoteUsers[response.idUser] = response.idConv;
+                    var conv = getConversationItem(response.idUser,response.idConv);
+                    conv && conv.setChildValue("visible","on");
+
+                };
+
+            }
+
         });
 
         //Manejador para el evento NEW_CONVERSATION
@@ -177,6 +214,7 @@ var Conversation = (function(_super,$,environment){
     }
 
 
+    //Manejadores para la vista de conversaciones.
     var onCreateViewConversations = function(view){
         viewConversations = view;
 
@@ -211,10 +249,14 @@ var Conversation = (function(_super,$,environment){
                         exclusions:exclusions,
                         callbacks:{
                             onDataLoaded:function(messages){
+                                console.log("Estos son los mensajes devueltos....");
+                                console.log(messages);
+                                var filter = this.filterValue;
                                 //Mostramos cada mensaje.
                                 messages.forEach(function(message){
                                     showMessage(message,{
-                                        direction:"asc"
+                                        direction:"asc",
+                                        filter:filter
                                     });
                                 });
 
@@ -267,6 +309,9 @@ var Conversation = (function(_super,$,environment){
                 $.ionSound.play("acceptYourApplication");
                 //Actualizamos número de mensajes para la conversación
                 updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_SENT);
+                //Incrementamos el cargador de datos.
+                var loaderData = loaderManager.getLoader(currentConv.id);
+                loaderData.increaseAmount(1);
             })
             .fail(function(){
                 //fallo al enviar el mensaje.
@@ -363,11 +408,12 @@ var Conversation = (function(_super,$,environment){
                     id:currentConv.id,
                     callbacks:{
                         onDataLoaded:function(messages){
-                            console.log("Filtro actual : " + this.filterValue);
+                            var filter = this.filterValue;
                             //Mostramos cada mensaje.
                             messages.forEach(function(message){
                                 showMessage(message,{
-                                    direction:"asc"
+                                    direction:"asc",
+                                    filter:filter
                                 });
                             });
                             //Colocamos el scroll en el primer mensaje a mostrar.
@@ -376,7 +422,7 @@ var Conversation = (function(_super,$,environment){
                         },
                         onNoDataFound:function(){
                             self.notificator.dialog.alert({
-                                title:"Ningún Mensaje Encontrado",
+                                title:"Final de la conversación",
                                 text:"No se encontrarón más mensajes para esta conversación",
                                 level:"info"
                             });
@@ -396,12 +442,15 @@ var Conversation = (function(_super,$,environment){
             var $this = $(this);
             var id = $this.parents(".message-wrapper").data("id");
             //Borramos el mensaje.
-            serviceLocator.deleteMessage(id)
+            serviceLocator.deleteMessage(userConnected.id,currentConv.user,currentConv.id,id)
             .done(function(){
-                console.log("Borrado Mensaje con id : " + id);
                 container.getView(id).hide(true);
                 //Actualizamo el contandor de mensajes.
                 updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_DELETED);
+                //Incrementamos el cargador de datos.
+                var loaderData = loaderManager.getLoader(currentConv.id);
+                loaderData.decrementAmount(1);
+
             }).fail(function(){
                 self.notificator.dialog.alert({
                     title:"Mensaje no borrado",
@@ -456,8 +505,6 @@ var Conversation = (function(_super,$,environment){
         var conv = container.getView(idConv);
         return conv;
     }
-
-
 
     //Crea una nueva conversación.
     //Solicita un nombre de conversación y procede a crearla.
@@ -640,6 +687,10 @@ var Conversation = (function(_super,$,environment){
                         }else{
                             view.get().addClass("receptor");
                         }
+                        if (options) {
+                            options.filter && view.highlight(options.filter);
+                        };
+                        
                     }
                 },
                 animations:{
@@ -755,14 +806,17 @@ var Conversation = (function(_super,$,environment){
                                 },
                                 callbacks:{
                                     onDataLoaded:function(messages){
+                                        var filter = this.filterValue;
+                                        console.log("Este es el valor del filtro actual : " + filter);
                                         //Mostramos cada mensaje.
                                         messages.forEach(function(message){
                                             showMessage(message,{
-                                                direction:"asc"
+                                                direction:"asc",
+                                                filter:filter
                                             });
                                         });
 
-                                        container.scrollAt(view.getHeight()); 
+                                        container.scrollToLast();
                                     },
                                     onNoDataFound:function(){
                                         self.notificator.dialog.alert({
@@ -896,6 +950,12 @@ var Conversation = (function(_super,$,environment){
         .fail(function(error){
         });
         
+    };
+
+    Conversation.prototype.getPendingMessagesByConv = function(idConv) {
+        return pendingMessages.filter(function(pendingMessage){
+            return pendingMessage.idConv == idConv ? true : false;
+        }).length;
     };
 
     //Devuelve el número de mensajes no leídos.

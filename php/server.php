@@ -242,7 +242,7 @@ class ServerSocket extends WebSocketServer {
                     "action_name" => "deleteMessage"
                 ),
                 "token_required" => true,
-                "throw_event" => false
+                "throw_event" => true
             ),
             "UPDATE_MSG_STATUS" => array(
                 "controller" => array(

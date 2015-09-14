@@ -129,7 +129,7 @@ var View = (function(_super,$,environment){
 								view.el.addClass(value);
 								break;
 							case 'TOGGLE':
-								if(value == 'off') view.remove();
+								value === 'on' ? view.show() : view.hide(false);
 								break;
 							default:
 								console.log("Valor no conocido");
@@ -302,11 +302,20 @@ var View = (function(_super,$,environment){
 		if(text.search(pattern) == -1){
 			return false;
 		}else{
-			//El texto encaja con el patrón, señalamos en que parte.
-			//Con $1 hacemos referencia a la captura anterior.
-			this.el.find("[data-mark]").html(text.replace(pattern,"<mark>$1</mark>"));
+			this.highlight(pattern);
 			return true;
 		}
+	};
+
+	//Destaca elemento de una vista.
+	View.prototype.highlight = function(pattern) {
+		if (!(pattern instanceof RegExp)) {
+			pattern = new RegExp("("+pattern+")","ig");
+		};
+		var text = this.el.find("[data-mark]").html();
+		//El texto encaja con el patrón, señalamos en que parte.
+		//Con $1 hacemos referencia a la captura anterior.
+		this.el.find("[data-mark]").html(text.replace(pattern,"<mark>$1</mark>"));
 	};
 
 	View.prototype.addClass = function(classNames) {
@@ -503,7 +512,7 @@ var View = (function(_super,$,environment){
 					view.el.attr("data-"+view.name,value);
 					break;
 				case 'TOGGLE':
-					value === 'on' ? view.el.show() : view.el.hide();
+					value === 'on' ? view.show() : view.hide(false);
 					break;
 					default:
 				console.log("Valor no conocido");

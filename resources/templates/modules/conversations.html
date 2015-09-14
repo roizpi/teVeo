@@ -17,16 +17,16 @@
                 </form> 
             </header>
             <div class="conversation-wrapper" data-view="conversationContainer">
-                <ul class="conversation animateView" data-view="conversation" data-type="template" data-animationin="zoomInUp" data-animationout="zoomOutDown">
+                <ul class="conversation animateView" data-view="conversation" data-type="template" data-animationin="fadeIn" data-animationout="fadeOut">
                     <li class="message-wrapper animateView" data-view="message" data-type="template" >
                         <div class="circle-wrapper">
                             <img class="cover" data-view="photo" data-type="img" src="" alt="">
                         </div>
                         <div class="text-wrapper">
-                            <header class="flex-block">
+                            <header class="flex-block" data-view='dataMessage'>
                                 <span class="authorName" data-view="authorName" data-type="text"></span>
                                 <span class="fa" data-view="status" data-type="class"></span>
-                                <a href="#"  class='delete' data-action='deleteMessage' data-view="close" data-type="toggle">
+                                <a href="#"  class='delete animateView' data-action='deleteMessage' data-view="close" data-type="toggle" data-animationin="fadeIn" data-animationout="fadeOut">
                                     <span class="fa fa-close"></span>
                                 </a>
                             </header>
@@ -49,7 +49,7 @@
         </article>
         <article class='flex-block flex-block-y-full flex-direction-column flex-liquid-content'>
             <header class="header flex-block">
-                <h2>Conversaciones con Elisabeth</h2>
+                <h2 class="singleLine">Conversaciones con Elisabeth</h2>
             </header>
             <form action="" class="search-form  y-large" data-view="searchConversations" autocomplete="off">
                 <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..."/>
@@ -62,10 +62,10 @@
                 <ul class="list conversation-list animateView" data-view='conversationList' data-type='template' data-animationin="zoomInUp" data-animationout="zoomOutDown">
                     <li class="conversation-item animateView" data-action="showBody" data-view="conversationItem" data-type='template' data-animationin="slideInLeft" data-animationout="slideOutLeft">
                         <div class="conversation-item-header" >
-                            <div class="data singleLine">
+                            <div class="data singleLine" data-view='convData'>
                                 <span class="fa fa-weixin"></span>
                                 <span data-view="convName" data-mark data-type='text'></span>
-                                <span class='fa fa-eye visible' data-view='visible' data-type='toggle'></span>
+                                <span class='fa fa-eye visible animateView' data-view='visible' data-type='toggle' data-animationin="bounce" data-animationout="fadeOut"></span>
                                 <span class='pending' data-view='pending' data-type='text' data-exclusions='0'></span>
                             </div>
                             <div class="actions flex-block flex-direction-column flex-liquid-content" data-view='info' data-type='hidden'>

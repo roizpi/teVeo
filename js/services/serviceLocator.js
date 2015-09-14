@@ -31,6 +31,7 @@ var ServiceLocator = (function(_super,environment){
             "DROP_CONVERSATION":[],
             "DROP_ALL_CONVERSATION":[],
             "NEW_MESSAGE":[],
+            "DELETE_MESSAGE":[],
             "TALK_USER_CHANGES":[],
             "MENSAJES_LEIDOS":[],
             "OFFER_RECEIVED":[],
@@ -84,10 +85,12 @@ var ServiceLocator = (function(_super,environment){
     //Manejador de Mensajes del Servidor WebSocket
     var handlerMessage = function(e){
         //Parseamos la respuesta.
-        //console.log(e.data);
+        
         var response = JSON.parse(e.data);
         self.debug.log(response,"log");
         if(response.type == "EVENT"){
+            console.log("Evento...");
+            console.log(response);
             var name = response.name;
             var data = response.data;
             this.triggerEvent(name,data);
@@ -452,11 +455,14 @@ var ServiceLocator = (function(_super,environment){
     }
 
     //Elimina un mensaje enviado y que no ha sido leido.
-    ServiceLocator.prototype.deleteMessage = function(idMessage) {
+    ServiceLocator.prototype.deleteMessage = function(emisor,receptor,idConv,idMessage) {
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"DELETE_MESSAGE",
             params:{
+                emisor:emisor,
+                receptor:receptor,
+                idConv:idConv,
                 idMessage:idMessage
             }
         });
@@ -475,11 +481,12 @@ var ServiceLocator = (function(_super,environment){
     }
     
     //Notifica a otro usuario la conversación que está visualizando.
-    ServiceLocator.prototype.notifyChangeOfConversation = function(receptor,idConv) {
+    ServiceLocator.prototype.notifyChangeOfConversation = function(emisor,receptor,idConv) {
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"CONVERSATION_CURRENTLY_VIEWING",
             params:{
+                emisor:emisor,
                 receptor:receptor,
                 idConv:idConv
             }

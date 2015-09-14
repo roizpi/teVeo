@@ -54,48 +54,39 @@ var ActivityManager = (function(_super,$,environment){
 				category:"ACTIVITY_UPLOADPAGE_VIEWS",
 				handlers:{
 					onAfterShow:function(uploadpage){
-						//aplicamos animaciones a la página de carga.
-						uploadpage.getView("title").get().addClass("fadeInDown").on("webkitAnimationEnd  animationend",function(e){
-				            $("<img>",{
-				                src:"resources/img/mainLoader.gif",
-				                alt:""
-				            }).insertAfter(this);
+						//Registramos la actividad
+						self.historyManager.registerActivity(activity);
+						//Ruta de la actividad.
+						var activityPath = environment.ACTIVITIES_BASE_PATH + activity.file;
+						//Sincronizamos la descarga de la actividad, la interfaz y los módulos.
+						$.when(
+							environment.loadResource({
+								type:"script",
+								src:activityPath
+							}),
+							self.templating.loadTemplate({
+								name:"GUI",
+								category:"ACTIVITY_VIEWS"
+							}),
+							self.managerModule.getModules(activity["modules"])
+						).done(function(script,view,modules){
+							//recogemos el html de la view
+							//Instacia actividad inyectándola la vista y los módulos.
+							var instance =  new window[activity.className](view,modules);
+							//guardamos la instancia.
+							activity.instance = instance;
+							//eliminamos la clase del contexto global.
+							delete window[activity.className];
+							setTimeout(function(){
+								uploadpage.hide(false);
+							},5000);
+							//ejecutamos la actividad
+							instance.onResume();
+							
 						});
+
 					}
 				}
-			}).done(function(uploadpage){
-				//Registramos la actividad
-				self.historyManager.registerActivity(activity);
-				//Ruta de la actividad.
-				var activityPath = environment.ACTIVITIES_BASE_PATH + activity.file;
-				//Sincronizamos la descarga de la actividad, la interfaz y los módulos.
-				$.when(
-					environment.loadResource({
-						type:"script",
-						src:activityPath
-					}),
-					self.templating.loadTemplate({
-						name:"GUI",
-						category:"ACTIVITY_VIEWS"
-					}),
-					self.managerModule.getModules(activity["modules"])
-				).done(function(script,view,modules){
-					console.log("Esta es la vista");
-					console.log(view);
-					//recogemos el html de la view
-					//Instacia actividad inyectándola la vista y los módulos.
-					var instance =  new window[activity.className](view,modules);
-					//guardamos la instancia.
-					activity.instance = instance;
-					//eliminamos la clase del contexto global.
-					delete window[activity.className];
-		
-					uploadpage.detach();
-					//ejecutamos la actividad
-					instance.onResume();
-					
-				});
-
 			});
 
 		}else{

@@ -21,6 +21,7 @@ var LoaderDataManager = (function(_super,$,environment){
 			this.countData;
 			this.filterValue;
 			this.filterField;
+			this.exclusions = [];
 			this.minResultShown = config.minResultShown;
 			this.dataStepts = config.dataStepts;
 			this.service = config.service;
@@ -75,8 +76,9 @@ var LoaderDataManager = (function(_super,$,environment){
 
 			if (config.exclusions) {
 				request.exclusions = config.exclusions;
+				this.exclusions = config.exclusions;
 			}else{
-				request.exclusions = [];
+				request.exclusions = this.exclusions;
 			}
 
             request.callbacks = {};
@@ -119,6 +121,14 @@ var LoaderDataManager = (function(_super,$,environment){
 
 		LoaderData.prototype.resetTo = function(val) {
 			this.countData = val;
+		};
+
+		LoaderData.prototype.increaseAmount = function(quantity) {
+			if(!isNaN(parseInt(quantity))) this.countData += quantity;
+		};
+
+		LoaderData.prototype.decrementAmount = function(quantity) {
+			if(!isNaN(parseInt(quantity))) this.countData -= quantity;
 		};
 
 

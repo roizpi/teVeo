@@ -236,14 +236,14 @@ class conversationController extends baseController{
     
     }
 
-    public function deleteMessage($id){
+    public function deleteMessage($emisor,$receptor,$idConv,$idMessage){
 
         $response = null;
         $query = 'SELECT status FROM MENSAJES_VIEW WHERE id = :id';
         //Preparamos la sentencia.                             
         $stmt = $this->conn->prepare($query);
         //Bindeamos los datos.
-        $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+        $stmt->bindParam(':id',$idMessage,PDO::PARAM_INT);
         //Ejecutamos la sentencia.                                     
         $exito = $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -252,7 +252,7 @@ class conversationController extends baseController{
             //Preparamos la sentencia.                             
             $stmt = $this->conn->prepare($dml);
             //Bindeamos los datos.
-            $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+            $stmt->bindParam(':id',$idMessage,PDO::PARAM_INT);
             //Ejecutamos la sentencia.                                     
             $exito = $stmt->execute();
             $response = array(
@@ -261,7 +261,14 @@ class conversationController extends baseController{
                     "name" => "MESSAGE_DROPED",
                     "data" => array(
                         "error" => false,
-                        "msg" => $id
+                        "msg" => $idMessage
+                    )
+                ),
+                "event_message" => array(
+                    "type" => "EVENT",
+                    "name" => "DELETE_MESSAGE",
+                    "targets" => array(
+                        array("id" => $receptor, "data" => array('user' => $emisor,'conv' => $idConv,'id' => $idMessage ))
                     )
                 )
             );

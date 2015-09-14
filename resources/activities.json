@@ -32,8 +32,8 @@
 			"uploadPage":{
 				"file":"dashboard/uploadpage.html",
 				"animations":{
-					"animationIn":"slideInLeft",
-					"animationOut":"slideOutLeft"
+					"animationIn":"fadeIn",
+					"animationOut":"fadeOut"
 				}
 			},
 			"errorPage":{}
@@ -78,8 +78,8 @@
 			"uploadPage":{
 				"file":"dashboard/uploadpage.html",
 				"animations":{
-					"animationIn":"slideInLeft",
-					"animationOut":"slideOutLeft"
+					"animationIn":"fadeIn",
+					"animationOut":"fadeOut"
 				}
 			},
 			"errorPage":{}
