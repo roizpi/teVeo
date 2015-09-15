@@ -62,7 +62,12 @@ var LoaderDataManager = (function(_super,$,environment){
             if(isUpdateRequired){
 				this.countData = 0;
 				request.start = 0;
-				request.count = this.minResultShown;
+				if (config.limit) {
+					request.count = config.limit.count;
+				}else{
+					request.count = this.minResultShown;
+				}
+				
 				
 			}else{
 				request.start = this.countData ;
@@ -129,6 +134,10 @@ var LoaderDataManager = (function(_super,$,environment){
 
 		LoaderData.prototype.decrementAmount = function(quantity) {
 			if(!isNaN(parseInt(quantity))) this.countData -= quantity;
+		};
+
+		LoaderData.prototype.getFilter = function() {
+			return this.filterValue;
 		};
 
 

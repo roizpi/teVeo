@@ -96,27 +96,23 @@ var Conversation = (function(_super,$,environment){
                     
             }
 
-            showMessage(message);
             //Actualizamos número de mensajes para la conversación
             updateNumberMessages(message.idConv,message.userId,MESSAGE_RECEIVED);
-            //Colocamos el scroll al final del contenedor.
-            var container = viewConversations.getView("conversationContainer");
-            container.scrollToLast();
+            //Mostramos el mensaje.
+            showMessage(message);
            
         });
         
         //Manejador para el evento DELETE_MESSAGE.
         //Evento producido cuando el usuario borra un mensaje que este usuario todavía no ha visualizado.
         serviceLocator.addEventListener("DELETE_MESSAGE",function(message){
-            console.log("DELETE_MESSAGE...");
-            console.log(message);
             var conv = getConversation(message.conv);
             conv && conv.removeChild(message.id);
-            //Eliminamos el mensaje de la lista de mensajes pendientes.
+            //Obtenemos el índice del mensaje pendiente.
             var idx = pendingMessages.map(function(pendingMessage){
                 return pendingMessage.id;
             }).indexOf(message.id);
-            
+            //Eliminamos el mensaje pendiente.
             pendingMessages = pendingMessages.splice(idx,1);
             //Obtenemos total de mensajes.
             var count = self.getPendingMessagesByConv(message.conv);
@@ -228,10 +224,14 @@ var Conversation = (function(_super,$,environment){
                 var container = viewConversations.getView("conversationContainer");
                 //obtenemos una referencia a la conversación actual.
                 var conv =  container.getView(currentConv.id);
-                var exclusions = conv.filterChild(text,true);
-                console.log("Estas son las exclusiones");
-                console.log(exclusions);
-                console.log(conv.size());
+                var exclusions = [];
+                if (text) {
+                    exclusions = conv.filterChild(text,true);
+                }else{
+                    console.log("Borrando todos los mensajes...");
+                    conv.hideAllChild(true);
+                }
+                
                 if (conv.size() < MIN_MESSAGES_BY_CONV) {
                     //Obtenemos la diferencia.
                     var diff = MIN_MESSAGES_BY_CONV - conv.size();
@@ -254,21 +254,25 @@ var Conversation = (function(_super,$,environment){
                                 var filter = this.filterValue;
                                 //Mostramos cada mensaje.
                                 messages.forEach(function(message){
-                                    showMessage(message,{
+                                    createViewMessage(message,{
                                         direction:"asc",
                                         filter:filter
                                     });
                                 });
 
-                                //Colocamos el scroll al final.
+                                //Colocamos el scroll en el último mensaje.
                                 container.scrollToLast();
                             },
                             onNoDataFound:function(){
-                                self.notificator.dialog.alert({
-                                    title:"Ningún mensaje encontrado",
-                                    text:"Esta conversación no tiene mensajes",
-                                    level:"info"
-                                });
+
+                                if (!conv.size()) {
+                                    self.notificator.dialog.alert({
+                                        title:"Ningún mensaje encontrado",
+                                        text:"No se encontraron mensajes para '" + text + "'",
+                                        level:"info"
+                                    });
+                                };
+                                
                             }
                         }
                     });
@@ -302,16 +306,10 @@ var Conversation = (function(_super,$,environment){
             serviceLocator
             .createMessage(currentConv.id,userConnected.id,currentConv.user,text)
             .done(function(message){
-                //Mostramos  el mensaje enviado.
-                showMessage(message);
-                //Colocamos el scroll en el último mensaje.
-                container.scrollToLast();
-                $.ionSound.play("acceptYourApplication");
                 //Actualizamos número de mensajes para la conversación
                 updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_SENT);
-                //Incrementamos el cargador de datos.
-                var loaderData = loaderManager.getLoader(currentConv.id);
-                loaderData.increaseAmount(1);
+                //Mostramos el mensaje.
+                showMessage(message);
             })
             .fail(function(){
                 //fallo al enviar el mensaje.
@@ -328,13 +326,17 @@ var Conversation = (function(_super,$,environment){
                 case 'RESTORECONVERSATION':
                     //Comprobamos que no se trata de la conversación actual.
                     if (!$this.hasClass('active')) {
-
+                        convListContainer.get().find("[data-action]").removeClass("active");
+                        //Marcamos como activa la conversación y recogemos su información.
                         var conversation = $this.addClass("active").parent().data("info");
-                        console.log("Este es el botón :");
-                        console.log($this);
                         //Iniciamos la conversación.
                         initConversation(JSON.parse(conversation));
+                        //Notificamos el cambio de conversación.
+                        serviceLocator.notifyChangeOfConversation(userConnected.id,conversation.user,conversation.id);
                     };
+                    break;
+                case 'SHOWBODY':
+                    $this.find("[data-body]").slideDown(500).end().siblings().find("[data-body]").slideUp(500);
                     break;
                 case 'DROPCONVERSATION':
                     var info = $this.parent().data("info");
@@ -346,7 +348,9 @@ var Conversation = (function(_super,$,environment){
                         onSuccess:function(){
                             //Borramos la conversación.
                             dropConversation(conversation,function(){
-
+                                //Eliminamos la conversación del panel de conversaciones.
+                                var conv = getConversation(conversation.id);
+                                conv && conv.hide(true);
                                 var convList = convListContainer.getView(conversation.user);
                                 //Ocultamos el item de conversación.
                                 convList.hideChild(conversation.id,true,function(){
@@ -388,9 +392,7 @@ var Conversation = (function(_super,$,environment){
                             });
                         }
                     });
-                case 'SHOWBODY':
-                    $this.find("[data-body]").slideDown(500).end().siblings().find("[data-body]").slideUp(500);
-                    break;
+                break;
             }
         });
 
@@ -411,7 +413,7 @@ var Conversation = (function(_super,$,environment){
                             var filter = this.filterValue;
                             //Mostramos cada mensaje.
                             messages.forEach(function(message){
-                                showMessage(message,{
+                                createViewMessage(message,{
                                     direction:"asc",
                                     filter:filter
                                 });
@@ -476,6 +478,30 @@ var Conversation = (function(_super,$,environment){
         });
         
 
+    }
+
+    var showMessage = function(message){
+        $.ionSound.play("acceptYourApplication");
+        var loaderData = loaderManager.getLoader(message.idConv);
+        var filter = loaderData.getFilter();
+        var pattern = new RegExp(filter,'im');
+        //comprobamos si el mensaje concuerda con el patrón actual.
+        if (message.text.match(pattern)) {
+            console.log("Mensaje concuerda con el filtro actual");
+            console.log(pattern);
+            //Mostramos  el mensaje enviado.
+            createViewMessage(message,{
+                direction:"desc",
+                filter:filter
+            });
+            //Colocamos el scroll al final del contenedor.
+            var container = viewConversations.getView("conversationContainer");
+            //Colocamos el scroll en el último mensaje.
+            container.scrollToLast();
+            //Incrementamos la cantidad de datos.
+            loaderData.increaseAmount(1);
+        };
+                
     }
 
 
@@ -546,6 +572,11 @@ var Conversation = (function(_super,$,environment){
                 title:"Conversación Borrada",
                 text:"La conversación " + conversation.name + " fue borrada con éxito",
                 level:"info"
+            });
+
+            //Eliminamos los mensajes pendientes para esta conversación.
+            pendingMessages = pendingMessages.filter(function(message){
+                return message.idConv == conversation.id ? false : true;
             });
 
             typeof(callback) == "function" && callback();
@@ -642,7 +673,7 @@ var Conversation = (function(_super,$,environment){
     }
 
     //Función para insertar mensajes en el DOM.
-    var showMessage = function(message,options){
+    var createViewMessage = function(message,options){
         var conv = getConversation(message.idConv)
         if(conv){
 
@@ -670,12 +701,18 @@ var Conversation = (function(_super,$,environment){
             }
 
             var direction = (options && options.direction && options.direction.toUpperCase() == "ASC" ) ? "ASC" : "DESC";
-
+            
+            var creacion = "sin fecha";
+            if (!isNaN(parseInt(message.creacion))) {
+                creacion = new Date(parseInt(message.creacion));
+                creacion = creacion.toLocaleDateString() + " " + creacion.toLocaleTimeString();
+            }
+            
             conv.createView("message",{
                 id:message.id,
                 photo:photo,
                 authorName:utils.urldecode(message.userName),
-                creation:message.creacion,
+                creation:creacion,
                 status:status,
                 close:closeStatus,
                 text:message.text
@@ -768,8 +805,6 @@ var Conversation = (function(_super,$,environment){
     //Inicia el panel de la conversación.
     var initConversation = function(conversation){
         currentConv = conversation;
-        //Notificamos el cambio de conversación.
-        serviceLocator.notifyChangeOfConversation(userConnected.id,currentConv.user,currentConv.id);
         
         if (loaderManager.existsLoader(currentConv.id)) {
             loaderData = loaderManager.getLoader(currentConv.id);
@@ -796,8 +831,7 @@ var Conversation = (function(_super,$,environment){
                 },{
                     handlers:{
                         onAfterFirstShow:function(view){
-                            console.log("Conversación....");
-                            console.log(view);
+
                             loaderData.load({
                                 id:conversation.id,
                                 filter:{
@@ -807,15 +841,15 @@ var Conversation = (function(_super,$,environment){
                                 callbacks:{
                                     onDataLoaded:function(messages){
                                         var filter = this.filterValue;
-                                        console.log("Este es el valor del filtro actual : " + filter);
+
                                         //Mostramos cada mensaje.
                                         messages.forEach(function(message){
-                                            showMessage(message,{
+                                            createViewMessage(message,{
                                                 direction:"asc",
                                                 filter:filter
                                             });
                                         });
-
+                                        //Colocamos el scroll en el último mensaje.
                                         container.scrollToLast();
                                     },
                                     onNoDataFound:function(){
@@ -830,8 +864,7 @@ var Conversation = (function(_super,$,environment){
 
                         },
                         onAfterShow:function(view){
-                            container.scrollAt(view.getHeight());
-                            
+                            container.scrollToLast();
                             //Recogemos los mensajes que hemos recibido y que no hemos visto
                             var unseenMessages = pendingMessages.filter(function(message){
                                 if(message.idConv == currentConv.id && message.status == "NOLEIDO" && message.userId !== userConnected.id){
@@ -866,7 +899,7 @@ var Conversation = (function(_super,$,environment){
                             
                         },
                         onBeforeHide:function(view){
-                            container.scrollAt(view.getHeight());
+                            
                             console.log(view);
                             console.log("Número de mensajes de la conv : " + view.size());
                             if (view.size() > MAX_MESSAGES_BY_CONV) {
@@ -876,7 +909,9 @@ var Conversation = (function(_super,$,environment){
                                 view.removeNthFirstChilds(diff);
                                 console.log("Valor a resetear : " + view.size());
                                 loaderManager.resetLoaderTo(view.getId(),MAX_MESSAGES_BY_CONV);
-                            };   
+                            };
+
+                               
                         }
                     }
                 });
@@ -1047,6 +1082,9 @@ var Conversation = (function(_super,$,environment){
                         //La marcamos como activa.
                         conversation.active = true;
                         showItemConversation(conversation);                                
+                    },function(){
+                        //Notificamos que no hay conversaciones.
+                        self.triggerEvent("ANY_CONVERSATION_FOUND");
                     });
                 };
             }

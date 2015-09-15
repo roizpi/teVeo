@@ -329,7 +329,12 @@ var Contacts = (function(_super,$,environment){
             contactName:contact.name,
             status:contact.status ? contact.status : "disconnected",
             town:contact.currentPosition ? contact.currentPosition.detail.address_components[1] : "ubicación no disponible"
-        },{});
+        },{
+            onCreate:function(view){
+                console.log("Contacto");
+                console.log(view);
+            }
+        });
         
     
     }

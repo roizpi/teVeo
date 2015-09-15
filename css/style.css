@@ -2073,7 +2073,7 @@ DESC: Distribuidores de contenidos.
   position: relative;
 }
 
-.conversation-wrapper .conversation .message-wrapper .text-wrapper header .delete{
+.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper header .delete{
   position: absolute;
   top: 0;right: 0;
   width: 32px;height: 32px;
@@ -2087,17 +2087,17 @@ DESC: Distribuidores de contenidos.
   transition:all .5s;
 }
 
-.conversation-wrapper .conversation .message-wrapper .text-wrapper header .delete:hover,
-.conversation-wrapper .conversation .message-wrapper .text-wrapper header .delete:active{
+.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper header .delete:hover,
+.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper header .delete:active{
   text-shadow:#4353FF 0px 0px 4px;
-}
-
-.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper header{
-  flex-direction:row-reverse;
 }
 
 .conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper header .delete{
   display: none;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper header{
+  flex-direction:row-reverse;
 }
 
 

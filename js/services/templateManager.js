@@ -298,13 +298,20 @@ var View = (function(_super,$,environment){
 	};
 
 	View.prototype.match = function(pattern) {
-		var text = this.el.find("[data-mark]").html().replace(/<mark>|<\/mark>/ig,"");
+		var text = this.removeHighlight();
 		if(text.search(pattern) == -1){
 			return false;
 		}else{
 			this.highlight(pattern);
 			return true;
 		}
+	};
+
+	View.prototype.removeHighlight = function() {
+		//replace(/(<mark>)|(<\/mark>)/ig,"")
+		var $mark = this.el.find("[data-mark]");
+		$mark.html($mark.text());
+		return $mark.text();
 	};
 
 	//Destaca elemento de una vista.

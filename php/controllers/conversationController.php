@@ -164,8 +164,7 @@ class conversationController extends baseController{
         );
         //Validamos las exclusiones.
         if (is_array($exclusions) && sizeof($exclusions)) {
-            $query .= ' AND id NOT IN (:exclusions)';
-            $params['exclusions'] = join(",",$exclusions);
+            $query .= ' AND id NOT IN ('.join(",",$exclusions).')';
         }
 
         //Validamos el Limit
@@ -213,14 +212,26 @@ class conversationController extends baseController{
  
         //Sentencia para crear el mensaje
         $sql = "INSERT INTO MENSAJES (conversacion,user,creacion,text)
-                VALUES(:conversacion,:user,CURRENT_TIMESTAMP(),:text)";
+                VALUES(:conversacion,:user,:creacion,:text)";
         //Preparamos la sentencia.                             
         $stmt = $this->conn->prepare($sql);
-            
+        //Obtenemos el momento actual.
+        if (version_compare(PHP_VERSION, '5.0.0', '<')){
+            $microtime =  array_sum(explode(' ', microtime()));
+        }else{
+            $microtime = microtime(true);
+        }
+
+        
+
+        $microtime = round($microtime * 1000);
+        echo "Timestamp : $microtime" . PHP_EOL;
         //Bindeamos los datos.
         $stmt->bindParam(':conversacion',$idConversacion,PDO::PARAM_INT); 
-        $stmt->bindParam(':user',$idEmisor,PDO::PARAM_INT);       
-        $stmt->bindParam(':text',$text, PDO::PARAM_STR); 
+        $stmt->bindParam(':user',$idEmisor,PDO::PARAM_INT);
+        $stmt->bindParam(':creacion',$microtime,PDO::PARAM_STR);       
+        $stmt->bindParam(':text',$text, PDO::PARAM_STR);
+
         //Ejecutamos la sentencia.                                     
         $exito = $stmt->execute();
         if ($exito) {

@@ -52,11 +52,11 @@ var DashboardActivity = (function(environment,$){
             else if(document[visibilityState] == "visible")
                 document.title = "TeVeo!";
                 
-        }).delegate("[data-action]","click",function(e){
+        });/*.delegate("[data-action]","click",function(e){
             var $this = $(this);
             $("[data-action]").removeClass("active");
             $this.addClass("active");
-        });
+        });*/
 
         var $el = $("[data-notifications]","#tasks");
         //Implementamos manejador para el evento "NOTIFICATION_ELIMINATED".
