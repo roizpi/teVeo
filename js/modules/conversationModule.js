@@ -398,7 +398,7 @@ var Conversation = (function(_super,$,environment){
 
         var container = viewConversations.getView("conversationContainer");
         var currentLoaded = false;
-        container.get().on("scroll",function(e){
+        container.get().perfectScrollbar().on("scroll",function(e){
             var $this = $(this);
             if ($this.scrollTop() == 0 && !currentLoaded) {
                 console.log("Cargando más resultados");
@@ -702,23 +702,19 @@ var Conversation = (function(_super,$,environment){
 
             var direction = (options && options.direction && options.direction.toUpperCase() == "ASC" ) ? "ASC" : "DESC";
             
-            var creacion = "sin fecha";
-            if (!isNaN(parseInt(message.creacion))) {
-                creacion = new Date(parseInt(message.creacion));
-                creacion = creacion.toLocaleDateString() + " " + creacion.toLocaleTimeString();
-            }
-            
             conv.createView("message",{
                 id:message.id,
                 photo:photo,
                 authorName:utils.urldecode(message.userName),
-                creation:creacion,
+                creation:message.creacion,
                 status:status,
                 close:closeStatus,
                 text:message.text
             },{
                 handlers:{
                     onCreate:function(view){
+                        console.log("Mensaje creado ...");
+                        console.log(view);
                         if(message.userId == userConnected.id){
                             view.get().addClass("emisor");
                         }else{
@@ -863,8 +859,11 @@ var Conversation = (function(_super,$,environment){
                             });
 
                         },
-                        onAfterShow:function(view){
+                        onBeforeHide:function(view){
                             container.scrollToLast();
+                        },
+                        onAfterShow:function(view){
+                            
                             //Recogemos los mensajes que hemos recibido y que no hemos visto
                             var unseenMessages = pendingMessages.filter(function(message){
                                 if(message.idConv == currentConv.id && message.status == "NOLEIDO" && message.userId !== userConnected.id){

@@ -1,13 +1,15 @@
 var View = (function(_super,$,environment){
 
 
-	function View(el,id,type,category,name,animations,handlers,target,exclusions,direction){
+	function View(el,id,type,format,category,name,animations,handlers,target,exclusions,direction){
 
 		this.el = el;
 		this.id = id;
-		this.type = type;
-		this.category = category;
 		this.name = name;
+		this.type = type;
+		this.format = format;
+		this.category = category;
+		this.value = null;
 		this.animations = animations;
 		this.handlers = handlers;
 		this.target = target;
@@ -30,6 +32,8 @@ var View = (function(_super,$,environment){
 		var id = (data && data.id) || Math.round(Math.random() * 100000 + 5000);
 		//Obtenemos el tipo de componente.
 		var type = $element.get(0).dataset.type || 'html';
+		//Obtenemos el formato del contenido de la vista.
+		var format = $element.get(0).dataset.format || null;
 		//Obtenemos nombre de la vista.
 		var name = (data && data.name) || $element.get(0).dataset.view;
 		//Obtenemos la categoría de la vista.
@@ -47,7 +51,7 @@ var View = (function(_super,$,environment){
 		var exclusions = $element.get(0).dataset.exclusions || options.exclusions || null;
 		var direction = options.direction;
 		$element.data("id",id);
-		var view = new View($element,id,type,category,name,animations,handlers,target,exclusions,direction);
+		var view = new View($element,id,type,format,category,name,animations,handlers,target,exclusions,direction);
 		//los handlers se configuran mediante la API.
 		//mediante método setOnCreate
 		//Procesamos todos los componentes que contiene el elemento
@@ -74,7 +78,7 @@ var View = (function(_super,$,environment){
 		});
 
 		//Eliminamos las meta-información del elementos
-		view.get().removeAttr("data-view").removeAttr("data-type");
+		//view.get().removeAttr("data-view").removeAttr("data-type");
 
 		//hidratamos la vista con los datos especificados.
 		view._hydrate(data);
@@ -97,50 +101,10 @@ var View = (function(_super,$,environment){
 				var view = this.views[key];
 				//recogemos el valor.
 				var value = data[view.name];
-	
-				if (value && (!this.exclusions || value.match(this.exclusions))) {
-
-					//recogemos el tipo.
-					var type = view.type &&  view.type.toUpperCase();
-					//Si se ha encontrado valor.
-					if (value && type) {
-
-						switch(type){
-
-							case 'IMG':
-								view.el.attr("src",value);
-								break;
-							case 'TEXT':
-								view.el.text(value);
-								break;
-							case 'HTML':
-								view.el.html(value);
-								break;
-							case 'BACKGROUND':
-								view.el.css("background-image","url("+value+")");
-								break;
-							case 'HIDDEN':
-								view.el.data(view.name,value);
-								break;
-							case 'DATA':
-								view.el.attr("data-"+view.name,value);
-								break;
-							case "CLASS":
-								view.el.addClass(value);
-								break;
-							case 'TOGGLE':
-								value === 'on' ? view.show() : view.hide(false);
-								break;
-							default:
-								console.log("Valor no conocido");
-						}
-							
-					};
-
-				};
-
-				view._hydrate(data);
-					
+				//Establecemos el dato de la vista.
+				view.setValue(value);
+				//hidratamos de forma recursiva.
+				view._hydrate(data);	
 			}
 
 		}
@@ -175,6 +139,54 @@ var View = (function(_super,$,environment){
 		return this.el;
 	};
 
+	View.prototype.setValue = function(value) {
+
+		if (value && (!this.exclusions || !new String(value).match(this.exclusions))) {
+			//recogemos el tipo.
+			var type = this.type &&  this.type.toUpperCase();
+			//Recogemos el formato.
+			var format = this.format && this.format.toUpperCase();
+			//Guardamos el valor.
+			this.value = value;
+			switch(type){
+
+				case 'IMG':
+					this.el.attr("src",value);
+					break;
+				case 'TEXT':
+					//Aplica un formato de fecha al texto.
+					if (format == "DATE" && !isNaN(parseInt(value))) {
+						var date = new Date(parseInt(value));
+						value = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+					}
+					this.el.text(value);
+
+					break;
+				case 'HTML':
+					this.el.html(value);
+					break;
+				case 'BACKGROUND':
+					this.el.css("background-image","url("+value+")");
+					break;
+				case 'HIDDEN':
+					this.el.data(this.name,value);
+					break;
+				case 'DATA':
+					this.el.attr("data-"+this.name,value);
+					break;
+				case "CLASS":
+					this.el.addClass(value);
+					break;
+				case 'TOGGLE':
+					value === 'on' ? this.show() : this.hide(false);
+					break;
+				default:
+					console.log("Valor no conocido");
+			}
+							
+		};
+	};
+
 	View.prototype.getNativeNode = function() {
 		return this.el.get(0);
 	};
@@ -194,6 +206,29 @@ var View = (function(_super,$,environment){
 	View.prototype.getViews = function() {
 		return this.views;
 	};
+
+	View.prototype.getViewsOrderByAsc = function(value) {
+		var views = this.views;
+		var values = [];
+		for(var view in views){
+			var parentView = views[view];
+			var viewShort = parentView.getView(value);
+			viewShort && values.push({
+				id:parentView.id,
+				value:viewShort.value
+			});
+		}
+
+		var utils = environment.getService("UTILS");
+		values = utils.orderByInsercionBinariaAsc(values,"value");
+		console.log("Estos son los valores ordenador asc");
+		console.log(values);
+		return values.map(function(value){
+			return views[value.id];
+		});
+		
+	};
+
 
 	View.prototype.getViewIds = function() {
 		return Object.keys(this.views);
@@ -406,16 +441,10 @@ var View = (function(_super,$,environment){
 	View.prototype.removeNthFirstChilds = function(n) {
 		if (n && !isNaN(parseInt(n))) {
 			var self = this;
-			var utils = environment.getService("UTILS");
-			var keys = Object.keys(this.views).map(function(key){
-				return parseInt(key);
-			});
-			console.log("Claves antes de ordenar : " + keys);
-			var keys = utils.orderByBubbleShortAsc(keys);
-			console.log("Claves después de ordenar ");
-			console.log(keys);
-			keys.slice(0,n).forEach(function(key){
-				self.removeChild(key);
+			var views = this.getViewsOrderByAsc("creation");
+			//Eliminamos la vistas n primeras vistas.
+			views.slice(0,n).forEach(function(view){
+				self.removeChild(view.id);
 			});
 		};
 	};
@@ -496,34 +525,8 @@ var View = (function(_super,$,environment){
 	View.prototype.setChildValue = function(id,value) {
 		if (id && value) {
 			var view = this.getView(id);
-			//recogemos el tipo.
-			var type = view.type &&  view.type.toUpperCase();
-			switch(type){
-
-				case 'IMG':
-					view.el.attr("src",value);
-					break;
-				case 'TEXT':
-					view.el.text(value);
-					break;
-				case 'HTML':
-					view.el.html(value);
-					break;
-				case 'BACKGROUND':
-					view.el.css("background-image","url("+value+")");
-					break;
-				case 'HIDDEN':
-					view.el.data("id",value);
-					break;
-				case 'DATA':
-					view.el.attr("data-"+view.name,value);
-					break;
-				case 'TOGGLE':
-					value === 'on' ? view.show() : view.hide(false);
-					break;
-					default:
-				console.log("Valor no conocido");
-			}
+			///establecemos el valor de la vista.
+			view.setValue(value);
 		};
 	};
 
