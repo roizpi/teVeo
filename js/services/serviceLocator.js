@@ -417,6 +417,7 @@ var ServiceLocator = (function(_super,environment){
             params:{
                 idConver:data.id,
                 filter:{
+                    type:data.type,
                     field:self.utils.urlencode(data.field),
                     pattern:self.utils.urlencode(data.value)
                 },
@@ -441,7 +442,7 @@ var ServiceLocator = (function(_super,environment){
     }
     
     //Enviar un mensaje en una conversación.
-    ServiceLocator.prototype.createMessage = function(idConv,idUserEmisor,idUsuRecep,text){
+    ServiceLocator.prototype.createMessage = function(idConv,idUserEmisor,idUsuRecep,type,content){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"CREATE_MESSAGE",
@@ -449,7 +450,8 @@ var ServiceLocator = (function(_super,environment){
                 idConver:idConv,
                 idUserEmisor:idUserEmisor,
                 idUsuRecep:idUsuRecep,
-                text:self.utils.urlencode(text)
+                type:type,
+                content:content
             }
         });
     }

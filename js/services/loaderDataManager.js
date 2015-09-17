@@ -19,6 +19,7 @@ var LoaderDataManager = (function(_super,$,environment){
 		function LoaderData(config){
 			self = this;
 			this.countData;
+			this.filterType;
 			this.filterValue;
 			this.filterField;
 			this.exclusions = [];
@@ -31,6 +32,7 @@ var LoaderDataManager = (function(_super,$,environment){
 
 			return services[self.service]({
 				id:request.id,
+				type:request.filterType,
 				value:request.filterText,
                 field:request.filterField,
                 start:request.start,
@@ -49,12 +51,15 @@ var LoaderDataManager = (function(_super,$,environment){
             }
 
             if(config.filter){
+            	request.filterType = config.filter.type;
+            	this.filterType = config.filter.type;
             	request.filterText = config.filter.value;
             	this.filterValue = config.filter.value;
             	request.filterField = config.filter.field;
                 this.filterField = config.filter.field;
                 isUpdateRequired = true;
             }else{
+            	request.filterType = this.filterType;
             	request.filterText = this.filterValue;
             	request.filterField = this.filterField;
             }

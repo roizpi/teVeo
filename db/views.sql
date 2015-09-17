@@ -72,21 +72,90 @@ AS
     FROM CONVERSACIONES NATURAL JOIN CONVERSACIONES_GRUPALES;
 
 
+/*
+    Vistas para mensajes.
+
+*/
+
+
+/* Devuelve Mensajes de Texto ordenados de forma descendente*/
+CREATE VIEW LAST_MENSAJES_VIEW_TEXT
+AS 
+   SELECT 
+        id,
+        type,
+        status,
+        creacion,
+        user AS userId,
+        conversacion AS idConv,
+        text
+   FROM  MENSAJES M JOIN MENSAJES_TEXT USING(id)
+   ORDER BY creacion DESC;
+
+CREATE VIEW MENSAJES_VIEW_TEXT
+AS
+    SELECT 
+        id,
+        type,
+        status,
+        creacion,
+        user AS userId,
+        conversacion AS idConv,
+        text
+    FROM  MENSAJES M JOIN MENSAJES_TEXT USING(id);
+
+CREATE VIEW MENSAJES_IMG_TEXT
+AS 
+   SELECT 
+        id,
+        type,
+        status,
+        creacion,
+        user AS userId,
+        conversacion AS idConv,
+        file,
+        format,
+        caption
+   FROM  MENSAJES M JOIN MENSAJES_IMG USING(id);
+
+
+/*Devuelve los últimos mensajes*/
+CREATE VIEW LATEST_MESSAGES
+AS
+    SELECT 
+        id,
+        type,
+        status,
+        creacion,
+        user AS userId,
+        conversacion AS idConv
+    FROM  MENSAJES
+    ORDER BY creacion DESC;
+
+/* Devuelve los mensajes no leidos*/
+CREATE VIEW PENDING_MESSAGES
+AS
+    SELECT 
+        M.id AS id,
+        type,
+        status,
+        creacion,
+        user AS userId,
+        conversacion AS idConv,
+        user_one,
+        user_two
+    FROM  MENSAJES M JOIN CONVERSACIONES_NORMALES C ON(M.conversacion = C.id)
+    WHERE status = 2
+    ORDER BY creacion DESC;
+
+/*
+
+Vista Antigua
 CREATE VIEW MENSAJES_VIEW
 AS
     SELECT 
             M.id AS id,
-            URLENCODE(CONCAT(
-                CONCAT(
-                    UCASE(LEFT(firstName,1)),
-                    LCASE(SUBSTRING(firstName,2))
-                ),
-                "  ",
-                CONCAT(
-                    UCASE(LEFT(lastName,1)),
-                    LCASE(SUBSTRING(lastName,2))
-                )
-            )) AS userName,
+            
             text,
             status,
             M.creacion AS creacion,
@@ -96,9 +165,9 @@ AS
             user_one,
             user_two
     FROM USUARIOS U JOIN MENSAJES M ON(U.id = M.user) JOIN CONVERSACIONES C ON (M.conversacion=C.id) JOIN CONVERSACIONES_NORMALES CN ON(C.id = CN.id)
-    ORDER BY creacion DESC;
+    
 
-
+*/
 
             
 

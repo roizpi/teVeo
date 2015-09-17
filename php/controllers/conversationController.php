@@ -1,6 +1,8 @@
 <?php
 
 class conversationController extends baseController{
+
+    const MESSAGE_TEXT = 1;
     
     //Obtiene todas las conversaciones en las que participa estos usuarios.
     public function getConversations($idUserOne,$idUserTwo){
@@ -153,15 +155,11 @@ class conversationController extends baseController{
         
         return $response;
     }
-    
-    //Obtiene todos los mensajes de una conversación.
-    public function getMessages($idConv,$filter,$limit,$exclusions){
-        
-        $query = 'SELECT * FROM MENSAJES_VIEW WHERE idConv = :idConv AND UPPER(text) LIKE UPPER(:text)';
-        $params = array(
-            'idConv' => $idConv,
-            'text' => "%".$filter->pattern."%"
-        );
+
+
+    private function getLatestMessages($idConv,$filter,$limit,$exclusions){
+
+        $query = 'SELECT * FROM LATEST_MESSAGES WHERE idConv = :idConv';
         //Validamos las exclusiones.
         if (is_array($exclusions) && sizeof($exclusions)) {
             $query .= ' AND id NOT IN ('.join(",",$exclusions).')';
@@ -171,17 +169,61 @@ class conversationController extends baseController{
         if (is_int($limit->start) && is_int($limit->count)) {
             $query .= " LIMIT {$limit->start},{$limit->count}";
         }
-
-        echo "Query : $query";
         //Preparamos la sentencia
         $stmt = $this->conn->prepare($query);
-        $stmt->execute($params);
+        $stmt->execute(array('idConv' => $idConv));
         //Extraemos los resultados
-        $mensajes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        //Obtenemos el contenido de cada mensaje.
+        return $messages;
+    }
+
+    private function getLatestTextMessages($idConv,$filter,$limit,$exclusions){
+
+        $query = 'SELECT * FROM LAST_MENSAJES_VIEW_TEXT WHERE idConv = :idConv AND UPPER(text) LIKE :text';
+        //Validamos las exclusiones.
+        if (is_array($exclusions) && sizeof($exclusions)) {
+            $query .= ' AND id NOT IN ('.join(",",$exclusions).')';
+        }
+
+        //Validamos el Limit
+        if (is_int($limit->start) && is_int($limit->count)) {
+            $query .= " LIMIT {$limit->start},{$limit->count}";
+        }
+        //Preparamos la sentencia
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute(array('idConv' => $idConv,'text' => "%".$filter->pattern."%" ));
+        //Extraemos los resultados
+        $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $messages;
+    }
     
-        for($i = 0; $i < sizeof($mensajes); $i++)
-            $mensajes[$i] = array_map("utf8_encode",$mensajes[$i]);
-        return array("response_message" =>array("type" => "RESPONSE","name" => "MENSAJES_ENCONTRADOS","data" => array("error" => false,"msg" => $mensajes)));
+    //Obtiene todos los mensajes de una conversación.
+    public function getMessages($idConv,$filter,$limit,$exclusions){
+        //Comprobamos el tipo del mensaje.
+        switch (strtoupper($filter->type)) {
+            case 'MESSAGE_TEXT':
+                //Obtenemos mensajes de texto.
+                $messages = $this->getLatestTextMessages($idConv,$filter,$limit,$exclusions);
+                break;
+            default:
+                //Obtenemos mensajes de cualquier tipo.
+                $messages = $this->getLatestMessages($idConv,$filter,$limit,$exclusions);
+                break;
+        }
+        
+        print_r($messages);
+        return array(
+            "response_message" =>
+                array(
+                    "type" => "RESPONSE",
+                    "name" => "MENSAJES_ENCONTRADOS",
+                    "data" => array(
+                        "error" => false,
+                        "msg" => $messages
+                    )
+                )
+            );
     
     }
     
@@ -189,7 +231,7 @@ class conversationController extends baseController{
     public function getPendingMessages($idUser){
         
         //Preparamos la sentencia
-        $sql = $this->conn->prepare('SELECT * FROM MENSAJES_VIEW WHERE (user_one = :id OR user_two = :id) AND status = "NOLEIDO" AND userId != :id');
+        $sql = $this->conn->prepare('SELECT * FROM PENDING_MESSAGES WHERE (user_one = :id OR user_two = :id) AND  userId != :id');
         //La ejecutamos bindeando los datos.
         $sql->execute(array("id" => $idUser));
         //Extraemos los resultados
@@ -198,21 +240,34 @@ class conversationController extends baseController{
             $pendingMessages[$i] = array_map("utf8_encode",$pendingMessages[$i]);
         return array("response_message" =>array("type" => "RESPONSE","name" => "PENDING_MESSAGES_FINDED","data" => array("error" => false,"msg" => $pendingMessages)));
     
-    } 
-    
-    
-    //Crea un nuevo mensaje para una conversación
-    public function createMessage($idConversacion,$idEmisor,$idReceptor,$text){
-        
+    }
+
+
+    private function appendTextContent($id,$content){
         $insultos = array("gilipollas", "cabron","puta","puto","putorra","zorra","mamon");
         $insultos = join($insultos,"|");
         $text = preg_replace_callback("/$insultos/i",function($matches){
             return substr_replace($matches[0], str_repeat("*", strlen($matches[0])), 0);
-        }, $text);
- 
+        }, $content->text);
+    
+        $sql = "INSERT INTO MENSAJES_TEXT (id,text) VALUES(:id,:text)";
+        //Preparamos la sentencia.                             
+        $stmt = $this->conn->prepare($sql);
+        //Bindeamos los datos.
+        $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+        $stmt->bindParam(':text',$text,PDO::PARAM_STR);
+        //Ejecutamos la sentencia.                                     
+        $exito = $stmt->execute();
+        
+    } 
+    
+    
+    //Crea un nuevo mensaje para una conversación
+    public function createMessage($idConversacion,$idEmisor,$idReceptor,$type,$content){
+        
         //Sentencia para crear el mensaje
-        $sql = "INSERT INTO MENSAJES (conversacion,user,creacion,text)
-                VALUES(:conversacion,:user,:creacion,:text)";
+        $sql = "INSERT INTO MENSAJES (conversacion,user,creacion,type)
+                VALUES(:conversacion,:user,:creacion,:type)";
         //Preparamos la sentencia.                             
         $stmt = $this->conn->prepare($sql);
         //Obtenemos el momento actual.
@@ -221,36 +276,37 @@ class conversationController extends baseController{
         }else{
             $microtime = microtime(true);
         }
-
-        
-
         $microtime = round($microtime * 1000);
-        echo "Timestamp : $microtime" . PHP_EOL;
         //Bindeamos los datos.
         $stmt->bindParam(':conversacion',$idConversacion,PDO::PARAM_INT); 
         $stmt->bindParam(':user',$idEmisor,PDO::PARAM_INT);
-        $stmt->bindParam(':creacion',$microtime,PDO::PARAM_STR);       
-        $stmt->bindParam(':text',$text, PDO::PARAM_STR);
-
+        $stmt->bindParam(':creacion',$microtime,PDO::PARAM_STR);
+        $stmt->bindParam(':type',$type,PDO::PARAM_INT);       
         //Ejecutamos la sentencia.                                     
-        $exito = $stmt->execute();
-        if ($exito) {
-            $msgId = $this->conn->lastInsertId();
-            $result = $this->conn->query("SELECT * FROM MENSAJES_VIEW WHERE id = $msgId");
-            $msg = $result->fetch(PDO::FETCH_ASSOC);
-            
-            return array(
-                "response_message" => array("type" => "RESPONSE","name" => "MESSAGE_CREATED","data" => array("error" => false,"msg" => $msg)),
-                 "event_message" => array("type" => "EVENT","name" => "NEW_MESSAGE","targets" => array(array("id" => $idReceptor, "data" => $msg)))
-            );
+        $stmt->execute();
+        $id = $this->conn->lastInsertId();
+        switch ($type) {
+            case self::MESSAGE_TEXT:
+                $this->appendTextContent($id,$content);
+                $query = "SELECT * FROM MENSAJES_VIEW_TEXT WHERE id = $id";
+                break;
+            default:
+                break;
         }
-    
+
+        $result = $this->conn->query($query);
+        $message = $result->fetch(PDO::FETCH_ASSOC);
+        return array(
+            "response_message" => array("type" => "RESPONSE","name" => "MESSAGE_CREATED","data" => array("error" => false,"msg" => $message)),
+            "event_message" => array("type" => "EVENT","name" => "NEW_MESSAGE","targets" => array(array("id" => $idReceptor, "data" => $message)))
+        );
+
     }
 
     public function deleteMessage($emisor,$receptor,$idConv,$idMessage){
 
         $response = null;
-        $query = 'SELECT status FROM MENSAJES_VIEW WHERE id = :id';
+        $query = 'SELECT status FROM MENSAJES WHERE id = :id';
         //Preparamos la sentencia.                             
         $stmt = $this->conn->prepare($query);
         //Bindeamos los datos.
@@ -334,7 +390,7 @@ class conversationController extends baseController{
                 "type" => "EVENT",
                 "name" => "TALK_USER_CHANGES",
                 "targets" => array(
-                    array("id" => $receptor, "data" => array('idUser' => $emisor,'idConv' => $idConv ))
+                    array("id" => $receptor, "data" => array('idUser' => $emisor,'msg' => $idConv ))
                 )
             )
         );

@@ -10,6 +10,7 @@ var Conversation = (function(_super,$,environment){
     const MESSAGE_SENT = 1;
     const MESSAGE_RECEIVED = 2;
     const MESSAGE_DELETED = 3;
+    const MESSAGE_TEXT = 1;
 
     var self;
     //Mensajes pendientes.
@@ -241,6 +242,7 @@ var Conversation = (function(_super,$,environment){
                     loaderData.load({
                         id:currentConv.id,
                         filter:{
+                            type:"message_text",
                             value:text
                         },
                         limit:{
@@ -259,7 +261,6 @@ var Conversation = (function(_super,$,environment){
                                         filter:filter
                                     });
                                 });
-
                                 //Colocamos el scroll en el último mensaje.
                                 container.scrollToLast();
                             },
@@ -304,7 +305,15 @@ var Conversation = (function(_super,$,environment){
             var container = viewConversations.getView("conversationContainer");
             //Creamos el mensaje.
             serviceLocator
-            .createMessage(currentConv.id,userConnected.id,currentConv.user,text)
+            .createMessage(
+                currentConv.id,
+                userConnected.id,
+                currentConv.user,
+                MESSAGE_TEXT,
+                {
+                    text:text
+                }
+            )
             .done(function(message){
                 //Actualizamos número de mensajes para la conversación
                 updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_SENT);
@@ -489,6 +498,7 @@ var Conversation = (function(_super,$,environment){
         if (message.text.match(pattern)) {
             console.log("Mensaje concuerda con el filtro actual");
             console.log(pattern);
+
             //Mostramos  el mensaje enviado.
             createViewMessage(message,{
                 direction:"desc",
@@ -677,25 +687,33 @@ var Conversation = (function(_super,$,environment){
         var conv = getConversation(message.idConv)
         if(conv){
 
+            var user = null;
+            if(message.userId != userConnected.id){
+                user = self.contacts.getContactById(message.userId).data;
+            }else{
+                user = userConnected;
+            }
+            
+            console.log("Creador del mensaje");
+            console.log(user);
+
             var status = "fa-eye-slash";
             
-            if(message.status == "LEIDO" || (message.status == "NOLEIDO"  && message.userId != userConnected.id)){
+            if(message.status == "LEIDO" || (message.status == "NOLEIDO"  && user.id != userConnected.id)){
                 status = "fa-eye";
             }
 
             var closeStatus = 'off';
-            if(message.status == "NOLEIDO" && message.userId == userConnected.id){
+            if(message.status == "NOLEIDO" && user.id == userConnected.id){
                 closeStatus = 'on';
             }
 
 
-            var photo,animationin,animationout;
-            if (message.userId == userConnected.id) {
-                photo = userConnected.foto;
+            var animationin,animationout;
+            if (user.id == userConnected.id) {
                 animationin = "slideInLeft";
                 animationout = "slideOutLeft";
             }else{
-                photo = self.contacts.getContactPhoto(message.userId);
                 animationin = "slideInRight";
                 animationout = "slideOutRight";
             }
@@ -704,8 +722,8 @@ var Conversation = (function(_super,$,environment){
             
             conv.createView("message",{
                 id:message.id,
-                photo:photo,
-                authorName:utils.urldecode(message.userName),
+                photo:user.foto,
+                authorName:user.name,
                 creation:message.creacion,
                 status:status,
                 close:closeStatus,
@@ -715,7 +733,7 @@ var Conversation = (function(_super,$,environment){
                     onCreate:function(view){
                         console.log("Mensaje creado ...");
                         console.log(view);
-                        if(message.userId == userConnected.id){
+                        if(user.id == userConnected.id){
                             view.get().addClass("emisor");
                         }else{
                             view.get().addClass("receptor");
@@ -831,6 +849,7 @@ var Conversation = (function(_super,$,environment){
                             loaderData.load({
                                 id:conversation.id,
                                 filter:{
+                                    type:"message_text",
                                     value:"",
                                     field:"text"
                                 },

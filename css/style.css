@@ -9,6 +9,7 @@
     -> Estilos Base
     -> Tipografía
     -> Componentes
+        -> Perfect Scrollbar css
         -> preloaders
         -> Imágenes
         -> Botones
@@ -400,6 +401,14 @@ DESC: Distribuidores de contenidos.
   .flex-block.mb-flex-content-wrap{
     flex-wrap: wrap;
   }
+}
+
+/* Perfect Scrollbar */
+
+.ps-container .ps-scrollbar-x,
+.ps-container .ps-scrollbar-y,
+.ps-container .ps-scrollbar-y.in-scrolling {
+  background-color: #4353FF !important;
 }
 
 
@@ -2137,8 +2146,6 @@ DESC: Distribuidores de contenidos.
   position: absolute;
   top: 0;
 }
-
-
 
 .conversation-wrapper .conversation .message-wrapper .text-wrapper .data{
   font-size: .9rem;
