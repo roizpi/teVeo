@@ -214,7 +214,16 @@ var Conversation = (function(_super,$,environment){
     //Manejadores para la vista de conversaciones.
     var onCreateViewConversations = function(view){
         viewConversations = view;
+        $('.fancybox').fancybox({
+            padding: 0,
+            openEffect : 'elastic',
+            openSpeed  : 150,
+            closeEffect : 'elastic',
+            closeSpeed  : 150,
+            closeClick : true
+        });
 
+    
         //Obtenemos la vista searchFormMessages.
         var searchMessages = viewConversations.getView("searchFormMessages");
         searchMessages.get().on("submit",function(e){
@@ -261,6 +270,7 @@ var Conversation = (function(_super,$,environment){
                                         filter:filter
                                     });
                                 });
+
                                 //Colocamos el scroll en el último mensaje.
                                 container.scrollToLast();
                             },
@@ -456,6 +466,8 @@ var Conversation = (function(_super,$,environment){
             serviceLocator.deleteMessage(userConnected.id,currentConv.user,currentConv.id,id)
             .done(function(){
                 container.getView(id).hide(true);
+                //Colocamos el scroll al final.
+                container.scrollToLast();
                 //Actualizamo el contandor de mensajes.
                 updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_DELETED);
                 //Incrementamos el cargador de datos.
@@ -496,9 +508,6 @@ var Conversation = (function(_super,$,environment){
         var pattern = new RegExp(filter,'im');
         //comprobamos si el mensaje concuerda con el patrón actual.
         if (message.text.match(pattern)) {
-            console.log("Mensaje concuerda con el filtro actual");
-            console.log(pattern);
-
             //Mostramos  el mensaje enviado.
             createViewMessage(message,{
                 direction:"desc",
@@ -710,7 +719,7 @@ var Conversation = (function(_super,$,environment){
 
 
             var animationin,animationout;
-            if (user.id == userConnected.id) {
+            if (user.id != userConnected.id) {
                 animationin = "slideInLeft";
                 animationout = "slideOutLeft";
             }else{
@@ -722,17 +731,11 @@ var Conversation = (function(_super,$,environment){
             
             conv.createView("message",{
                 id:message.id,
-                photo:user.foto,
-                authorName:user.name,
-                creation:message.creacion,
-                status:status,
-                close:closeStatus,
-                text:message.text
+                photo:user.foto
             },{
                 handlers:{
                     onCreate:function(view){
-                        console.log("Mensaje creado ...");
-                        console.log(view);
+     
                         if(user.id == userConnected.id){
                             view.get().addClass("emisor");
                         }else{
@@ -740,13 +743,24 @@ var Conversation = (function(_super,$,environment){
                         }
                         if (options) {
                             options.filter && view.highlight(options.filter);
-                        };
-                        
+                        };   
+                    },
+                    onAfterFirstShow:function(view){
+
+                        //Creamos contenido del mensaje.
+                        view.createView("textContent",{
+                            authorName:user.name,
+                            creation:message.creacion,
+                            status:status,
+                            close:closeStatus,
+                            text:message.text
+                        },{
+                            animations:{
+                                animationIn:animationin,
+                                animationOut:animationout
+                            }
+                        });
                     }
-                },
-                animations:{
-                    animationIn:animationin,
-                    animationOut:animationout
                 },
                 direction:direction
             });
@@ -845,7 +859,9 @@ var Conversation = (function(_super,$,environment){
                 },{
                     handlers:{
                         onAfterFirstShow:function(view){
-
+                            console.log("Circle Audio Player");
+                            console.log($("audio desde initConversation"));
+                            $("audio").circleAudioPlayer();
                             loaderData.load({
                                 id:conversation.id,
                                 filter:{

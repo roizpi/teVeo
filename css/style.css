@@ -783,18 +783,18 @@ DESC: Distribuidores de contenidos.
 
 /*Skins*/
 .btn-disabled{
-    cursor: not-allowed;
-    background-color: silver;
+  cursor: not-allowed;
+  background-color: silver;
 }
 
 .btn-success{
-    color: #fff;
-    background-color: #24c4ff;
+  color: #fff;
+  background-color: #24c4ff;
 }
 
 .btn-success:hover{
-    background-color:#008ABD;
-    box-shadow:#008ABD 0px 0px 0px 3px;
+  background-color:#008ABD;
+  box-shadow:#008ABD 0px 0px 0px 3px;
 }
 
 .btn-facebook{
@@ -816,32 +816,32 @@ DESC: Distribuidores de contenidos.
 
 
 .btn-upload{
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-upload > *{
-    position: absolute;
-    top: 0;left: 0;right: 0;bottom:0;
-    height: 100%;
+  position: absolute;
+  top: 0;left: 0;right: 0;bottom:0;
+  height: 100%;
 }
 
 .btn-upload p{
-    z-index: 1;
-    background: inherit;
-    pointer-events: none;
-    margin: 0;
-    text-align: center;
-    line-height: 50px;
-    font-size: 1.9em;
+  z-index: 1;
+  background: inherit;
+  pointer-events: none;
+  margin: 0;
+  text-align: center;
+  line-height: 50px;
+  font-size: 1.9em;
 }
 
 
 .btn-rejectCall,
 .btn-hangUp{
-    color: #fff;
-    font-size: 1.9em;
-    background-color:#B22222;
+  color: #fff;
+  font-size: 1.9em;
+  background-color:#B22222;
 }
 
 .btn-rejectCall:hover,
@@ -851,9 +851,9 @@ DESC: Distribuidores de contenidos.
 }
 
 .btn-takeCall{
-    color: #fff;
-    font-size: 1.9em;
-    background-color: #00FF00;
+  color: #fff;
+  font-size: 1.9em;
+  background-color: #00FF00;
 }
 
 .btn-takeCall:hover{
@@ -1125,7 +1125,7 @@ DESC: Distribuidores de contenidos.
 
 */
 
-.fa-microphone,
+/*.fa-microphone,
 .fa-microphone-slash{
   position: absolute;
   top: calc(50% - (25px / 2));right: 10px;
@@ -1143,7 +1143,7 @@ DESC: Distribuidores de contenidos.
 }
 
 /*Micrófono tachado no recibe eventos*/
-.fa-microphone-slash{
+/*.fa-microphone-slash{
   pointer-events: none;
 }
 
@@ -1161,7 +1161,7 @@ DESC: Distribuidores de contenidos.
 .fa-microphone.invert:hover{
   color:#fff;
   background-color:#008ABD;
-}
+}*/
 
 /* 
 
@@ -1425,7 +1425,6 @@ DESC: Distribuidores de contenidos.
 .conversation-list-wrapper .conversation-list .conversation-item:nth-child(even) .conversation-item-body table td{
   color:#4353FF;
 }
-
 
 
 /*
@@ -2055,34 +2054,82 @@ DESC: Distribuidores de contenidos.
   border-color: #4353FF;
 }
 
-.conversation-wrapper .conversation .message-wrapper .text-wrapper {
+/*Estilos base para cualquier contenido*/
+
+.conversation-wrapper .conversation .message-wrapper .content-wrapper{
   min-height: 40px;
   width: 60%;
   margin: 0 10.66667px;
   min-width: 200px;
   max-width:300px;
   box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
+  position: relative;  
+}
+
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper{
+  border-radius: 0 50px 10px 50px;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper{
+  border-radius: 50px 0px 50px 10px;
+}
+
+.conversation-wrapper .conversation .message-wrapper .content-wrapper::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-style: solid;
+  position: absolute;
+  top: 0;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .circle-wrapper, 
+.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper {
+  background: #4353FF;
+  background: -webkit-linear-gradient(bottom left,rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(bottom left, rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(bottom left,rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(bottom left, rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* Standard syntax (must be last)*/
+  float: right;
+}
+
+.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper::before {
+  border-width: 10px 10px 0 0;
+  border-color: #4353FF transparent transparent transparent;
+  right: -9px;
+}
+
+.conversation-wrapper .conversation .message-wrapper.emisor .circle-wrapper, 
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper {
+  background: #00AFF0;
+  background: -webkit-linear-gradient(bottom right,rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* Standard syntax (must be last)*/
+  float: left;
+}
+
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper::before {
+  border-width: 0 10px 10px 0;
+  border-color: transparent #00AFF0 transparent transparent;
+  left:-9px;
+}
+
+/* Mensajes tipo texto*/
+
+.conversation-wrapper .conversation .message-wrapper .content-wrapper.text-wrapper {
   font-weight: 300;
-  position: relative;
   color: #fff;
   /* word-break: break-all; */
 }
 
-.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper{
-  border-radius: 0 50px 10px 50px;
-}
-
-.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper{
-  border-radius: 50px 0px 50px 10px;
-}
-
-.conversation-wrapper .conversation .message-wrapper .text-wrapper header{
+.conversation-wrapper .conversation .message-wrapper .content-wrapper.text-wrapper header{
   padding:.5rem 1.2rem;
   font-size: .9rem;
   position: relative;
 }
 
-.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper header .delete{
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper.text-wrapper header .delete{
   position: absolute;
   top: 0;right: 0;
   width: 32px;height: 32px;
@@ -2096,21 +2143,20 @@ DESC: Distribuidores de contenidos.
   transition:all .5s;
 }
 
-.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper header .delete:hover,
-.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper header .delete:active{
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper.text-wrapper header .delete:hover,
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper.text-wrapper header .delete:active{
   text-shadow:#4353FF 0px 0px 4px;
 }
 
-.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper header .delete{
+.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper.text-wrapper header .delete{
   display: none;
 }
 
-.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper header{
+.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper.text-wrapper header{
   flex-direction:row-reverse;
 }
 
-
-.conversation-wrapper .conversation .message-wrapper .text-wrapper .text{
+.conversation-wrapper .conversation .message-wrapper .content-wrapper.text-wrapper .text{
   margin: 0;
   padding: 1.2rem;
   font-size: 1.2rem;
@@ -2118,72 +2164,70 @@ DESC: Distribuidores de contenidos.
   word-wrap: break-word;
 }
 
-.conversation-wrapper .conversation .message-wrapper .text-wrapper .text::first-letter{
+.conversation-wrapper .conversation .message-wrapper .content-wrapper.text-wrapper .text::first-letter{
   text-transform: uppercase;
   font-size: 1.5rem;
 }
 
-.conversation-wrapper .conversation .message-wrapper .text-wrapper footer{
+.conversation-wrapper .conversation .message-wrapper .content-wrapper.text-wrapper footer{
   font-size: .8rem;
   font-style: italic;
 }
 
-.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper footer{
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper.text-wrapper footer{
   text-align: right;
   padding-right: .25rem;
 }
 
-.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper footer{
+.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper.text-wrapper footer{
   text-align: left;
   padding-left: .25rem;
 }
 
-.conversation-wrapper .conversation .message-wrapper .text-wrapper::before {
-  content: '';
-  width: 0;
-  height: 0;
-  border-style: solid;
-  position: absolute;
-  top: 0;
-}
-
-.conversation-wrapper .conversation .message-wrapper .text-wrapper .data{
+.conversation-wrapper .conversation .message-wrapper .content-wrapper.text-wrapper .data{
   font-size: .9rem;
 }
 
-.conversation-wrapper .conversation .message-wrapper.receptor .circle-wrapper, 
-.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper {
-  background: #4353FF;
-  background: -webkit-linear-gradient(bottom left,rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(bottom left, rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(bottom left,rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(bottom left, rgba(67, 83, 255, 0.7), rgba(67, 83, 255, 1)); /* Standard syntax (must be last)*/
-  float: right;
+/* Estilo mensajes tipo imagen */
+
+.conversation-wrapper .conversation .message-wrapper .content-wrapper .img-wrapper{
+  display: block;
+  position: relative;
+
 }
 
-.conversation-wrapper .conversation .message-wrapper.receptor .text-wrapper::before {
-  border-width: 10px 10px 0 0;
-  border-color: #4353FF transparent transparent transparent;
-  right: -9px;
+.conversation-wrapper .conversation .message-wrapper .content-wrapper .img-wrapper::after{
+  position: absolute;
+  top: 0;left: 0;right: 0;bottom: 0;
+  font-family: 'FontAwesome';
+  font-size: 4rem;
+  color: #fff;
+  padding-top: 25%;
+  content: "\f065";
+  cursor: pointer;
+  -webkit-transform:scale(0) rotateY(0);
+  transform:scale(0) rotateY(0);
+  -webkit-transition:-webkit-transform .3s linear,text-shadow .6s linear .3s;
+  transition:transform .3s linear,text-shadow .6s linear .3s;
+  text-align: center;
+
 }
 
-.conversation-wrapper .conversation .message-wrapper.emisor .circle-wrapper, 
-.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper {
-  background: #00AFF0;
-  background: -webkit-linear-gradient(bottom right,rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(bottom right, rgba(0, 175, 240, 0.7), rgba(0, 175, 240,1)); /* Standard syntax (must be last)*/
-  float: left;
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper .img-wrapper::after{
+  background-color: rgba(0, 175, 240, 0.47);
 }
 
-.conversation-wrapper .conversation .message-wrapper.emisor .text-wrapper::before {
-  border-width: 0 10px 10px 0;
-  border-color: transparent #00AFF0 transparent transparent;
-  left:-9px;
+.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper .img-wrapper::after{
+  background-color: rgba(67, 83, 255, 0.47);
 }
 
-/*Envío de mensajes*/
+.conversation-wrapper .conversation .message-wrapper .content-wrapper .img-wrapper:hover::after{
+  -webkit-transform:scale(1) rotateY(360deg);
+  transform:scale(1) rotateY(360deg);
+  text-shadow:#fff 5px 5px 8px;
+}
+
+/* Estilos para la barra de envio de mensajes*/
 
 .conversation-wrapper + .conversation-sendmessage{
   width: 100%;
@@ -2201,15 +2245,15 @@ DESC: Distribuidores de contenidos.
 
 
 .conversation-wrapper + .conversation-sendmessage .text{
-  width: 90%;
+  width: 75%;
   background-color: #fff;
-  overflow: hidden; /*clear fix hack*/
+  overflow: visible; /*clear fix hack*/
   position: relative;
 }
 
 .conversation-wrapper + .conversation-sendmessage .text > *{
-  float: right;
   display: inline-block;
+  float: right;
   height: 100%;
 }
 
@@ -2244,46 +2288,34 @@ DESC: Distribuidores de contenidos.
   text-shadow:#4353FF 0px 0px 5px;
 }
 
+.conversation-wrapper + .conversation-sendmessage .conversation-sendmessage-actions{
+  width: 25%;
+  padding: 0 0.5rem;
+  background-color: #fff;
+  position: relative;
+  text-align: right;
+}
+
+.conversation-wrapper + .conversation-sendmessage .conversation-sendmessage-actions .fa{
+  background-color: rgb(0, 138, 189);
+  color: #fff;
+  box-sizing: content-box;
+  padding: 1.1rem;
+  border-radius: 50%;
+  -webkit-transition:text-shadow .5s;
+  transition:text-shadow .5s;
+  cursor: pointer;
+}
+
+.conversation-wrapper + .conversation-sendmessage .conversation-sendmessage-actions .fa:hover{
+  text-shadow:#fff 4px 4px 5px;
+}
+
+
 .conversation-wrapper + .conversation-sendmessage .text + button[type=submit]{
   line-height: 50px;
 }
 
-/*
-    
-    Custom
-    ===========================
-
-*/
-
-.actionList .containerItems .item .head .convName{
-    position: relative;
-}
-
-.actionList .containerItems .item .head .convName > span{
-    max-width: 80%;
-}
-
-.actionList .containerItems .item .head .convName.newMessages::after{
-    content: attr(data-newmessages);
-    position: absolute;
-    top:5px;
-    left:80%;
-    width: 25px;
-    height: 25px;
-    font-size: .7em;
-    text-align: center;
-    line-height: 25px;
-    border-radius: 50%;
-    color: #000;
-    font-weight: bold;
-    background-color: yellow;
-    -webkit-animation-name: newMessages;
-        animation-name: newMessages;
-    -webkit-animation-duration:.5s;
-        animation-duration: .5s;
-    -webkit-animation-iteration-count:infinite;
-        animation-iteration-count: infinite;
-}
 
 
 /*
@@ -6496,5 +6528,9 @@ span.css-emoticon.nintendo-controller {
   margin:0 1rem;
 }
 
+#appendResources{
+  position: absolute;
+  right: 0;bottom: 100%;
+}
 
 

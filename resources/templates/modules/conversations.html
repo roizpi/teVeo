@@ -18,11 +18,13 @@
             </header>
             <div class="conversation-wrapper scroll-pane" data-view="conversationContainer">
                 <ul class="conversation animateView" data-view="conversation" data-type="template" data-animationin="fadeIn" data-animationout="fadeOut">
-                    <li class="message-wrapper animateView" data-view="message" data-type="template" >
+                    <!-- Template Mensajes -->
+                    <li class="message-wrapper animateView" data-view="message" data-type="template" data-animationin="fadeIn" data-animationout="fadeOut">
                         <div class="circle-wrapper">
                             <img class="cover" data-view="photo" data-type="img" src="" alt="">
                         </div>
-                        <div class="text-wrapper">
+                        <!-- Template para mensajes de texto -->
+                        <div class="content-wrapper text-wrapper animateView" data-view='textContent' data-type='template'>
                             <header class="flex-block" data-view='dataMessage'>
                                 <span class="authorName" data-view="authorName" data-type="text"></span>
                                 <span class="fa" data-view="status" data-type="class"></span>
@@ -35,17 +37,48 @@
                                 <span class="messageDate" data-view="creation" data-type="text" data-format='date'></span>
                             </footer>   
                         </div>
+                        <!-- Template para mensajes de tipo imagen -->
+                        <div class="content-wrapper animateView" data-view='imgContent' data-type='template'>
+                            <a class="img-wrapper fancybox" href="resources/img/img1.jpg" title="Lorem ipsum dolor sit amet, consectetur adipiscing elit">
+                                <img src="resources/img/img1.jpg" />
+                            </a>
+                        </div>
+                        <!-- Mensajes de tipo audio -->
+                        <div class="content-wrapper sound-wrapper animateView" data-view='soundContent' data-type='template'>
+                            <header class="flex-block" data-view='dataMessage'>
+                                <span class="authorName" data-view="authorName" data-type="text">Sergio Sánchez</span>
+                                <span class="fa" data-view="status" data-type="class"></span>
+                                <a href="#"  class='delete animateView' data-action='deleteMessage' data-view="close" data-type="toggle" data-animationin="fadeIn" data-animationout="fadeOut">
+                                    <span class="fa fa-close"></span>
+                                </a>
+                            </header>
+                            <audio controls preload="false" data-radius="40" data-skin="green" data-circle-audio-player>
+                                <source src="http://cdn.dj-punjab.info/songs/128/553/Aaye%20Ho%20Meri%20Zindagi%20Mein%20(RaagJatt.com).mp3" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
                     </li>
+    
                 </ul>
             </div>
+            
             <form class="conversation-sendmessage flex-block flex-liquid-content" data-action="send-message" action="#" method="post" data-view='sendMessage'>
                 <div class="text">
                     <input type="text"  name="message" id="message" data-message required autocomplete="off" autocorrect="off" placeholder="escribe un mensaje"/>
-                    <span data-microphone class="invert fa fa-microphone-slash"></span>
                     <label for="message"><span class="fa fa-paper-plane"></span></label>
                 </div>
-                <button type="submit" class='btn btn-normal btn-action'>Enviar</button>
+                <!--<button type="submit" class='btn btn-normal btn-action'>Enviar</button>-->
+                <div class="conversation-sendmessage-actions flex-block">
+                    <span data-microphone class="fa fa-paper-plane"></span>
+                    <span class='fa fa-plus'></span>
+                    <ul class="t-menu" id="appendResources">
+                        <li><a href="#"><span class="mif-file-empty icon"></span></a></li>
+                        <li><a href="#"><span class="mif-video-camera icon"></span></a></li>
+                        <li><a href="#"><span class="mif-camera icon"></span></a></li>
+                    </ul>
+                </div>
             </form>
+            
         </article>
         <article class='flex-block flex-block-y-full flex-direction-column flex-liquid-content'>
             <header class="header flex-block">

@@ -302,8 +302,8 @@ var View = (function(_super,$,environment){
 		return result;
 	};
 	//Coloca el scroll la vista al final.
-	View.prototype.scrollToLast = function() {
-		var pos = this.el.children().height();
+	View.prototype.scrollToLast = function(debug) {
+		var pos = this.el.children(".animateView").height();
 		this.el.scrollTop(pos);
 	};
 
