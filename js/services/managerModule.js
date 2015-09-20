@@ -14,7 +14,10 @@ var ManagerModule = (function(_super,$,environment){
         //Retornamos los módulos que corresponden con los nombres.
         var extractedModules =  names.map(function(module){
             return modules[module];
-        });
+        }).filter(function(module){
+            //Eliminamos los módulos que no existen y los que ya están cargados o son diferidos.
+            return module != undefined && !module.deferred;
+        })
         //Ordenamos los módulos ascendentemente 
         return utilitis.orderByInsercionBinariaAsc(extractedModules,"order");
     }
@@ -44,11 +47,10 @@ var ManagerModule = (function(_super,$,environment){
     var downloadModules = function(modulesRequired){
         
         var promises = modulesRequired.filter(function(module){
-            //Eliminamos los módulos que no existen y los que ya están cargados.
-            return module != undefined && !module.loaded;
+            return !module.loaded; 
         }).map(function(module){
             return downloadModule(module);
-        })
+        });
 
         //Sincronizamos todas las promises.
         return $.when.apply($, promises).done(function(){
@@ -151,22 +153,26 @@ var ManagerModule = (function(_super,$,environment){
 
     ManagerModule.prototype.getDefferedModule = function(name,callback) {
         
-        var activityManager = environment.getService("ACTIVITY_MANAGER");
-
-        //Comprobamos si el módulo solicitado está especificado en el manifiesto de la actividad.
-        if (activityManager.getCurrentActivity().modules.indexOf(name) != -1) {
-            var module = modules[name];
-            downloadModule(module).done(function(){
-                module.instance = new window[module.className];
-                delete window[module.className];
-                //Ejecutamos el callback especificado.
-                typeof(callback) == "function" && callback(module.instance);
-            });
-
+        if (modules[name] && modules[name].loaded) {
+            //Ejecutamos el callback especificado.
+            typeof(callback) == "function" && callback(modules[name].instance);
         }else{
-            console.log("MÓDULO "+name+" , no declarado para esta actividad");
-        }
+            var activityManager = environment.getService("ACTIVITY_MANAGER");
+            //Comprobamos si el módulo solicitado está especificado en el manifiesto de la actividad.
+            if (activityManager.getCurrentActivity().modules.indexOf(name) != -1) {
+                var module = modules[name];
+                downloadModule(module).done(function(){
+                    module.instance = new window[module.className];
+                    delete window[module.className];
+                    //Ejecutamos el callback especificado.
+                    typeof(callback) == "function" && callback(module.instance);
+                });
 
+            }else{
+                console.log("MÓDULO "+name+" , no declarado para esta actividad");
+            }
+        }
+    
     };
 
 

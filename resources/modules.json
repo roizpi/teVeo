@@ -188,6 +188,26 @@
                 }  
             }
         }
+    },
+    "FILE_MANAGER":{
+        "name":"fileManager",
+        "className":"FileManager",
+        "file":"fileManager.js",
+        "order":15,
+        "deferred":true,
+        "dependences":null,
+        "templates":{
+            "request_file":{
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"requestFile.html",
+                    "animations":{
+                        "animationIn":"fadeIn",
+                        "animationOut":"fadeOut"
+                    }
+                }  
+            }
+        }
     }
     
 }

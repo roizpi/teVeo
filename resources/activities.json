@@ -61,7 +61,8 @@
 			"GEO_LOCATION",
 			"METRO",
 			"CONVERSATION",
-			"MOVIEDB"
+			"MOVIEDB",
+			"FILE_MANAGER"
 		],
 		"templates":{
 			"gui":{

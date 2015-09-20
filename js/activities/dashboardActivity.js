@@ -52,11 +52,11 @@ var DashboardActivity = (function(environment,$){
             else if(document[visibilityState] == "visible")
                 document.title = "TeVeo!";
                 
-        });/*.delegate("[data-action]","click",function(e){
+        }).delegate("[data-action-main]","click",function(e){
             var $this = $(this);
-            $("[data-action]").removeClass("active");
+            $("[data-action-main]").removeClass("active");
             $this.addClass("active");
-        });*/
+        });
 
         var $el = $("[data-notifications]","#tasks");
         //Implementamos manejador para el evento "NOTIFICATION_ELIMINATED".
@@ -278,7 +278,8 @@ var DashboardActivity = (function(environment,$){
         });
         //Iniciamos el configurador de wallpapers.
         startWallpaperConfigurator();
-
+        console.log("Módulo de conversaciones");
+        console.log(this.modules["conversation"]);
         //Notifica al usuario la existencia de mensajes que no ha leído
         var pendingMessages = this.modules["conversation"].getPendingMessages();
         console.log("Mensajes pendientes");

@@ -257,14 +257,13 @@ var View = (function(_super,$,environment){
 	};
 	
 	View.prototype.show = function(first,callback) {
-		
 		if (!this.isVisible()) {
 			var self = this;
 			this.onBeforeShow();
 			if(this.animations && this.animations.animationIn){
 				var animation = this.animations.animationIn;
 				var target;
-				if (this.category && this.category == "MODULE_VIEWS") {
+				if (this.category && (this.category == "MODULE_VIEWS" || this.category == "OVERLAY_MODULE_VIEW")) {
 					target = convertToRegion(this.target);
 				}else{
 					target = this.target;
@@ -607,6 +606,12 @@ var TemplateManager = (function(_super,$,environment){
 				typeof(callback) == "function" && callback(view);
 			});
 		}else{
+			console.log("Template : ");
+			console.log(template);
+			console.log("Data");
+			console.log(data);
+			console.log(options);
+
 			//creamos la vista
 			var view = View.create(template,data,options);
 			typeof(callback) == "function" && callback(view);
@@ -665,14 +670,17 @@ var TemplateManager = (function(_super,$,environment){
 					target = "body";
 					break;
 				case "MODULE_VIEWS":
+				case "OVERLAY_MODULE_VIEW":
 					var template = environment.getService("MANAGER_MODULE").getTemplateData(fqn);
 					//var name = data["template"] ? data["template"] : Array.prototype.slice.call(Object.keys(templates),0,1);
 					//Ruta de la interfaz de la actividad.
 					path = environment.MODULES_TEMPLATES_BASE_PATH + template["file"];
+					console.log("Path de la template : " + path);
 					//Animaciones para la interfaz
 					animations = template["animations"];
 					//Donde se ubicará la interfaz.
 					target = activity.name + ":" + template["region"];
+					console.log("Target de la template : " + target);
 					break;
 			}
 			//Cargamos el recurso.

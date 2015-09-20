@@ -40,8 +40,6 @@ class userController extends baseController{
             $sql->execute(array("idUser"=> $idUser,"value" => "%$value%")); 
             //Extraemos los usuarios.
             $usuarios = $sql->fetchAll(PDO::FETCH_ASSOC);
-            for($i = 0; $i < sizeof($usuarios); $i++)
-                $usuarios[$i] = array_map("utf8_encode",$usuarios[$i]);
 
             return array(
                 "response_message" => array(
@@ -95,7 +93,6 @@ class userController extends baseController{
         $sql = $this->conn->prepare('SELECT id,foto,name,edad,sexo,ubicacion FROM USUARIOS_VIEW WHERE id = :id');
         $sql->execute(array("id" => $id));
         $usuario = $sql->fetch(PDO::FETCH_ASSOC);
-        $usuario = array_map("utf8_encode",$usuario);
         return array(
             "response_message" => array("type" => "RESPONSE","name" => "USER_DETAILS","data" => array("error" => false,"msg" =>$usuario))
         );
@@ -107,7 +104,6 @@ class userController extends baseController{
         $sql = $this->conn->prepare('SELECT id,foto,name,ubicacion FROM USUARIOS_VIEW WHERE id = :idUsuario');
         $sql->execute(array(":idUsuario" => $idUser));
         $user = $sql->fetch(PDO::FETCH_ASSOC);
-        $user = array_map("utf8_encode",$user);
         $response = array(
             "response_message" => array(
                 "type" => "RESPONSE",
@@ -131,7 +127,6 @@ class userController extends baseController{
         $sql = $this->conn->prepare('SELECT id,foto,name FROM USUARIOS_VIEW WHERE id = :idUsuario');
         $sql->execute(array(":idUsuario" => $idUser));
         $user = $sql->fetch(PDO::FETCH_ASSOC);
-        $user = array_map("utf8_encode",$user);
         //Obtenemos los contactos del usuario.
         $sql = $this->conn->prepare('SELECT idRepresentado FROM contactos_view WHERE idUsuario = :idUsuario');
         $sql->execute(array(":idUsuario" => $user["id"]));

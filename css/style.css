@@ -307,13 +307,18 @@ h1,h2,h3,p,li,.logo,.btn{
 }
 
 
-/* Componentes */
+/* 
+
+  Componentes
+  =====================
+
+*/
 
 /*
 
-Layout
-=====================
-DESC: Distribuidores de contenidos.
+  Layout
+  =====================
+  DESC: Distribuidores de contenidos.
 
 */
 
@@ -1183,9 +1188,6 @@ DESC: Distribuidores de contenidos.
   -webkit-transition:all .5s;
   transition:all .5s;
 }
-
-
-
 
 
 
@@ -2317,7 +2319,6 @@ DESC: Distribuidores de contenidos.
 }
 
 
-
 /*
   
   Notifications
@@ -2478,57 +2479,6 @@ DESC: Distribuidores de contenidos.
 }
 
 
-/*
-  Tabs Container
-  ==================
-*/
-
-.tabs-container{
-  width: 100%;
-}
-
-
-/*#header .logo,
-#header .navIcon,
-#nav{
-    display: inline-block;
-    vertical-align: top;
-}
-
-#header .logo{
-  width: 20%;
-  text-align: center;
-  font-size: 2.5em;
-  line-height: 70px;
-}
-
-#header .logo a{
-  border-radius: 10px;
-  -webkit-transition:all 1s;
-    -moz-transition:all 1s;
-        transition:all 1s;
-  color: #fff;
-}
-
-#header .logo a:hover{
-  padding: 4px;
-  background-color: #fff;
-}
-
-#header .navIcon{
-    width: 7%;
-    text-align: center;
-    color: #fff;
-    line-height: 70px;
-    cursor: pointer;
-    -webkit-transition:all .5s;
-        -moz-transition:all .5s;
-            transition: all .5s;
-}
-
-#header .navIcon .fa{
-    line-height: 70px
-}*/
 
 #nav{
   width: 70%;
@@ -2560,9 +2510,7 @@ DESC: Distribuidores de contenidos.
     position: relative;
 }
 
-#main.dashboard{
-    height: calc(100vh - 70px);
-}
+
 
 #main  img.wallpaper {
     position: absolute;
@@ -2588,74 +2536,24 @@ DESC: Distribuidores de contenidos.
 
 */
 
-#main .panel-menu{
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
+#main.dashboard{
+  height: calc(100vh - 70px);
 }
 
-
-#main .panel-menu .userImage{
-   
-    border-radius: 100%;
-    border: 4px solid #fff;
-    -webkit-transtion:all .5s;
-    transition:all .9s;
-}
-
-#main .panel-menu .actions{
-    width: 100%;
-    text-align: center;
-}
-
-#main .panel-menu .actions > *{
-    display: inline-block;
-    vertical-align: top;
-    width: 25%;
-    height: 90px;
-}
-
-#main .panel-menu .actions a{
-    -webkit-box-sizing:border-box;
-        -moz-box-sizing:border-box;
-            box-sizing: border-box;
-    display: block;
-    height: 100%;
-    color: #fff;
-    padding-top: 15px;
-    -webkit-transition:all .5s;
-        -moz-transition:all .5s;
-                transition:all .5s;
-}
-
-#main .panel-menu .actions a:hover,
-#main .panel-menu .actions a.active{
-    background-color: #fff;
-}
-
-
-#viewPanelMenu{
-    width: 100%;
-}
-
-.body{
-  display: -webkit-flex;
-  display: flex;
-  height: 100%;
-}
-
-.body .sidenav,
-.body .tabs-container{
+#main.dashboard .sidenav,
+#main.dashboard .tabs-container{
   height: 100%;
   overflow: hidden;
-  flex:1 1 auto;
+}
+
+#main.dashboard .tabs-container{
+  width: 100%;
 }
 
 .sidenav{
   width: 40%;
-  max-width: 450px;
+  max-width: 350px !important;
+  overflow: hidden;
   position: relative;
   will-change: transform;/*Hacking overflow hidden*/
 }
@@ -3000,33 +2898,52 @@ DESC: Distribuidores de contenidos.
   border: 0;
 }
 
+/*
+  Overlays
+  ======================
+  DESC: Ventana Modal que se superpone al resto del conetenido.
+*/
 
-
-/* Presentación Contacto */
-
-.contactDetail .backImg{
-    background-image: url("../php/fotos/dsadsadasd.png");
+.overlay,
+.overlay .overlay-content{
+  position: absolute;
+  top:0;left: 0;right: 0;bottom: 0;
 }
 
-.contactDetail form .desc{
-    display:block;
-    width: 90%;
-    margin: 0px auto;
-    border-width: 2px;
-    border-style: solid;
-    resize: none;
-    padding: 10px;
-    -webkit-transition:all .6s;
-            transition:all .6s;
+.overlay{
+  background-color: rgba(0,0,0,0.7);
 }
 
-.contactDetail form .actions {
-    text-align: center;
-    margin: 10px 0;
+.overlay .overlay-content{
+  background-color: #fff;
+  margin: auto;
+  border-radius: 15px;
+  position: relative;
 }
 
+.overlay .overlay-content .close{
+  position: absolute;
+  top: 5%;right: 5%;
+  padding: 0.6rem .9rem;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 30px;
+  color: #00AFF0;
+  font-size: 2.2rem;
+  -webkit-transition:all .5s;
+  transition:all .5s;
+}
 
+.overlay .overlay-content .close:active,
+.overlay .overlay-content .close:hover{
+  color: #fff;
+  background-color: #00AFF0;
+}
 
+.overlay .overlay-content.overlay-content-normal{
+  width: 700px;
+  height: 500px;
+}
 
 /*
     
@@ -6533,4 +6450,7 @@ span.css-emoticon.nintendo-controller {
   right: 0;bottom: 100%;
 }
 
+#conversationPanel{
+  max-width: 500px !important;
+}
 

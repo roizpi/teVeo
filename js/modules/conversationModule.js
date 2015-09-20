@@ -333,6 +333,26 @@ var Conversation = (function(_super,$,environment){
             .fail(function(){
                 //fallo al enviar el mensaje.
             });
+        }).delegate("[data-action]","click",function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            var action = this.dataset.action.toUpperCase();
+            switch(action){
+                case "REQUEST_FILE":
+                    //Obtenemos el servicio de administración de módulos
+                    var managerModule = environment.getService("MANAGER_MODULE");
+                    if(managerModule.isExists("FILE_MANAGER") && managerModule.isDeferred("FILE_MANAGER")){
+                        //Solicitamos el módulo diferido indicado como parámetro.
+                        managerModule.getDefferedModule("FILE_MANAGER",function(fileManager){
+                            fileManager.requestFile();
+                        });
+
+                    }else{
+                        console.log("El módulo no existe o no está activado");
+                    }
+                break;
+            }
+
         });
 
         //Manejadores para el panel de conversaciones.
@@ -655,7 +675,6 @@ var Conversation = (function(_super,$,environment){
             var pending = pendingMessages.filter(function(message){
                 return message.idConv == conversation.id ? true : false;
             }).length;
-
 
             var info = {
                 id:conversation.id,
@@ -986,8 +1005,6 @@ var Conversation = (function(_super,$,environment){
             }else{
 
                 createConversation(idUser,function(conversation){
-                    console.log("Conversación");
-                    console.log(conversation);
                     conversation.active = true;
                     deferred.resolve([conversation],conversation);
                 },function(){
@@ -1092,6 +1109,7 @@ var Conversation = (function(_super,$,environment){
                 onCreate:onCreateViewConversations
             }
         }).done(function(view){
+            console.log("IDENTIFICADOR del usuario : " + idUser);
 
             var container = view.getView("conversationListContainer");
             //Comprobamos si existe panel de conversaciones para este usuario.
@@ -1120,7 +1138,12 @@ var Conversation = (function(_super,$,environment){
                         //Notificamos que no hay conversaciones.
                         self.triggerEvent("ANY_CONVERSATION_FOUND");
                     });
-                };
+                }else{
+                    //Iniciamos el listado de conversaciones
+                    initConversationList({
+                        idUser:idUser
+                    });
+                }
             }
 
         });

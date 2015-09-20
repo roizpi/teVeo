@@ -8,8 +8,7 @@ class solicitudesController extends baseController{
         $sql = $this->conn->prepare('SELECT * FROM SOLICITUDES_PENDIENTES WHERE idSolicitado = :idUser');
         $sql->execute(array("idUser" => $idUser));
         $applications = $sql->fetchAll(PDO::FETCH_ASSOC); 
-        for($i = 0; $i < sizeof($applications); $i++)
-            $applications[$i] = array_map("utf8_encode",$applications[$i]);
+
         return array("response_message" =>array("type" => "RESPONSE","name" => "PENDIG_APPLICATIONS","data" => array("error" => false,"msg" => $applications)));
         
     
@@ -51,7 +50,6 @@ class solicitudesController extends baseController{
             //Ejecutamos la sentencia.                                     
             $stmt->execute();
             $application = $stmt->fetch(PDO::FETCH_ASSOC);
-            $application = array_map('utf8_encode',$application);
             return array(
                 "response_message" => array("type" => "RESPONSE","name" => "RESULT_OF_ADD_APPLICATION","data" => array("error" => false,"msg" => "La solicitud se ha enviado correctamente")),
                 "event_message" => array("type" => "EVENT","name" => "NEW_APPLICATION_OF_FRIENDSHIP","targets" => array(array("id" => $idUsuSolicitado,"data" => $application)))
@@ -76,7 +74,6 @@ class solicitudesController extends baseController{
         if ($exito) {
             $result = $this->conn->query("SELECT name FROM USUARIOS_VIEW WHERE id = $idSolicitado");
             $name = $result->fetch(PDO::FETCH_ASSOC)["name"];
-            $name = utf8_encode($name);
             return array(
                 "response_message" => array("type" => "RESPONSE","name" => "RESULT_OF_ACCEPT_APPLICATION","data" => array("error" => false,"msg" => "La solicitud ha sido aceptada correctamente")),
                 "event_message" => array("type" => "EVENT","name" => "ACCEPT_YOUR_APPLICATION","targets" => array(array("id" => $idSolicitador,"data" => "Ahora $name y tu sois amigos")))
@@ -99,7 +96,6 @@ class solicitudesController extends baseController{
         if ($exito) {
             $result = $this->conn->query("SELECT name FROM USUARIOS_VIEW WHERE id = $idSolicitado");
             $name = $result->fetch(PDO::FETCH_ASSOC)["name"];
-            $name = utf8_encode($name);
             return array(
                 "response_message" => array("type" => "RESPONSE","name" => "RESULT_OF_REJECT_APPLICATION","data" => array("error" => false,"msg" => "La solicitud ha sido rechazada correctamente")),
                 "event_message" => array("type" => "EVENT","name" => "REJECT_YOUR_APPLICATION","targets" => array(array("id" => $idSolicitador,"data" => "$name ha rechazado tu solicitud de amistad")))

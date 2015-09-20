@@ -60,7 +60,7 @@ AS
 
 CREATE VIEW CONVERSACIONES_NORMALES_VIEW
 AS
-    SELECT C.id AS id,M.creacion as creacion,name,user_one,user_two,COUNT(M.id) AS MENSAJES
+    SELECT C.id AS id,C.creacion as creacion,name,user_one,user_two,COUNT(M.id) AS MENSAJES
     FROM CONVERSACIONES C NATURAL JOIN CONVERSACIONES_NORMALES LEFT OUTER JOIN MENSAJES M ON(C.id = M.conversacion)
     GROUP BY C.id
     ORDER BY creacion DESC;

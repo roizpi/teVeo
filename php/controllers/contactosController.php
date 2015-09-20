@@ -8,8 +8,6 @@ class contactosController extends baseController{
         $sql = $this->conn->prepare('SELECT * FROM CONTACTOS_VIEW WHERE idUsuario = :idUser');
         $sql->execute(array("idUser" => $idUser));
         $contactos = $sql->fetchAll(PDO::FETCH_ASSOC);
-        for($i = 0; $i < sizeof($contactos); $i++)
-            $contactos[$i] = array_map("utf8_encode",$contactos[$i]);
         return array(
             "response_message" => array("type" => "RESPONSE","name" => "RESULT_OF_GET_ALL_CONTACTS","data" => array("error" => false,"msg" =>$contactos))
         );
@@ -23,7 +21,6 @@ class contactosController extends baseController{
             $sql = $this->conn->prepare('SELECT id,foto,name,ubicacion FROM USUARIOS_VIEW WHERE id = :idUsuario');
             $sql->execute(array(":idUsuario" => $idUser));
             $user = $sql->fetch(PDO::FETCH_ASSOC);
-            $user = array_map("utf8_encode",$user);
             //Formamos los destinatarios del evento.
             $targets = [];
             for($i = 0; $i < sizeof($contactos); $i++){
@@ -89,10 +86,8 @@ class contactosController extends baseController{
         if ($exito1 && $exito2) {
             $result1 = $this->conn->query("SELECT * FROM CONTACTOS_VIEW WHERE idUsuario = $idSolicitador AND idRepresentado = $idSolicitado");
             $usuSolicitado = $result1->fetch(PDO::FETCH_ASSOC);
-            $usuSolicitado = array_map("utf8_encode",$usuSolicitado);
             $result2 = $this->conn->query("SELECT * FROM CONTACTOS_VIEW WHERE idUsuario = $idSolicitado AND idRepresentado = $idSolicitador ");
             $usuSolicitador = $result2->fetch(PDO::FETCH_ASSOC);
-            $usuSolicitador = array_map("utf8_encode",$usuSolicitador);
             return array(
                 "response_message" => array("type" => "RESPONSE","name" => "RESULT_OF_ADD_CONTACT","data" => array("error" => false,"msg" => "Nuevo contacto agregado correctamente")),
                  "event_message" => array("type" => "EVENT","name" => "NEW_CONTACT","targets" => array(array("id" => $idSolicitador,"data" => $usuSolicitado ),array("id" => $idSolicitado,"data" => $usuSolicitador)))

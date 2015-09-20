@@ -346,7 +346,8 @@ class ServerSocket extends WebSocketServer {
                 }
                 
             }
-
+            //Codificamos los datos de la respuesta.
+            $this->encodeData($response["response_message"]['data']['msg']);
             //Enviamos la respuesta al emisor.
             $this->send($conn,json_encode($response["response_message"]));
             //Si el servicio debe notificar a otros clientes
@@ -382,17 +383,42 @@ class ServerSocket extends WebSocketServer {
         }
     
     }
+
+    private function decodeParams($params){
+        if (!is_null($params)) {
+            $params = get_object_vars($params);
+            foreach ($params as $key => $value) {
+                if (is_string($value)) {
+                    $params[$key] = utf8_encode(base64_decode($value));
+                }else{
+                    $params[$key] = $value;
+                }
+            }
+        }
+        return $params;
+    }
+
+    private function encodeData(&$data){
+        if (!is_null($data)) {
+            foreach ($data as $key => $value) {
+                if (is_string($value)) {
+                    $data[$key] = base64_encode($value);
+                }
+            }
+        }
+    }
     
     protected function process ($conn, $message) {
         //Decodificamos el mensaje.
-        $msg = json_decode(urldecode($message));
+        $msg = json_decode($message);
         echo var_dump($msg) . PHP_EOL;
-        $serviceName = $msg->service;
-        $params = $msg->params;
         //Comprobamos si existe el servicio solicitado.
-        if(array_key_exists($serviceName,$this->serviceMap)){
+        if(array_key_exists($msg->service,$this->serviceMap)){
             //Obtenemos el servicio.
-            $service = $this->serviceMap[$serviceName];
+            $service = $this->serviceMap[$msg->service];
+            //Decodificamos los parámetros.
+            $params = $this->decodeParams($msg->params);
+             echo var_dump($params) . PHP_EOL;
             //Comprobamos si el servicio requiere token de acceso.
             if (isset($service["token_required"])) {
                 //Comprobamos si hay token de sessión en la petición

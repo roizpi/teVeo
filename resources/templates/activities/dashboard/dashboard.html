@@ -10,31 +10,31 @@
         <!-- Barra de Tareas -->
         <ul class="actions" role="menu" id="tasks">
             <!-- Inicio -->
-            <li class="action" role="listitem" data-action="goHome">
+            <li class="action" role="listitem" data-action="goHome" data-action-main>
                 <a href="#" title="Volver a Inicio">
                     <span class="fa  fa-home"></span>
                 </a>
             </li>
             <!-- Solicitudes de amistad -->
-            <li class="action" role="listitem" data-action="">
+            <li class="action" role="listitem" data-action="" data-action-main>
                 <a href="#" title="Solicitudes de amistad">
                     <span class="fa fa-user-plus"></span>
                 </a> 
             </li>
             <!--Configuracion -->
-            <li class="action" role="listitem" data-action="preferences">
+            <li class="action" role="listitem" data-action="preferences" data-action-main>
                 <a href="#" title="Preferencias">
                     <span class="fa  fa-gear"></span>
                 </a>
             </li>
             <!--Agregar Contactos -->
-            <li class="action" role="listitem" data-action="searchUsers">
+            <li class="action" role="listitem" data-action="searchUsers" data-action-main>
                 <a href="#" title="Buscar Amigos">
                     <span class="fa  fa-search-plus"></span>
                 </a>
             </li>
             <!-- Notificaciones -->
-            <li class="action" role="listitem" data-action="showNotifications">
+            <li class="action" role="listitem" data-action="showNotifications" data-action-main>
                 <a href="#" title="Ver Notificaciones">
                     <span class="fa fa-bell"></span>
                     <span class="badge" data-notifications></span>
@@ -42,27 +42,25 @@
             </li>
             <!-- Logout -->
             <li class="action" role="listitem">
-                <a href="#" title="Salir" data-action='overflow'><span class="fa fa-th"></span></a>
+                <a href="#" title="Salir" data-action='overflow' data-action-main><span class="fa fa-th"></span></a>
             </li>            
         </ul>
 
     </header>
         
-    <main id="main" class="dashboard  wallpaper">
-        
-        <div class="body">
-            <!-- side nav -->
-            <aside data-view="panelMenu" data-type="html" class="sidenav animateView  slideOutLeft">
-                <header class="sidenav-header">
-                    <div class="user-info flex-block  flex-direction-row">
-                        <div class="large cycle">
-                            <img data-view="userImage" data-type="img" src="#" alt="imagen del usuarios">
-                        </div>
-                        <div>
-                            <p data-view='name' data-type='text'></p>
-                            <p>Lorem Inpsum</p>
-                        </div>
+    <main id="main" class="dashboard  wallpaper flex-block flex-block-full flex-liquid-content ">
+        <!-- side nav -->
+        <aside data-view="panelMenu" data-type="html" class="sidenav animateView  slideOutLeft">
+            <header class="sidenav-header">
+                <div class="user-info flex-block  flex-direction-row">
+                    <div class="large cycle">
+                         <img data-view="userImage" data-type="img" src="#" alt="imagen del usuarios">
                     </div>
+                    <div>
+                        <p data-view='name' data-type='text'></p>
+                        <p>Lorem Inpsum</p>
+                    </div>
+                </div>
                     <div class="user-statistics flex-block  flex-direction-row">
                         <figure class="statistics">
                             <span class="fa fa-user-plus"></span>
@@ -98,7 +96,6 @@
                
             </section>
 
-        </div>
     </main>
         
 </div>

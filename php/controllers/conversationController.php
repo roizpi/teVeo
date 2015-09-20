@@ -14,7 +14,7 @@ class conversationController extends baseController{
         //Extraemos los resultados
         $conversations = $sql->fetchAll(PDO::FETCH_ASSOC);
         for($i = 0; $i < sizeof($conversations); $i++){
-            $conversations[$i] = array_map("utf8_encode",$conversations[$i]);
+
             //obtenemos número de mensajes realizados por el user_one
             $sql = $this->conn->prepare('SELECT COUNT(*) AS mensajes
                                          FROM CONVERSACIONES C NATURAL JOIN CONVERSACIONES_NORMALES LEFT OUTER JOIN MENSAJES M ON(C.id = M.conversacion)
@@ -67,7 +67,6 @@ class conversationController extends baseController{
                 $sql->execute(array("id" => $idConv));
                 //Extraemos los resultados
                 $conversation = $sql->fetchAll(PDO::FETCH_ASSOC)[0];
-                $conversation = array_map("utf8_encode",$conversation);
                 $conversation["user_one"] = array(
                     "id" => $idUserOne,
                     "mensajes" => 0
@@ -112,7 +111,6 @@ class conversationController extends baseController{
         $sql->execute(array("id" => $idConv));
         //Extraemos los resultados
         $conversation = $sql->fetch(PDO::FETCH_ASSOC);
-        $conversation = array_map("utf8_encode",$conversation);
         //Borramos la conversación.                       
         $stmt = $this->conn->prepare("DELETE FROM CONVERSACIONES WHERE id = :id");
         $exito = $stmt->execute(array("id" => $idConv));
@@ -236,8 +234,7 @@ class conversationController extends baseController{
         $sql->execute(array("id" => $idUser));
         //Extraemos los resultados
         $pendingMessages = $sql->fetchAll(PDO::FETCH_ASSOC);
-        for($i = 0; $i < sizeof($pendingMessages); $i++)
-            $pendingMessages[$i] = array_map("utf8_encode",$pendingMessages[$i]);
+    
         return array("response_message" =>array("type" => "RESPONSE","name" => "PENDING_MESSAGES_FINDED","data" => array("error" => false,"msg" => $pendingMessages)));
     
     }

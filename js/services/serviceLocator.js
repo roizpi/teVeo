@@ -81,30 +81,68 @@ var ServiceLocator = (function(_super,environment){
 
     }
 
+    //Método para codificar en base64 parámetros de una petición.
+    var encodeParams = function(params){
+        var param;
+        var ite = new Iterator(params);
+        try{
+            while(param = ite.next()){
+                //si es cadena la codificamos a base64
+                if (isNaN(parseInt(param[1]))) {
+                    params[param[0]] = self.utils.utf8_to_b64(param[1]);
+                };
+            
+            }
+        }catch(e){
+            console.log(e);
+        }
+
+        return params;
+    }
+    
+    //Método para descodificar los datos de la respuesta.
+    var decodeData = function(data){
+        var value;
+        var ite = new Iterator(data);
+        try{
+            while(value = ite.next()){
+                //si es cadena la codificamos a base64
+                if (isNaN(parseInt(value[1]))) {
+                    data[value[0]] = self.utils.b64_to_utf8(value[1]);
+                };
+            
+            }
+        }catch(e){
+            console.log(e);
+        }
+
+        return data;
+    }
+
 
     //Manejador de Mensajes del Servidor WebSocket
     var handlerMessage = function(e){
         //Parseamos la respuesta.
         
         var response = JSON.parse(e.data);
+        console.log("RESPUESTA");
+        console.log(response);
         self.debug.log(response,"log");
         if(response.type == "EVENT"){
-            console.log("Evento...");
-            console.log(response);
             var name = response.name;
             var data = response.data;
             this.triggerEvent(name,data);
         }else if(response.type == "RESPONSE"){
 
             clearInterval(timerReenvio);
-            
+            var msg = decodeData(response.data.msg);
             if(!response.data.error){
                 //no hay error, resolvemos la promise
-                currentRequest.resolve(response.data.msg);
+                currentRequest.resolve(msg);
                 //Si hay peticiones pendientes
             }else{
                 // hay error, la rechazamos.
-                currentRequest.reject(response.data.msg);
+                currentRequest.reject(msg);
             }
             
             //desencolamos siguiente petición
@@ -113,9 +151,11 @@ var ServiceLocator = (function(_super,environment){
        
     }
     
-    var sendRequest = function($request){
-        currentRequest = $request.deferred;
-        var request = JSON.stringify($request.data);
+    var sendRequest = function(request){
+        currentRequest = request.deferred;
+        //codificamos los parámetros a base64.
+        request.data.params = request.data.params && encodeParams(request.data.params);
+        var request = JSON.stringify(request.data);
         console.log("Enviando petición!!!!!!!!");
         console.log(request);
         socket.send(request);
@@ -132,19 +172,19 @@ var ServiceLocator = (function(_super,environment){
         }
     }
     
-    var enqueueRequest = function($request){
+    var enqueueRequest = function(data){
         var deferred = $.Deferred();
         if(socket.readyState == 1){
             if(!currentRequest || currentRequest.state() == "resolved" || currentRequest.state() == "rejected"){
-                sendRequest({data:$request,deferred:deferred});
+                sendRequest({data:data,deferred:deferred});
             }else{
                 //hay una petición en curso, portanto la encolamos.
-                pendingRequest.push({data:$request,deferred:deferred});
+                pendingRequest.push({data:data,deferred:deferred});
             }
 
         }else{
             //Socket no abierto, encolamos la petición
-            pendingRequest.push({data:$request,deferred:deferred});
+            pendingRequest.push({data:data,deferred:deferred});
         }
         
         return deferred.promise();

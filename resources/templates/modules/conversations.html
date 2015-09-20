@@ -53,7 +53,7 @@
                                 </a>
                             </header>
                             <audio controls preload="false" data-radius="40" data-skin="green" data-circle-audio-player>
-                                <source src="http://cdn.dj-punjab.info/songs/128/553/Aaye%20Ho%20Meri%20Zindagi%20Mein%20(RaagJatt.com).mp3" type="audio/mpeg">
+                                <!--<source src="http://cdn.dj-punjab.info/songs/128/553/Aaye%20Ho%20Meri%20Zindagi%20Mein%20(RaagJatt.com).mp3" type="audio/mpeg">-->
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
@@ -72,7 +72,7 @@
                     <span data-microphone class="fa fa-paper-plane"></span>
                     <span class='fa fa-plus'></span>
                     <ul class="t-menu" id="appendResources">
-                        <li><a href="#"><span class="mif-file-empty icon"></span></a></li>
+                        <li><a href="#" data-action='request_file'><span class="mif-file-empty icon"></span></a></li>
                         <li><a href="#"><span class="mif-video-camera icon"></span></a></li>
                         <li><a href="#"><span class="mif-camera icon"></span></a></li>
                     </ul>
@@ -80,7 +80,7 @@
             </form>
             
         </article>
-        <article class='flex-block flex-block-y-full flex-direction-column flex-liquid-content'>
+        <article id='conversationPanel' class='flex-block flex-block-y-full flex-direction-column flex-liquid-content'>
             <header class="header flex-block">
                 <h2 class="singleLine">Conversaciones con Elisabeth</h2>
             </header>
