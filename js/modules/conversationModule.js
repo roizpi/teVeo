@@ -344,7 +344,9 @@ var Conversation = (function(_super,$,environment){
                     if(managerModule.isExists("FILE_MANAGER") && managerModule.isDeferred("FILE_MANAGER")){
                         //Solicitamos el módulo diferido indicado como parámetro.
                         managerModule.getDefferedModule("FILE_MANAGER",function(fileManager){
-                            fileManager.requestFile();
+                            fileManager.requestFile({
+                                title:"Selecciona archivos a enviar"
+                            });
                         });
 
                     }else{
@@ -722,9 +724,6 @@ var Conversation = (function(_super,$,environment){
                 user = userConnected;
             }
             
-            console.log("Creador del mensaje");
-            console.log(user);
-
             var status = "fa-eye-slash";
             
             if(message.status == "LEIDO" || (message.status == "NOLEIDO"  && user.id != userConnected.id)){

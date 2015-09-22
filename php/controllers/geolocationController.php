@@ -7,9 +7,22 @@ class geolocationController extends baseController{
         for($i = 0,$len = sizeof($users); $i < $len; $i++){
             array_push($targets,array("id" => $users[$i] , "data" => array("id" => $user, "position" => array("timestamp" => $timestamp,"detail" => array("formatted_address" => $formatted_address,"address_components" => $address_components) ))));
         }
-        return array(
-            "response_message" => array("type" => "RESPONSE","name" => "POSITION_SHARED","data" => array("error" => false,"msg" => "Posición compartida")),
-            "event_message" => array("type" => "EVENT","name" => "USER_SHARE_YOUR_POSITION","targets" => $targets)
+        $response = array(
+            "response_message" => array(
+                "type" => "RESPONSE",
+                "name" => "POSITION_SHARED",
+                "data" => array(
+                    "error" => false,
+                    "msg" => array("msg" => "Posición compartida")
+                )
+            ),
+            "event_message" => array(
+                "type" => "EVENT",
+                "name" => "USER_SHARE_YOUR_POSITION",
+                "targets" => $targets
+            )
         );
+
+        return $response;
     }
 }

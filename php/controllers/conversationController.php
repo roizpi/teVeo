@@ -164,8 +164,8 @@ class conversationController extends baseController{
         }
 
         //Validamos el Limit
-        if (is_int($limit->start) && is_int($limit->count)) {
-            $query .= " LIMIT {$limit->start},{$limit->count}";
+        if (is_int($limit['start']) && is_int($limit['count'])) {
+            $query .= " LIMIT {$limit['start']},{$limit['count']}";
         }
         //Preparamos la sentencia
         $stmt = $this->conn->prepare($query);
@@ -185,12 +185,12 @@ class conversationController extends baseController{
         }
 
         //Validamos el Limit
-        if (is_int($limit->start) && is_int($limit->count)) {
-            $query .= " LIMIT {$limit->start},{$limit->count}";
+        if (is_int($limit['start']) && is_int($limit['count'])) {
+            $query .= " LIMIT {$limit['start']},{$limit['count']}";
         }
         //Preparamos la sentencia
         $stmt = $this->conn->prepare($query);
-        $stmt->execute(array('idConv' => $idConv,'text' => "%".$filter->pattern."%" ));
+        $stmt->execute(array('idConv' => $idConv,'text' => "%".$filter['pattern']."%" ));
         //Extraemos los resultados
         $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $messages;
@@ -199,7 +199,7 @@ class conversationController extends baseController{
     //Obtiene todos los mensajes de una conversación.
     public function getMessages($idConv,$filter,$limit,$exclusions){
         //Comprobamos el tipo del mensaje.
-        switch (strtoupper($filter->type)) {
+        switch (strtoupper($filter['type'])) {
             case 'MESSAGE_TEXT':
                 //Obtenemos mensajes de texto.
                 $messages = $this->getLatestTextMessages($idConv,$filter,$limit,$exclusions);
@@ -210,7 +210,6 @@ class conversationController extends baseController{
                 break;
         }
         
-        print_r($messages);
         return array(
             "response_message" =>
                 array(
@@ -245,7 +244,7 @@ class conversationController extends baseController{
         $insultos = join($insultos,"|");
         $text = preg_replace_callback("/$insultos/i",function($matches){
             return substr_replace($matches[0], str_repeat("*", strlen($matches[0])), 0);
-        }, $content->text);
+        }, $content['text']);
     
         $sql = "INSERT INTO MENSAJES_TEXT (id,text) VALUES(:id,:text)";
         //Preparamos la sentencia.                             

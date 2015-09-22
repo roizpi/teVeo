@@ -8,9 +8,18 @@ class contactosController extends baseController{
         $sql = $this->conn->prepare('SELECT * FROM CONTACTOS_VIEW WHERE idUsuario = :idUser');
         $sql->execute(array("idUser" => $idUser));
         $contactos = $sql->fetchAll(PDO::FETCH_ASSOC);
-        return array(
-            "response_message" => array("type" => "RESPONSE","name" => "RESULT_OF_GET_ALL_CONTACTS","data" => array("error" => false,"msg" =>$contactos))
+        $response = array(
+            "response_message" => array(
+                "type" => "RESPONSE",
+                "name" => "RESULT_OF_GET_ALL_CONTACTS",
+                "data" => array(
+                    "error" => false,
+                    "msg" =>$contactos
+                )
+            )
         );
+        return $response;
+
     
     }
     //Notifica el inicio de sesión de un usuario a todos sus contactos.

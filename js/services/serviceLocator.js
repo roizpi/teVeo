@@ -83,15 +83,20 @@ var ServiceLocator = (function(_super,environment){
 
     //Método para codificar en base64 parámetros de una petición.
     var encodeParams = function(params){
-        var param;
+        
         var ite = new Iterator(params);
         try{
+            var param = null;
             while(param = ite.next()){
-                //si es cadena la codificamos a base64
-                if (isNaN(parseInt(param[1]))) {
-                    params[param[0]] = self.utils.utf8_to_b64(param[1]);
-                };
-            
+                if (param[1] instanceof Object) {
+                    params[param[0]] = encodeParams(param[1]);
+                }else{
+                    //si es cadena la codificamos a base64
+                    if (isNaN(parseInt(param[1]))) {
+                        params[param[0]] = self.utils.utf8_to_b64(param[1]);
+                    };
+                }
+
             }
         }catch(e){
             console.log(e);
@@ -102,15 +107,19 @@ var ServiceLocator = (function(_super,environment){
     
     //Método para descodificar los datos de la respuesta.
     var decodeData = function(data){
-        var value;
         var ite = new Iterator(data);
         try{
+            var value = null;
             while(value = ite.next()){
-                //si es cadena la codificamos a base64
-                if (isNaN(parseInt(value[1]))) {
-                    data[value[0]] = self.utils.b64_to_utf8(value[1]);
-                };
-            
+                if (value[1] instanceof Object) {
+                    data[value[0]] = decodeData(value[1]);
+                }else{
+                    //si es cadena la decodificamos.
+                    if (isNaN(parseInt(value[1]))) {
+                        data[value[0]] = self.utils.b64_to_utf8(value[1]);
+                    };
+                }
+                
             }
         }catch(e){
             console.log(e);
@@ -123,9 +132,10 @@ var ServiceLocator = (function(_super,environment){
     //Manejador de Mensajes del Servidor WebSocket
     var handlerMessage = function(e){
         //Parseamos la respuesta.
-        
-        var response = JSON.parse(e.data);
         console.log("RESPUESTA");
+        console.log(e.data);
+        var response = JSON.parse(e.data);
+        
         console.log(response);
         self.debug.log(response,"log");
         if(response.type == "EVENT"){
@@ -135,7 +145,7 @@ var ServiceLocator = (function(_super,environment){
         }else if(response.type == "RESPONSE"){
 
             clearInterval(timerReenvio);
-            var msg = decodeData(response.data.msg);
+            var msg = response.data.msg && decodeData(response.data.msg);
             if(!response.data.error){
                 //no hay error, resolvemos la promise
                 currentRequest.resolve(msg);
@@ -458,8 +468,8 @@ var ServiceLocator = (function(_super,environment){
                 idConver:data.id,
                 filter:{
                     type:data.type,
-                    field:self.utils.urlencode(data.field),
-                    pattern:self.utils.urlencode(data.value)
+                    field:data.field,
+                    pattern:data.value
                 },
                 limit:{
                     start:data.start || 0,
@@ -677,9 +687,9 @@ var ServiceLocator = (function(_super,environment){
             params:{
                 user:self.sessionManager.getUser().id,
                 timestamp:timestamp,
-                formatted_address:self.utils.urlencode(formatted_address),
+                formatted_address:formatted_address,
                 address_components:Object.keys(address_components).map(function(component){
-                    return self.utils.urlencode(address_components[component]);
+                    return address_components[component];
                 }),
                 users:users
             }

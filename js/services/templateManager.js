@@ -512,7 +512,6 @@ var View = (function(_super,$,environment){
 					this.setChildValue(key,data[i][key]);
 				}
 			};
-			
 		};
 	};
 

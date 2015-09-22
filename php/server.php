@@ -346,6 +346,7 @@ class ServerSocket extends WebSocketServer {
                 }
                 
             }
+
             //Codificamos los datos de la respuesta.
             $this->encodeData($response["response_message"]['data']['msg']);
             //Enviamos la respuesta al emisor.
@@ -386,23 +387,35 @@ class ServerSocket extends WebSocketServer {
 
     private function decodeParams($params){
         if (!is_null($params)) {
-            $params = get_object_vars($params);
+            if (is_object($params)) {
+                $params = get_object_vars($params);
+            }
             foreach ($params as $key => $value) {
-                if (is_string($value)) {
-                    $params[$key] = utf8_encode(base64_decode($value));
+                if (!is_array($value) && !is_object($value)) {
+
+                    if (!is_numeric($value)) {
+                        $params[$key] = utf8_decode(base64_decode($value));
+                    }else{
+                        $params[$key] = $value;
+                    }
+                    echo "key : $key , value : {$params[$key]}" . PHP_EOL;
                 }else{
-                    $params[$key] = $value;
+                    $params[$key] = $this->decodeParams($params[$key]);
                 }
             }
         }
         return $params;
     }
-
+    //Método para codificar cadenas en base64
     private function encodeData(&$data){
         if (!is_null($data)) {
             foreach ($data as $key => $value) {
-                if (is_string($value)) {
-                    $data[$key] = base64_encode($value);
+                if (!is_array($value)) {
+                    if (!is_numeric($value)) {
+                        $data[$key] = base64_encode(utf8_encode($value));
+                    }
+                }else{
+                    $this->encodeData($data[$key]);
                 }
             }
         }
@@ -418,7 +431,8 @@ class ServerSocket extends WebSocketServer {
             $service = $this->serviceMap[$msg->service];
             //Decodificamos los parámetros.
             $params = $this->decodeParams($msg->params);
-             echo var_dump($params) . PHP_EOL;
+            echo "Parámetros : " . PHP_EOL;
+            print_r($params);
             //Comprobamos si el servicio requiere token de acceso.
             if (isset($service["token_required"])) {
                 //Comprobamos si hay token de sessión en la petición

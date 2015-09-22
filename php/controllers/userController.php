@@ -6,11 +6,11 @@ class userController extends baseController{
     public function searchUsers($idUser,$filter,$limit,$exclusions){
 
         $fields = array('NAME','LOCATION');
-        $field = strtoupper($filter->field);
+        $field = strtoupper($filter['field']);
 
         if(strtoupper($field) && in_array($field,$fields)){
             //Decodificamos el patrón.
-            $value = $filter->pattern;
+            $value = $filter['pattern'];
             //Construimos la query.
             $query = 'SELECT id,foto,name,ubicacion FROM USUARIOS_VIEW U ';
 
@@ -31,8 +31,8 @@ class userController extends baseController{
                 )";
 
             //Validamos el Limit
-            if (is_int($limit->start) && is_int($limit->count)) {
-               $query .= " LIMIT {$limit->start},{$limit->count}";
+            if (is_int($limit['start']) && is_int($limit['count'])) {
+               $query .= " LIMIT {$limit['start']},{$limit['count']}";
             }
 
             $sql = $this->conn->prepare($query);
@@ -115,8 +115,6 @@ class userController extends baseController{
             ),
             "task_before_send_data" => $user
         );
-        echo "ESTA ES LA RESPUESTA OBTENIDA";
-        print_r($response["response_message"]["name"]);
         return $response;
     
     }

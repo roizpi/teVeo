@@ -2,8 +2,20 @@
 
 	<div class='overlay-content overlay-content-normal'>
 		<a href="#" data-action='close' class='close'><span class="fa fa-close"></span></a>
-		<p>Hola que tal</p>
+		
+		<section class='dropzone-wrapper'>
+			<h1 class="dropzone-title" data-view='title' data-type='text'></h1>
+			<div class="dropzone-area" data-view='dropzone' dropzone="copy">
+				<form class="dropzone">
+					<div class="dropzone-message">
+		    			Arrastra aquí los ficheros.<br>
+		    			<span class="note">(This is just a demo dropzone. Selected files are <strong>not</strong> actually uploaded.)</span>
+		  			</div>
+		  		</form>
+		  	</div>
 
+		</section>
+		<input type="file" multiple="multiple" class="dz-hidden-input" style="visibility: hidden; position: absolute; top: 0px; left: 0px; height: 0px; width: 0px;">
 	</div>
 
 </div>

@@ -585,6 +585,56 @@ h1,h2,h3,p,li,.logo,.btn{
 }
 
 /*
+  Dropzones
+  ====================
+*/
+
+.dropzone-wrapper{
+  padding: 1.4rem 1.4rem 2.8rem 1.4rem;
+}
+
+.dropzone-wrapper .dropzone-title{
+  margin-top: 0;
+  padding-top: 2.8rem;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.8rem;
+  color: #4353FF;
+  -webkit-font-smoothing: antialiased;
+  line-height: 2.2rem;
+}
+
+.dropzone-wrapper .dropzone-area{
+  margin-bottom: 3rem;
+}
+
+.dropzone-wrapper .dropzone-area .dropzone {
+  cursor: pointer;
+  border: 2px dashed #4353FF;
+  border-radius: 5px;
+  background: #E8E9EC;
+  min-height: 150px;
+  padding: 54px 54px;
+}
+
+.dropzone-wrapper .dropzone-area .dropzone .dropzone-message{
+  cursor: pointer;
+  font-weight: 400;
+  text-align: center;
+  margin: 2em 0;
+}
+
+.dropzone-wrapper .dropzone-area .dropzone .dropzone-message .note {
+  font-size: 0.8em;
+  font-weight: 200;
+  display: block;
+  margin-top: 1.4rem;
+}
+
+
+
+/*
     Imágenes
     ============================
 */
@@ -2918,7 +2968,6 @@ h1,h2,h3,p,li,.logo,.btn{
   background-color: #fff;
   margin: auto;
   border-radius: 15px;
-  position: relative;
 }
 
 .overlay .overlay-content .close{
@@ -2929,7 +2978,7 @@ h1,h2,h3,p,li,.logo,.btn{
   text-align: center;
   line-height: 30px;
   color: #00AFF0;
-  font-size: 2.2rem;
+  font-size: 2.1rem;
   -webkit-transition:all .5s;
   transition:all .5s;
 }
@@ -6156,6 +6205,124 @@ span.css-emoticon.nintendo-controller {
   animation-name: bounce;
   -webkit-transform-origin: center bottom;
   transform-origin: center bottom;
+}
+
+@-webkit-keyframes flipInY {
+  from {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+    opacity: 0;
+  }
+
+  40% {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+
+  60% {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+    opacity: 1;
+  }
+
+  80% {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+  }
+
+  to {
+    -webkit-transform: perspective(400px);
+    transform: perspective(400px);
+  }
+}
+
+@keyframes flipInY {
+  from {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+    opacity: 0;
+  }
+
+  40% {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, -20deg);
+    -webkit-animation-timing-function: ease-in;
+    animation-timing-function: ease-in;
+  }
+
+  60% {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, 10deg);
+    opacity: 1;
+  }
+
+  80% {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, -5deg);
+  }
+
+  to {
+    -webkit-transform: perspective(400px);
+    transform: perspective(400px);
+  }
+}
+
+.flipInY {
+  -webkit-backface-visibility: visible !important;
+  backface-visibility: visible !important;
+  -webkit-animation-name: flipInY;
+  animation-name: flipInY;
+}
+
+@-webkit-keyframes flipOutY {
+  from {
+    -webkit-transform: perspective(400px);
+    transform: perspective(400px);
+  }
+
+  30% {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -15deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, -15deg);
+    opacity: 1;
+  }
+
+  to {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    opacity: 0;
+  }
+}
+
+@keyframes flipOutY {
+  from {
+    -webkit-transform: perspective(400px);
+    transform: perspective(400px);
+  }
+
+  30% {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, -15deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, -15deg);
+    opacity: 1;
+  }
+
+  to {
+    -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+    opacity: 0;
+  }
+}
+
+.flipOutY {
+  -webkit-backface-visibility: visible !important;
+  backface-visibility: visible !important;
+  -webkit-animation-name: flipOutY;
+  animation-name: flipOutY;
 }
 
 

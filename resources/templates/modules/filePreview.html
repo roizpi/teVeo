@@ -1,0 +1,33 @@
+<div class='overlay' data-view="requestFile" data-type='main'>
+
+	<div class='overlay-content overlay-content-normal'>
+		<div class="flex-block">
+			<div data-view='previewFile' data-animationin="fadeIn" data-animationout="fadeOut">
+				<img class='animateView' src="" data-view='previewImg' data-type='template' data-animationin="flipInY" data-animationout="flipOutY"/>
+
+			</div>
+			<div data-view='info'>
+				<!--Info List para mostrar datos del usuario -->
+                <ul class="infoList" data-view='list' data-animationin="fadeIn" data-animationout="fadeOut">
+                    <li>
+                    	<span class="fa fa-file-image-o"></span>
+                    	<span data-view="fileName" data-type="text"></span>
+                    </li>
+                    <li>
+                    	<span class="fa fa-file-image-o"></span>
+                    	<span data-view="size" data-type="text"></span>
+                    </li>
+                    <li>
+                    	<span class="fa fa-file-image-o"></span>
+                    	<span data-view="type" data-type="text"></span>
+                    </li>
+                </ul>
+                <div class="actions" data-view="id" data-type="hidden" >
+                	<a href="#" class="btn btn-normal btn-action" data-action=''>Aceptar</a>
+                	<a href="#" class="btn btn-normal btn-action" data-action='cancel'>Cancelar</a>
+                </div>
+			</div>
+			
+		</div>
+	</div>
+</div>
