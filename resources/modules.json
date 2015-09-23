@@ -124,11 +124,20 @@
         "dependences":null,
         "templates":{}
     },
+    "GOOGLE_PLUS_AUTHENTICATOR":{
+        "name":"googlePlusAuthenticator",
+        "className":"GooglePlusAuthenticator",
+        "file":"googlePlusAuthenticator.js",
+        "order":11,
+        "deferred":true,
+        "dependences":null,
+        "templates":{}
+    },
     "LOCAL_AUTHENTICATOR":{
         "name":"localAuthenticator",
         "className":"LocalAuthenticator",
         "file":"localAuthenticator.js",
-        "order":11,
+        "order":12,
         "deferred":true,
         "dependences":null,
         "templates":{}
@@ -137,7 +146,7 @@
         "name":"movieDB",
         "className":"MovieDB",
         "file":"movieDBModule.js",
-        "order":12,
+        "order":13,
         "dependences":null,
         "templates":{}
     },
@@ -145,7 +154,7 @@
         "name":"conversation",
         "className":"Conversation",
         "file":"conversationModule.js",
-        "order":13,
+        "order":14,
         "dependences":["WEB_SPEECH","NOTIFICATOR","CONTACTS"],
         "templates":{
             "conversations":{
@@ -174,7 +183,7 @@
         "name":"metro",
         "className":"Metro",
         "file":"metroModule.js",
-        "order":14,
+        "order":15,
         "dependences":["MOVIEDB","CONVERSATION"],
         "templates":{
             "metro":{
@@ -193,7 +202,7 @@
         "name":"fileManager",
         "className":"FileManager",
         "file":"fileManager.js",
-        "order":15,
+        "order":16,
         "deferred":true,
         "dependences":null,
         "templates":{

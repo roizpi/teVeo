@@ -52,7 +52,7 @@ var LoginActivity = (function(environment,$){
 			});
 		});
 		//Autenticación externa.
-		var socialAuthenticators = {facebookauth:"FACEBOOK_AUTHENTICATOR"};
+		var socialAuthenticators = {facebookauth:"FACEBOOK_AUTHENTICATOR",googleplusauth:"GOOGLE_PLUS_AUTHENTICATOR"};
 		//delegamos las acciones en el contenedor socialAuth.
 		self.view.getView("socialAuth").get().delegate("[data-action]","click",function(e){
 			e.preventDefault();

@@ -852,20 +852,34 @@ h1,h2,h3,p,li,.logo,.btn{
   box-shadow:#008ABD 0px 0px 0px 3px;
 }
 
-.btn-facebook{
-  font-size: 1.3em;
-  background-color: #4e69a2;
+.btn-facebook,
+.btn-googleplus{
+  font-size: 1.5em;
   color: #fff;
   overflow: hidden;
 }
 
-.btn-facebook .fa{
+.btn-facebook .fa,
+.btn-googleplus .fa{
   line-height: 55px;
+  text-shadow:#000 8px 8px 10px;
+}
+
+.btn-facebook{
+  background-color: #4e69a2;
+}
+
+.btn-googleplus{
+  background-color: #DB4437;
 }
 
 .btn-facebook:hover{
   background-color:#4e69a2;
   box-shadow:#4e69a2 0px 0px 0px 3px;
+}
+
+.btn-googleplus:hover{
+  box-shadow:#DB4437 0px 0px 0px 3px;
 }
 
 
@@ -2808,6 +2822,14 @@ h1,h2,h3,p,li,.logo,.btn{
   min-width: 400px;
   max-width: 470px;
   overflow: hidden;
+  border-radius: 8px;
+  background-color: rgba(255,255,255, 0.5);
+  -webkit-transition:all .5s;
+  transition:all .5s;
+}
+
+.form-box:hover{
+  box-shadow: rgba(255,255,255, 0.5) 0px 0px 10px;
 }
 
 .form-box .form-header{
@@ -2816,8 +2838,6 @@ h1,h2,h3,p,li,.logo,.btn{
   background-color: rgba(255,255,255, 0.7);
   text-align: left;
   color: #00aff0;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
 }
 
 .form-box .form-header > *{
@@ -2853,8 +2873,6 @@ h1,h2,h3,p,li,.logo,.btn{
   padding: 25px 25px 30px 25px;
   background-color: rgba(255,255,255, 0.5);
   text-align: left;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
 }
 
 .form-box .form-body .form-group {
@@ -6495,6 +6513,11 @@ span.css-emoticon.nintendo-controller {
   ======================
 
 */
+
+#login-section{
+  max-width: 1500px;
+  margin: 0 auto;
+}
 
 #homepage{
   height: 100vh;
