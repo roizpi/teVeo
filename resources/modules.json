@@ -122,7 +122,28 @@
         "order":10,
         "deferred":true,
         "dependences":null,
-        "templates":{}
+        "templates":{
+            "facebook_loader":{
+                "LOGIN":{
+                    "region":"action",
+                    "file":"facebookloader.html",
+                    "animations":{
+                        "animationIn":"bounceInLeft",
+                        "animationOut":"bounceOutRight"
+                    }
+                }  
+            },
+            "user_facebook_preview":{
+                "LOGIN":{
+                    "region":"action",
+                    "file":"userFacebookPreview.html",
+                    "animations":{
+                        "animationIn":"fadeIn",
+                        "animationOut":"fadeOut"
+                    }
+                }  
+            }
+        }
     },
     "GOOGLE_PLUS_AUTHENTICATOR":{
         "name":"googlePlusAuthenticator",
@@ -131,7 +152,28 @@
         "order":11,
         "deferred":true,
         "dependences":null,
-        "templates":{}
+        "templates":{
+            "google_plus_loader":{
+                "LOGIN":{
+                    "region":"action",
+                    "file":"googleplusloader.html",
+                    "animations":{
+                        "animationIn":"bounceInLeft",
+                        "animationOut":"bounceOutRight"
+                    }
+                }  
+            },
+            "user_facebook_preview":{
+                "LOGIN":{
+                    "region":"action",
+                    "file":"userFacebookPreview.html",
+                    "animations":{
+                        "animationIn":"fadeIn",
+                        "animationOut":"fadeOut"
+                    }
+                }  
+            }
+        }
     },
     "LOCAL_AUTHENTICATOR":{
         "name":"localAuthenticator",

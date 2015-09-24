@@ -12,6 +12,16 @@ var LoginActivity = (function(environment,$){
 
 	}
 
+	var createSessionForUser = function(idUser){
+		var sessionManager = environment.getService("SESSION_MANAGER");
+		//Creamos la sesión para este usuario.
+		sessionManager.createSession(idUser).done(function(){
+			//Iniciamos la actividad DASHBOARD.
+			var activityManager = environment.getService("ACTIVITY_MANAGER");
+			activityManager.startActivity("DASHBOARD_ACTIVITY");
+		});
+	}
+
 
 	var attachHandlers = function(){
 
@@ -31,14 +41,8 @@ var LoginActivity = (function(environment,$){
 				//Nos autenticamos con el autenticador obtenido.
 				authenticator.login(credentials,function(idUser){
 					//En este punto debes obtener el id del usuario
-					//y crear la sesión. 
-					var sessionManager = environment.getService("SESSION_MANAGER");
-					//Creamos la sesión para este usuario.
-					sessionManager.createSession(idUser).done(function(){
-						//Iniciamos la actividad DASHBOARD.
-						var activityManager = environment.getService("ACTIVITY_MANAGER");
-						activityManager.startActivity("DASHBOARD_ACTIVITY");
-					});
+					//y crear la sesión.
+					createSessionForUser(idUser); 
 				},function(error){
 					$(".form-group",$login).addClass("invalid");
 					//Fallo de autenticación.
@@ -63,13 +67,15 @@ var LoginActivity = (function(environment,$){
 				self.modules["authenticatorFactory"].getAuthenticator(socialAuthenticators[action],function(authenticator){
 					//Nos autenticamos con el autenticador obtenido.
 					authenticator.login(function(idUser){
-						console.log("ID OBTENIDO");
-						console.log(idUser);
-						
+						//Creamos la sesión.
+						createSessionForUser(idUser);
 					},function(error){
 						//Fallo de autenticación.
-						console.log("Error de autenticación");
-						console.log(error);
+	                    self.modules["notificator"].dialog.alert({
+	                        title:"Fallo al iniciar sesión",
+	                        text:error.msg,
+	                        level:"alert"
+	                    });
 					});
 
 				});

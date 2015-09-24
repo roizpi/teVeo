@@ -1502,7 +1502,10 @@ h1,h2,h3,p,li,.logo,.btn{
 
 .infoList{
   text-align: center;
+  width: 70%;
+  margin: 0 auto;
 }
+
 
 .infoList li{
   padding: 15px 0;

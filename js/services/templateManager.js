@@ -674,12 +674,10 @@ var TemplateManager = (function(_super,$,environment){
 					//var name = data["template"] ? data["template"] : Array.prototype.slice.call(Object.keys(templates),0,1);
 					//Ruta de la interfaz de la actividad.
 					path = environment.MODULES_TEMPLATES_BASE_PATH + template["file"];
-					console.log("Path de la template : " + path);
 					//Animaciones para la interfaz
 					animations = template["animations"];
 					//Donde se ubicará la interfaz.
 					target = activity.name + ":" + template["region"];
-					console.log("Target de la template : " + target);
 					break;
 			}
 			//Cargamos el recurso.
@@ -687,7 +685,6 @@ var TemplateManager = (function(_super,$,environment){
 				type:"html",
 				src:path
 			}).done(function(template){
-
 				//cacheamos la template.
 				var $template = $(template);
 				$template.addClass("animateView");

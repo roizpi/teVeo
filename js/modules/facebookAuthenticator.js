@@ -53,6 +53,7 @@ var FacebookAuthenticator = (function(_super,$,environment){
     var signUp = function(callbackSuccess,callbackError){
         //Obtenemos información del usuario.
         getUserData(function(data){
+            console.log(data);
             //Obtenemos el localizador de servicios remotos.
             var serviceLocator = environment.getService("SERVICE_LOCATOR");
             //Comprobamos si el usuario ya está registrado.
@@ -61,40 +62,73 @@ var FacebookAuthenticator = (function(_super,$,environment){
                     //Comprobamos el resultado.
                     if (result.exists) {
                         //El usuario existe.
-                        typeof(callbackSuccess) == "function" && callbackSuccess.apply(self,[result.id]);
+                        typeof(callbackSuccess) == "function" && callbackSuccess.apply(self,[result.id.id]);
                     }else{
-                        //El usuario no existe, lo registramos.
+                        //Pedimos confirmación, para registrarse.
+                        templating.loadTemplate({
+                            name:"user_facebook_preview",
+                            category:"OVERLAY_MODULE_VIEW",
+                            handlers:{
+                                onCreate:function(view){
+                                    view.setChildValue("profileImg",data.photo);
+                                    view.setChildValue("userName",data.name);
+                                    view.setChildValue("location",data.location.name);
+                                    view.setChildValue("age",data.birthday);
+                                    view.setChildValue("email",data.email);
+                                }
+                            }
+                        });
                     }
                     
                 }).fail(function(){
                     //error.
                 });
+            
+        
         });
     }
 
     
     FacebookAuthenticator.prototype.login = function(callbackSuccess,callbackError) {
-        var self = this;
-        //Cargamos el SDK de Facebook.
-        loadFacebookSdk(function(){
-        	//Comprobamos el estado.
-            FB.getLoginStatus(function(data) {
-                if (data.status !== 'connected') {
-                	//El usuario no está conectado.
-                    FB.login(function(response) {
-                        console.log(response);
-                        //Comprobamos si se ha conectado.
-                        if (response.status === 'connected')
-                        	//Usuario conectado.
-                            signUp(callbackSuccess,callbackError);
-                        else
-                            callbackError.call(self);
-                    }, {scope: SCOPES});
-                }else{
-                	signUp(callbackSuccess,callbackError);
+
+        templating.loadTemplate({
+            name:"facebook_loader",
+            category:"OVERLAY_MODULE_VIEW",
+            handlers:{
+                onAfterShow:function(view){
+                    var self = this;
+                    var info = view.getView("info");
+                    //Cargamos el SDK de Facebook.
+                    loadFacebookSdk(function(){
+                        //Comprobamos el estado.
+                        info.setValue("Conectándo con Facebook");
+                        FB.getLoginStatus(function(data) {
+                            
+                            if (data.status !== 'connected') {
+                                info.setValue("Utiliza la ventana emergente para iniciar sesión en facebook");
+                                //El usuario no está conectado.
+                                FB.login(function(response) {
+                                    console.log(response);
+                                    info.setValue("Obteniendo tus datos");
+                                    //Comprobamos si se ha conectado.
+                                    if (response.status === 'connected'){
+                                        //Usuario conectado.
+                                        signUp(callbackSuccess,callbackError);
+                                    }else{
+                                        view.hide(false);
+                                        callbackError.call(self);
+                                    }
+                                }, {scope: SCOPES});
+                            }else{
+                                info.setValue("Obteniendo tus datos");
+                                signUp(callbackSuccess,callbackError);
+                            }
+                        });
+                    });
                 }
-            });
+            }
         });
+        
          
     }
      

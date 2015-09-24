@@ -75,22 +75,32 @@ var GooglePlusAuthenticator = (function(_super,$,environment){
 
 
 	GooglePlusAuthenticator.prototype.login = function(callbackSuccess,callbackError) {
-        var self = this;
-        //Cargamos el SDK de Facebook.
-        loadGooglePlusApi(function(gapi){
 
-        	var params = {
-			    'clientid' :CLIENT_ID , //You need to set client id
-			    'cookiepolicy' : 'single_host_origin',
-			    'callback' : 'loginCallback', //callback function
-			    'approvalprompt':'force',
-			    'scope' : 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
-			};
+		templating.loadTemplate({
+            name:"google_plus_loader",
+            category:"OVERLAY_MODULE_VIEW",
+            handlers:{
+            	onAfterShow:function(view){
+            		var self = this;
+			        //Cargamos el SDK de Facebook.
+			        loadGooglePlusApi(function(gapi){
 
-			window.loginCallback = loginCallback;
+			        	var params = {
+						    'clientid' :CLIENT_ID , //You need to set client id
+						    'cookiepolicy' : 'single_host_origin',
+						    'callback' : 'loginCallback', //callback function
+						    'approvalprompt':'force',
+						    'scope' : 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
+						};
 
-	  		gapi.auth.signIn(params);
+						window.loginCallback = loginCallback;
+
+				  		gapi.auth.signIn(params);
+			        });
+            	}
+            }
         });
+        
          
     }
 
