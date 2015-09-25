@@ -468,6 +468,20 @@ h1,h2,h3,p,li,.logo,.btn{
   margin: auto;
 }
 
+.preloader-content{
+  background-color: rgba(51, 51, 51, 0.71);
+}
+
+.preloader-content,
+.preloader-content [class^=preloader]{
+  position: absolute;
+  top: 0px;left: 0px;
+  right: 0px;bottom: 0px;
+  margin: auto;
+}
+
+
+
 /*
   Encabezados
   ==================

@@ -20,34 +20,58 @@ var FileManager = (function(_super,$,environment){
 
     //Previsualiza el archivo seleccionado.
     var showPreviewFile = function(file){
+        console.log("Fichero....");
+        console.log(file);
         templating.loadTemplate({
             name:"file_preview",
             category:"OVERLAY_MODULE_VIEW",
             handlers:{
-                onBeforeShow:function(view){
-                    view.getView("fileInfo").updateChilds([
-                        {size:file.size},
-                        {fileName:file.name},
-                        {type:file.type}
-                    ]);
-                },
-                onAfterShow:function(view){
+                onCreate:function(view){
+                    console.log("onCreate triggered");
+                    view.get().delegate("[data-action]","click",function(e){
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var action = this.dataset.action.toUpperCase();
+                        switch(action){
+                            case 'CANCEL':
+                                view.hide(true);
+                                break;
+                        }
 
-                    reader.readAsBinaryString(file);
+                    });
 
                     reader.addEventListener("load",function(e) {
                         var data = e.target.result;
                         console.log("Este es el resultado ...");
                         console.log(data);
-                        /*view.getView("previewFile").createView(null,{
+                        view.getView("preloader").hide(false);
+                        view.getView("filePreviewContainer").createView("imagePreview",{
+                            id:file.name,
+                            img:data,
                             handlers:{
                                 onCreate:function(view){
-                                    view.get().attr('src',);
+                                    console.log("Esta es la imagen ...");
+                                    console.log(view);
+                                    //view.setValue(data);
                                 }
                             }
-                        });*/
+                        });
                     });
-                    
+                },
+                onBeforeShow:function(view){
+                    console.log("Fichero a mostrar");
+                    console.log(file);
+                    var list = view.getView("infoFile");
+                    list.setChildValue("fileName",file.name);
+                    list.setChildValue("size",file.size);
+                    list.setChildValue("type",file.type);
+
+                    reader.readAsDataURL(file);
+                },
+                onAfterHide:function(view){
+                    console.log("Ocultando vista");
+                    console.log(view);
+                    view.getView("filePreviewContainer").hideChild(file.name,true);
                 }
             }
         });

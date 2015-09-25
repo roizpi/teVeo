@@ -247,7 +247,7 @@ var View = (function(_super,$,environment){
 			this.el.addClass(animation).one("webkitAnimationEnd animationend",function(){
 				var $this = $(this);
 				$this.removeClass(animation);
-				remove ? $this.remove() : $this.detach();
+				remove ? self.remove() : self.detach();
 				deferred.resolve();
 				self.onAfterHide();
 			});
@@ -459,6 +459,9 @@ var View = (function(_super,$,environment){
 
 	View.prototype.hideChild = function(id,remove,callback) {
 		var view = this.views && this.views[id];
+		console.log(this.views);
+		console.log("Id : " + id);
+		console.log(view);
 		if(view){
 			view.hide(remove).done(callback);
 			if (remove) {
