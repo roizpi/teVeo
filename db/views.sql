@@ -104,7 +104,7 @@ AS
         text
     FROM  MENSAJES M JOIN MENSAJES_TEXT USING(id);
 
-CREATE VIEW MENSAJES_IMG_TEXT
+CREATE VIEW MENSAJES_VIEW_IMG
 AS 
    SELECT 
         id,
@@ -113,7 +113,8 @@ AS
         creacion,
         user AS userId,
         conversacion AS idConv,
-        file,
+        folder,
+        name,
         format,
         caption
    FROM  MENSAJES M JOIN MENSAJES_IMG USING(id);

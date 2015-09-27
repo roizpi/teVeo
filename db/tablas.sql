@@ -97,8 +97,9 @@ CREATE TABLE IF NOT EXISTS MENSAJES_IMG(
         CONSTRAINT ME_IMG FOREIGN KEY(id) REFERENCES MENSAJES(id)
           ON DELETE CASCADE
           ON UPDATE CASCADE,
-    file        CHAR(20) NOT NULL,
-    format      ENUM('jpg', 'png', 'gif') NOT NULL DEFAULT 'png',
+    folder      VARCHAR(60) NOT NULL,
+    name        CHAR(22) NOT NULL,
+    format      ENUM('jpg', 'png', 'gif','jpeg') NOT NULL DEFAULT 'png',
     caption     VARCHAR(20)
 )ENGINE=INNODB CHARSET=LATIN1 COMMENT="Tabla de Mensajes de Imagen";
 

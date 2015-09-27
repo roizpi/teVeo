@@ -7,310 +7,20 @@ require_once 'vendor/phpWebSocketServer/websockets.php';
 class ServerSocket extends WebSocketServer {
   //protected $maxBufferSize = 1048576; //1MB... overkill for an echo server, but potentially plausible for other applications.
     private $clients;
-    private $serviceMap;
+    private $websocket_services;
+
+    const SERVICES_PATH = "services.json";
     
     
     public function __construct($addr, $port){
         parent::__construct($addr, $port);
         $this->clients = new SplObjectStorage();
         // Services
-        $this->serviceMap = array(
-            "GET_USER_CONNECTED_DATA" => array(
-                "controller" => array(
-                    "controller_name" => "userController",
-                    "action_name" => "getUserConnectedData"
-                ),
-                "token_required" => true,
-                "require_user_id" => true,
-                "task_before_send" => "attachUser",
-                "throw_event" => false
-            ),
-            "GET_LATEST_SPORTS_NEWS" => array(
-                "controller" => array(
-                    "controller_name" => "newsController",
-                    "action_name" => "getLatestSportsNews"
-                ),
-                "token_required" => true,
-                "throw_event" => false
-            ),
-            "GET_LATEST_TECHNOLOGY_NEWS" => array(
-                "controller" => array(
-                    "controller_name" => "newsController",
-                    "action_name" => "getLatestTechnologyNews"
-                ),
-                "token_required" => true,
-                "throw_event" => false
-            ),
-            "GET_LATEST_GENERAL_NEWS" => array(
-                "controller" => array(
-                    "controller_name" => "newsController",
-                    "action_name" => "getGeneralNewsToday"
-                ),
-                "token_required" => true,
-                "throw_event" => false
-            ),
-            "GET_LATEST_VIDEOGAMES_NEWS" => array(
-                "controller" => array(
-                    "controller_name" => "newsController",
-                    "action_name" => "getLatestVideoGamesNews"
-                ),
-                "token_required" => true,
-                "throw_event" => false
-            ),
-            "NOTIFY_INIT_SESSION" => array(
-                "controller" => array(
-                    "controller_name" => "contactosController",
-                    "action_name" => "notifyInitSession"
-                ),
-                "token_required" => true,
-                "throw_event" => true
-            ),
-            "USER_AUTHENTICATOR" => array(
-                "controller" => array(
-                    "controller_name" => "authController",
-                    "action_name" => "login"
-                ),
-                "throw_event" => false
-            ),
-            "CHECK_EXISTS_USER" => array(
-                "controller" => array(
-                    "controller_name" => "userController",
-                    "action_name" => "existsUser"
-                ),
-                "throw_event" => false
-            ),
-            "LOGOUT" => array(
-                "controller" => array(
-                    "controller_name" => "userController",
-                    "action_name" => "closeConnection"
-                ),
-                "require_user_id" => true,
-                "task_before_send" => "detachUser",
-                "throw_event" => true
-            ),
-            "NOTIFY_USER_STATUS" => array(
-                "controller" => array(
-                    "controller_name" => "contactosController",
-                    "action_name" => "notifyUserStatus"
-                ),
-                "throw_event" => true
-            ),
-            "SEARCH_USERS" => array(
-                "controller" => array(
-                    "controller_name" => "userController" ,
-                    "action_name" => "searchUsers"
-                ),
-                "throw_event" => false
-            ),
-            "DETAILS_OF_USER" => array(
-                "controller" => array(
-                    "controller_name" => "userController",
-                    "action_name" => "getUserDetails"
-                ),
-                "throw_event" => false
-            ),
-            "TO_ASK_FOR_FRIENDSHIP" => array(
-                "controller" => array(
-                    "controller_name" => "solicitudesController",
-                    "action_name" => "addApplication"
-                ),
-                "throw_event" => true
-            ),
-            "GET_APPLICATIONS_FOR_USER" => array(
-                "controller" => array(
-                    "controller_name" => "solicitudesController",
-                    "action_name" => "getApplicationForUser"
-                ),
-                "throw_event" => false
-            ),
-            "PENDING_APPLICATIONS_FRIENDSHIP" => array(
-                "controller" => array(
-                    "controller_name" => "solicitudesController",
-                    "action_name" => "getApplicationsOfFriendship"
-                ),
-                "throw_event" => false
-            ),
-            "ACCEPT_APPLICATION" => array(
-                "controller" => array(
-                    "controller_name" => "solicitudesController",
-                    "action_name" => "acceptApplication"
-                ),
-                "throw_event" => true
-            ),
-            "REJECT_APPLICATION" => array(
-                "controller" => array(
-                    "controller_name" => "solicitudesController",
-                    "action_name" => "rejectApplication"
-                ),
-                "throw_event" => true
-            ),
-            "GET_ALL_CONTACTS" => array(
-                "controller" => array(
-                    "controller_name" => "contactosController",
-                    "action_name" => "getAllContacts"
-                ),
-                "throw_event" => false
-            ),
-            "ADD_CONTACT" => array(
-                "controller" => array(
-                    "controller_name" => "contactosController",
-                    "action_name" => "addContact"
-                ),
-                "throw_event" => true
-            ),
-            "DROP_CONTACT" => array(
-                "controller" => array(
-                    "controller_name" => "contactosController",
-                    "action_name" => "dropContact"
-                ),
-                "throw_event" => true
-            ),
-            "UPDATE_CONTACT" => array(
-                "controller" => array(
-                    "controller_name" => "contactosController",
-                    "action_name" => "updateContact"
-                ),
-                "throw_event" => false
-            ),
-            "GET_CONVERSATIONS" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "getConversations"
-                ),
-                "throw_event" => false
-            ),
-            "CREATE_CONVERSATION" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "createConversation"
-                ),
-                "throw_event" => true
-            ),
-            "CONVERSATION_CURRENTLY_VIEWING" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "notifyConversationCurrentlyViewing"
-                ),
-                "token_required" => true,
-                "throw_event" => true
-            ),
-            "DROP_CONVERSATION" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "dropConversation"
-                ),
-                "throw_event" => true
-            ),
-            "DROP_ALL_CONVERSATIONS" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "dropAllConversation"
-                ),
-                "throw_event" => true
-            ),
-            "EXISTS_CONVERSATION_NAME" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "existsConversationName"
-                ),
-                "throw_event" => false
-            ),
-            "GET_MESSAGES" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "getMessages"
-                ),
-                "throw_event" => false
-            ),
-            "GET_PENDING_MESSAGES" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "getPendingMessages"
-                ),
-                "throw_event" => false
-            ),
-            "CREATE_MESSAGE" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "createMessage"
-                ),
-                "throw_event" => true
-            ),
-            "DELETE_MESSAGE" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "deleteMessage"
-                ),
-                "token_required" => true,
-                "throw_event" => true
-            ),
-            "UPDATE_MSG_STATUS" => array(
-                "controller" => array(
-                    "controller_name" => "conversationController",
-                    "action_name" => "updateMessagesStatus"
-                ),
-                "throw_event" => true
-            ),
-            "GET_CALLS" => array(
-                "controller" => array(
-                    "controller_name" => "callingController",
-                    "action_name" => "getCalls"
-                ),
-                "throw_event" => false
-            ),
-            "SEND_OFFER" => array(
-                "controller" => array(
-                    "controller_name" => "callingController",
-                    "action_name" => "sendOffer"
-                ),
-                "throw_event" => true
-            ),
-            "SEND_OFFER_SDP_CHUNK" => array(
-                "controller" => array(
-                    "controller_name" => "callingController",
-                    "action_name" => "sendOfferSdpChunk"
-                ),
-                "throw_event" => true
-            ),
-            "SEND_ANSWER" => array(
-                "controller" => array(
-                    "controller_name" => "callingController",
-                    "action_name" => "sendAnswer"
-                ),
-                "throw_event" => true
-            ),
-            "SEND_ANSWER_SDP_CHUNK" => array(
-                "controller" => array(
-                    "controller_name" => "callingController",
-                    "action_name" => "sendAnswerSdpChunk"
-                ),
-                "throw_event" => true
-            ),
-            "SAVE_CALL" => array(
-                "controller" => array(
-                    "controller_name" => "callingController",
-                    "action_name" => "saveCall"
-                ),
-                "throw_event" => true
-            ),
-            "FINISH_CALL" => array(
-                "controller" => array(
-                    "controller_name" => "callingController",
-                    "action_name" => "finishCall"
-                ),
-                "throw_event" => true
-            ),
-            "SHARE_POSITION" => array(
-                "controller" => array(
-                    "controller_name" => "geolocationController",
-                    "action_name" => "sharePosition"
-                ),
-                "token_required" => true,
-                "throw_event" => true
-            )
-        );
+        $services = @file_get_contents(self::SERVICES_PATH);
+        if ($services) {
+            $this->websocket_services = json_decode($services);
+        }
     }
-    
 
 
     private function resolveService($service,$params,$conn){
@@ -318,12 +28,12 @@ class ServerSocket extends WebSocketServer {
         try{
 
             //Ejecutamos la acción del controlador
-            $response = baseController::execute($service["controller"],$params);
+            $response = baseController::execute($service->controller,$params);
 
             //Comprobamos si es necesario ejecutar una tarea posterior 
-            if(isset($service["task_before_send"])){
+            if(isset($service->task_before_send)){
                 //recogemos el nombre de la tarea.
-                $task = $service["task_before_send"];
+                $task = $service->task_before_send;
                 if($task == "attachUser"){
                     //la información.
                     $data = $response["task_before_send_data"];
@@ -348,11 +58,11 @@ class ServerSocket extends WebSocketServer {
             }
 
             //Codificamos los datos de la respuesta.
-            $this->encodeData($response["response_message"]['data']['msg']);
+            encodeData($response["response_message"]['data']['msg']);
             //Enviamos la respuesta al emisor.
             $this->send($conn,json_encode($response["response_message"]));
             //Si el servicio debe notificar a otros clientes
-            if($service["throw_event"]){
+            if($service->throw_event){
                 //Obtenemos los targets
                 $targets = $response["event_message"]["targets"];
                 //Los eliminamos del evento
@@ -385,61 +95,30 @@ class ServerSocket extends WebSocketServer {
     
     }
 
-    private function decodeParams($params){
-        if (!is_null($params)) {
-            if (is_object($params)) {
-                $params = get_object_vars($params);
-            }
-            foreach ($params as $key => $value) {
-                if (!is_array($value) && !is_object($value)) {
-
-                    if (!is_numeric($value)) {
-                        $params[$key] = utf8_decode(base64_decode($value));
-                    }else{
-                        $params[$key] = $value;
-                    }
-                    echo "key : $key , value : {$params[$key]}" . PHP_EOL;
-                }else{
-                    $params[$key] = $this->decodeParams($params[$key]);
-                }
-            }
-        }
-        return $params;
-    }
-    //Método para codificar cadenas en base64
-    private function encodeData(&$data){
-        if (!is_null($data)) {
-            foreach ($data as $key => $value) {
-                if (!is_array($value)) {
-                    if (!is_numeric($value)) {
-                        $data[$key] = base64_encode(utf8_encode($value));
-                    }
-                }else{
-                    $this->encodeData($data[$key]);
-                }
-            }
-        }
-    }
+    
     
     protected function process ($conn, $message) {
         //Decodificamos el mensaje.
         $msg = json_decode($message);
         echo var_dump($msg) . PHP_EOL;
         //Comprobamos si existe el servicio solicitado.
-        if(array_key_exists($msg->service,$this->serviceMap)){
+        if(array_key_exists($msg->service,$this->websocket_services)){
             //Obtenemos el servicio.
-            $service = $this->serviceMap[$msg->service];
+            $service = get_object_vars($this->websocket_services)[$msg->service];
             //Decodificamos los parámetros.
-            $params = $this->decodeParams($msg->params);
-            echo "Parámetros : " . PHP_EOL;
-            print_r($params);
+            if ($msg->encode) {
+               $params = decodeParams($msg->params);
+            }else{
+                $params = $msg->params;
+            }
+            
             //Comprobamos si el servicio requiere token de acceso.
-            if (isset($service["token_required"])) {
+            if (isset($service->token_required)) {
                 //Comprobamos si hay token de sessión en la petición
                 if(array_key_exists("token",get_object_vars($msg))){
                     //decodificamos el token de sesión.
                     $token = json_decode(base64_decode($msg->token));
-                    if(isset($service["require_user_id"]))
+                    if(isset($service->require_user_id))
                         $this->resolveService($service,[$token->idUser],$conn);
                     else
                         $this->resolveService($service,$params,$conn);

@@ -4,10 +4,10 @@ var FileManager = (function(_super,$,environment){
 
     const DEFAULT_TITLE = "Eliga los archivos a adjuntar";
 
-    var reader;
+    var reader,self;
 
 	function FileManager(){
-
+        self = this;
         //crea instancias de un objeto FileReader.
         reader = new FileReader();
 		//Reporting the module events.
@@ -20,14 +20,12 @@ var FileManager = (function(_super,$,environment){
 
     //Previsualiza el archivo seleccionado.
     var showPreviewFile = function(file){
-        console.log("Fichero....");
-        console.log(file);
+
         templating.loadTemplate({
             name:"file_preview",
             category:"OVERLAY_MODULE_VIEW",
             handlers:{
                 onCreate:function(view){
-                    console.log("onCreate triggered");
                     view.get().delegate("[data-action]","click",function(e){
                         e.preventDefault();
                         e.stopPropagation();
@@ -36,14 +34,22 @@ var FileManager = (function(_super,$,environment){
                             case 'CANCEL':
                                 view.hide(true);
                                 break;
+                            case 'SUCCESS':
+                                var container = view.getView("filePreviewContainer");
+                                var value = container.getView("imagePreview").getChildValue("img");
+                                self.triggerEvent("FILE_SELECTED",{
+                                    type:2,
+                                    format:file.type.split("/")[1],
+                                    data:value
+                                });
+                                view.hide(true);
+                                break;
                         }
 
                     });
 
                     reader.addEventListener("load",function(e) {
                         var data = e.target.result;
-                        console.log("Este es el resultado ...");
-                        console.log(data);
                         view.getView("preloader").hide(false);
                         view.getView("filePreviewContainer").createView("imagePreview",{
                             id:file.name,

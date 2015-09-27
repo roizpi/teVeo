@@ -10,7 +10,10 @@ var Conversation = (function(_super,$,environment){
     const MESSAGE_SENT = 1;
     const MESSAGE_RECEIVED = 2;
     const MESSAGE_DELETED = 3;
+
+    //Tipos de Mensajes
     const MESSAGE_TEXT = 1;
+    const MESSAGE_IMG = 2;
 
     var self;
     //Mensajes pendientes.
@@ -313,25 +316,9 @@ var Conversation = (function(_super,$,environment){
             var text = this.message.value.trim().replace(/\s+/ig," ");
             this.message.value = "";
             var container = viewConversations.getView("conversationContainer");
-            //Creamos el mensaje.
-            serviceLocator
-            .createMessage(
-                currentConv.id,
-                userConnected.id,
-                currentConv.user,
-                MESSAGE_TEXT,
-                {
-                    text:text
-                }
-            )
-            .done(function(message){
-                //Actualizamos número de mensajes para la conversación
-                updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_SENT);
-                //Mostramos el mensaje.
-                showMessage(message);
-            })
-            .fail(function(){
-                //fallo al enviar el mensaje.
+            //Creamos el mensaje de tipo texto.
+            createMessage(MESSAGE_TEXT,{
+                text:text
             });
         }).delegate("[data-action]","click",function(e){
             e.preventDefault();
@@ -344,9 +331,23 @@ var Conversation = (function(_super,$,environment){
                     if(managerModule.isExists("FILE_MANAGER") && managerModule.isDeferred("FILE_MANAGER")){
                         //Solicitamos el módulo diferido indicado como parámetro.
                         managerModule.getDefferedModule("FILE_MANAGER",function(fileManager){
+                            
                             fileManager.requestFile({
                                 title:"Selecciona archivos a enviar"
                             });
+
+                            fileManager.addEventListener("FILE_SELECTED",function(file){
+
+                                serviceLocator.uploadFile(currentConv.id,file).done(function(response){
+                                    //Creamos el mensaje.
+                                    createMessage(file.type,{
+                                        folder:response.data.msg.folder,
+                                        name:response.data.msg.name,
+                                        format:file.format
+                                    });
+                                });
+                                
+                            },true);
                         });
 
                     }else{
@@ -523,28 +524,6 @@ var Conversation = (function(_super,$,environment){
 
     }
 
-    var showMessage = function(message){
-        $.ionSound.play("acceptYourApplication");
-        var loaderData = loaderManager.getLoader(message.idConv);
-        var filter = loaderData.getFilter();
-        var pattern = new RegExp(filter,'im');
-        //comprobamos si el mensaje concuerda con el patrón actual.
-        if (message.text.match(pattern)) {
-            //Mostramos  el mensaje enviado.
-            createViewMessage(message,{
-                direction:"desc",
-                filter:filter
-            });
-            //Colocamos el scroll al final del contenedor.
-            var container = viewConversations.getView("conversationContainer");
-            //Colocamos el scroll en el último mensaje.
-            container.scrollToLast();
-            //Incrementamos la cantidad de datos.
-            loaderData.increaseAmount(1);
-        };
-                
-    }
-
 
     var getConversationPanel = function(idUser){
         //Obtenemos el contenedor del panel de conversación.
@@ -712,6 +691,63 @@ var Conversation = (function(_super,$,environment){
 
     }
 
+    //Método para crear un nuevo mensaje.
+    var createMessage = function(type,data){
+        //Creamos el mensaje.
+        serviceLocator.createMessage(
+            currentConv.id,//Id de la conversacion actual
+            userConnected.id,//Id del usuario que maneja la aplicacion
+            currentConv.user,//Id del otro participante en la conversación
+            type,//Tipo de mensaje
+            data//Data del mensaje
+            ).done(function(message){
+                //Actualizamos número de mensajes para la conversación
+                updateNumberMessages(currentConv.id,currentConv.user,MESSAGE_SENT);
+                //Mostramos el mensaje.
+                showMessage(message);
+            })
+            .fail(function(){
+                //fallo al enviar el mensaje.
+            });
+    }
+
+    var showMessage = function(message){
+        $.ionSound.play("acceptYourApplication");
+        var loaderData = loaderManager.getLoader(message.idConv);
+
+        if (message.type.toUpperCase() == 'TEXT') {
+            var filter = loaderData.getFilter();
+            var pattern = new RegExp(filter,'im');
+            //comprobamos si el mensaje concuerda con el patrón actual.
+            if (message.text.match(pattern)) {
+                //Mostramos  el mensaje enviado.
+                createViewMessage(message,{
+                    direction:"desc",
+                    filter:filter
+                });
+                //Colocamos el scroll al final del contenedor.
+                var container = viewConversations.getView("conversationContainer");
+                //Colocamos el scroll en el último mensaje.
+                container.scrollToLast();
+                //Incrementamos la cantidad de datos.
+                loaderData.increaseAmount(1);
+            };
+
+        }else if(message.type.toUpperCase() == 'IMG'){
+            //Mostramos  el mensaje enviado.
+            createViewMessage(message,{
+                direction:"desc"
+            });
+            //Colocamos el scroll al final del contenedor.
+            var container = viewConversations.getView("conversationContainer");
+            //Colocamos el scroll en el último mensaje.
+            container.scrollToLast();
+            //Incrementamos la cantidad de datos.
+            loaderData.increaseAmount(1);
+        }
+             
+    }
+
     //Función para insertar mensajes en el DOM.
     var createViewMessage = function(message,options){
         var conv = getConversation(message.idConv)
@@ -765,14 +801,29 @@ var Conversation = (function(_super,$,environment){
                     },
                     onAfterFirstShow:function(view){
 
+                        var view_name,data;
+                        switch(message.type){
+                            case "TEXT":
+                                view_name = "textContent";
+                                data = {
+                                    authorName:user.name,
+                                    creation:message.creacion,
+                                    status:status,
+                                    close:closeStatus,
+                                    text:message.text
+                                }
+                                break;
+                            case "IMG":
+                                view_name = "imgContent";
+                                data = {
+                                    img:message.folder + message.name + "." + message.format
+                                }
+                                break;
+
+                        }
+
                         //Creamos contenido del mensaje.
-                        view.createView("textContent",{
-                            authorName:user.name,
-                            creation:message.creacion,
-                            status:status,
-                            close:closeStatus,
-                            text:message.text
-                        },{
+                        view.createView(view_name,data,{
                             animations:{
                                 animationIn:animationin,
                                 animationOut:animationout

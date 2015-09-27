@@ -9,9 +9,11 @@ var Component = (function (){
     
     function Component(){}
    
-    Component.prototype.addEventListener = function(events,callback){
+    Component.prototype.addEventListener = function(events,callback,one){
         if((events && isNaN(parseInt(events))) && typeof(callback) == "function"){
             var events = events.trim().replace(/\s+/g,' ').split(" ");
+            //Si one es true, marcamos el callback como de una sola ejecución.
+           	if (one) callback.one = true;
             for(var i = 0,len = events.length; i < len; i++)
                 this.events[events[i]] && this.events[events[i]].push(callback);
         }
@@ -19,8 +21,13 @@ var Component = (function (){
         
     Component.prototype.triggerEvent = function(event,data){
         if(this.events[event])
-            for(var i = 0,len = this.events[event].length; i < len; i++ )
-                this.events[event][i].apply(this,[data]);
+            for(var i = 0,len = this.events[event].length; i < len; i++ ){
+            	var callback = this.events[event][i];
+            	callback.one && this.events[event].splice(i,1);
+            	callback.apply(this,[data]);
+            }
+
+                
     }
 
     Component.prototype.onCreate = function() {};

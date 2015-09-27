@@ -649,10 +649,27 @@ h1,h2,h3,p,li,.logo,.btn{
 
 
 /*
-    Imágenes
-    ============================
+  Contenedores de Imagenes
+  ============================
 */
 
+.image-container{
+  display: block;
+  outline: none;
+  overflow: hidden;
+  height: auto;
+  width: 50%;
+  margin:0 auto;
+}
+
+.image-container.image-container-small{
+  width: 20%;
+}
+
+.image-container > img{
+  width: 100%;
+  height: auto;
+}
 
 .cover{
   height: 100%;

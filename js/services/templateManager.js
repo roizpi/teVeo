@@ -187,6 +187,10 @@ var View = (function(_super,$,environment){
 		};
 	};
 
+	View.prototype.getValue = function() {
+		return this.value;
+	};
+
 	View.prototype.getNativeNode = function() {
 		return this.el.get(0);
 	};
@@ -529,6 +533,12 @@ var View = (function(_super,$,environment){
 			///establecemos el valor de la vista.
 			view.setValue(value);
 		};
+	};
+
+	View.prototype.getChildValue = function(id) {
+		var view = this.getView(id);
+		///establecemos el valor de la vista.
+		return view && view.getValue();
 	};
 
 	View.prototype.removeChildValue = function(id) {

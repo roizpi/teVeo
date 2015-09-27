@@ -3,6 +3,7 @@
 class conversationController extends baseController{
 
     const MESSAGE_TEXT = 1;
+    const MESSAGE_IMG = 2;
     
     //Obtiene todas las conversaciones en las que participa estos usuarios.
     public function getConversations($idUserOne,$idUserTwo){
@@ -256,6 +257,21 @@ class conversationController extends baseController{
         $exito = $stmt->execute();
         
     } 
+
+    private function appendImgContent($id,$content){
+        echo "Contenido de la imagen";
+        print_r($content);
+        $sql = "INSERT INTO MENSAJES_IMG (id,folder,name,format) VALUES(:id,:folder,:name,:format)";
+        //Preparamos la sentencia.                             
+        $stmt = $this->conn->prepare($sql);
+        //Bindeamos los datos.
+        $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+        $stmt->bindParam(':folder',$content['folder'],PDO::PARAM_STR);
+        $stmt->bindParam(':name',$content['name'],PDO::PARAM_STR);
+        $stmt->bindParam(':format',$content['format'],PDO::PARAM_STR);
+        //Ejecutamos la sentencia.                                     
+        $exito = $stmt->execute();
+    }
     
     
     //Crea un nuevo mensaje para una conversación
@@ -285,6 +301,10 @@ class conversationController extends baseController{
             case self::MESSAGE_TEXT:
                 $this->appendTextContent($id,$content);
                 $query = "SELECT * FROM MENSAJES_VIEW_TEXT WHERE id = $id";
+                break;
+            case self::MESSAGE_IMG:
+                $this->appendImgContent($id,$content);
+                $query = "SELECT * FROM MENSAJES_VIEW_IMG WHERE id = $id";
                 break;
             default:
                 break;

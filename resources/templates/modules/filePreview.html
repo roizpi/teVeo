@@ -3,12 +3,12 @@
 	<div class='overlay-content overlay-content-normal'>
 
         <div class="flex-block flex-block-full flex-direction-column" data-view='container'>
-            <div data-view='filePreviewContainer' style='width:200px;height:200px'>
+            <div data-view='filePreviewContainer'>
                 <div class="preloader-content" data-view='preloader' data-animationin="fadeIn" data-animationout="fadeOut">
                     <div data-role="preloader" data-type="ring"></div>
                 </div>
-                <div class='animateView' data-view='imagePreview' data-type='template' data-animationin="flipInY" data-animationout="flipOutY" >
-                    <img class='animateView' src="" data-view='img' data-type='img' width="200" height="200" />
+                <div class='image-container animateView' data-view='imagePreview' data-type='template' data-animationin="flipInY" data-animationout="flipOutY" >
+                    <img class='animateView' src="" data-view='img' data-type='img' />
                 </div>
                
             </div>
@@ -17,7 +17,7 @@
             <ul class="infoList" data-view='infoFile'>
                 <li>
                     <span class="fa fa-file-image-o"></span>
-                    <span data-view="fileName" data-type="text"></span>
+                    <span class='singleLine' data-view="fileName" data-type="text"></span>
                 </li>
                 <li>
                     <span class="fa fa-file-image-o"></span>
@@ -30,7 +30,7 @@
             </ul>
 
             <div class="actions" data-view="id" data-type="hidden" >
-                <a href="#" class="btn btn-normal btn-action" data-action='send'>Aceptar</a>
+                <a href="#" class="btn btn-normal btn-action" data-action='success'>Aceptar</a>
                 <a href="#" class="btn btn-normal btn-action" data-action='cancel'>Cancelar</a>
             </div>
 

@@ -4,6 +4,10 @@ var ServiceLocator = (function(_super,environment){
     
     const IP = '127.0.0.1';
     const PORT = 30000;
+    //Identifica Servicios WebSocket
+    const WEBSOCKET_SERVICE = 1;
+    //Identifica Servicios HTTP
+    const HTTP_SERVICE = 2;
 
     var self;
     var socket;
@@ -93,6 +97,7 @@ var ServiceLocator = (function(_super,environment){
                 }else{
                     //si es cadena la codificamos a base64
                     if (isNaN(parseInt(param[1]))) {
+                        console.log(param[0] + " -- - - " + param[1]);
                         params[param[0]] = self.utils.utf8_to_b64(param[1]);
                     };
                 }
@@ -164,10 +169,13 @@ var ServiceLocator = (function(_super,environment){
     var sendRequest = function(request){
         currentRequest = request.deferred;
         //codificamos los parámetros a base64.
-        request.data.params = request.data.params && encodeParams(request.data.params);
+        if (request.data.encode && request.data.params) {
+            request.data.params = encodeParams(request.data.params);
+        };
+        
+        console.log("ENVIANDO PETICION");
+        console.log(request.data);
         var request = JSON.stringify(request.data);
-        console.log("Enviando petición!!!!!!!!");
-        console.log(request);
         socket.send(request);
         timerReenvio = setInterval(function(){
             socket.send(request);
@@ -191,7 +199,6 @@ var ServiceLocator = (function(_super,environment){
                 //hay una petición en curso, portanto la encolamos.
                 pendingRequest.push({data:data,deferred:deferred});
             }
-
         }else{
             //Socket no abierto, encolamos la petición
             pendingRequest.push({data:data,deferred:deferred});
@@ -214,6 +221,8 @@ var ServiceLocator = (function(_super,environment){
     ServiceLocator.prototype.authenticate = function(credentials) {
         return enqueueRequest({
             service:"USER_AUTHENTICATOR",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 nick:credentials.nick,
                 password:credentials.password
@@ -225,6 +234,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_USER_CONNECTED_DATA",
+            type:WEBSOCKET_SERVICE,
+            encode:false,
             params:null
         });
     }
@@ -232,6 +243,7 @@ var ServiceLocator = (function(_super,environment){
     ServiceLocator.prototype.checkExistsUser = function(email) {
         return enqueueRequest({
             service:"CHECK_EXISTS_USER",
+            encode:true,
             params:{
                 email:email
             }
@@ -242,6 +254,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"NOTIFY_INIT_SESSION",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUser:idUser,
                 contacts:contacts
@@ -257,6 +271,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"SEARCH_USERS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUser:userConnected.id,
                 filter:{
@@ -277,6 +293,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"NOTIFY_USER_STATUS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 userId:userId,
                 remoteUserId:remoteUserId,
@@ -290,6 +308,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"DETAILS_OF_USER",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 id:id
             }
@@ -300,6 +320,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"PENDING_APPLICATIONS_FRIENDSHIP",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUserConnected:idUserConnected
             }
@@ -310,6 +332,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"ACCEPT_APPLICATION",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idSolicitado:idSolicitado,
                 idSolicitador:idSolicitador
@@ -321,6 +345,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"REJECT_APPLICATION",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idSolicitado:idSolicitado,
                 idSolicitador:idSolicitador
@@ -332,6 +358,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"TO_ASK_FOR_FRIENDSHIP",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUserConnected:idUserConnected,
                 idUser:idUser,
@@ -344,6 +372,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_APPLICATIONS_FOR_USER",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 usuSolicitador:usuSolicitador,
                 usuSolicitado:usuSolicitado
@@ -356,6 +386,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_ALL_CONTACTS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUser:idUser
             }
@@ -366,6 +398,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"ADD_CONTACT",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idSolicitado:idSolicitado,
                 idSolicitador:idSolicitador
@@ -378,6 +412,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"DROP_CONTACT",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 user_one:user_one,
                 user_two:user_two
@@ -389,6 +425,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"UPDATE_CONTACT",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 user_one:user_one,
                 user_two:user_two,
@@ -404,6 +442,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_CONVERSATIONS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUserOne:idUserOne,
                 idUserTwo:idUserTwo
@@ -416,6 +456,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"CREATE_CONVERSATION",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUserOne:idUserOne,
                 idUserTwo:idUserTwo,
@@ -429,6 +471,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"DROP_CONVERSATION",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idConv:idConv,
                 receptor:receptor
@@ -440,6 +484,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"DROP_ALL_CONVERSATIONS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 user_one:user_one,
                 user_two:user_two
@@ -451,6 +497,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"EXISTS_CONVERSATION_NAME",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 name:name,
                 user_one:user_one,
@@ -464,6 +512,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_MESSAGES",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idConver:data.id,
                 filter:{
@@ -485,17 +535,52 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_PENDING_MESSAGES",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUser:idUser
             }
         });        
     }
+
+    ServiceLocator.prototype.uploadFile = function(idConv,file) {
+
+        return $.post("php/httpService.php",{
+            token:self.sessionManager.getToken(),
+            service:"UPLOAD_FILE",
+            type:HTTP_SERVICE,
+            encode:false,
+            params:{
+                idConv:idConv,
+                format:file.format,
+                data:file.data
+            }
+        });
+
+        /*$.post("php/httpService.php",{
+            token:11111,
+            service:"UPLOAD_FILE",
+            type:2,
+            encode:false,
+            params:{
+                idConv:1,
+                format:"hola",
+                data:"hola"
+            }
+        }).done(function(response){
+            console.log(response);
+        });*/
+
+    }
+
     
     //Enviar un mensaje en una conversación.
     ServiceLocator.prototype.createMessage = function(idConv,idUserEmisor,idUsuRecep,type,content){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"CREATE_MESSAGE",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idConver:idConv,
                 idUserEmisor:idUserEmisor,
@@ -511,6 +596,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"DELETE_MESSAGE",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 emisor:emisor,
                 receptor:receptor,
@@ -525,6 +612,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"UPDATE_MSG_STATUS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 receptor:receptor,
                 messages:messages
@@ -537,6 +626,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"CONVERSATION_CURRENTLY_VIEWING",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 emisor:emisor,
                 receptor:receptor,
@@ -552,6 +643,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_CALLS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 idUser:idUser
             }
@@ -659,6 +752,7 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"SAVE_CALL",
+            type:WEBSOCKET_SERVICE,
             params:{
                 type:type,
                 caller:caller,
@@ -673,6 +767,7 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"FINISH_CALL",
+            type:WEBSOCKET_SERVICE,
             params:{
                 callId:callId,
                 remoteUserId:remoteUserId
@@ -684,6 +779,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"SHARE_POSITION",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 user:self.sessionManager.getUser().id,
                 timestamp:timestamp,
@@ -700,6 +797,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_LATEST_SPORTS_NEWS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 count:count,
                 lastDate:lastDate || null
@@ -711,6 +810,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_LATEST_TECHNOLOGY_NEWS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 count:count,
                 lastDate:lastDate || null
@@ -722,6 +823,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_LATEST_GENERAL_NEWS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 count:count,
                 lastDate:lastDate || null
@@ -733,6 +836,8 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"GET_LATEST_VIDEOGAMES_NEWS",
+            type:WEBSOCKET_SERVICE,
+            encode:true,
             params:{
                 count:count,
                 lastDate:lastDate || null
@@ -744,6 +849,7 @@ var ServiceLocator = (function(_super,environment){
         return enqueueRequest({
             token:self.sessionManager.getToken(),
             service:"LOGOUT",
+            type:WEBSOCKET_SERVICE,
             params:null
         });
     }
