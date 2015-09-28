@@ -4,7 +4,7 @@ var FileManager = (function(_super,$,environment){
 
     const DEFAULT_TITLE = "Eliga los archivos a adjuntar";
 
-    var reader,self;
+    var reader,self,file_selected;
 
 	function FileManager(){
         self = this;
@@ -19,7 +19,7 @@ var FileManager = (function(_super,$,environment){
 
 
     //Previsualiza el archivo seleccionado.
-    var showPreviewFile = function(file){
+    var loadPreviewFile = function(){
 
         templating.loadTemplate({
             name:"file_preview",
@@ -32,17 +32,17 @@ var FileManager = (function(_super,$,environment){
                         var action = this.dataset.action.toUpperCase();
                         switch(action){
                             case 'CANCEL':
-                                view.hide(true);
+                                view.hide(false);
                                 break;
                             case 'SUCCESS':
                                 var container = view.getView("filePreviewContainer");
                                 var value = container.getView("imagePreview").getChildValue("img");
                                 self.triggerEvent("FILE_SELECTED",{
                                     type:2,
-                                    format:file.type.split("/")[1],
+                                    format:file_selected.type.split("/")[1],
                                     data:value
                                 });
-                                view.hide(true);
+                                view.hide(false);
                                 break;
                         }
 
@@ -52,32 +52,22 @@ var FileManager = (function(_super,$,environment){
                         var data = e.target.result;
                         view.getView("preloader").hide(false);
                         view.getView("filePreviewContainer").createView("imagePreview",{
-                            id:file.name,
-                            img:data,
-                            handlers:{
-                                onCreate:function(view){
-                                    console.log("Esta es la imagen ...");
-                                    console.log(view);
-                                    //view.setValue(data);
-                                }
-                            }
+                            id:file_selected.id,
+                            img:data
                         });
                     });
                 },
                 onBeforeShow:function(view){
-                    console.log("Fichero a mostrar");
-                    console.log(file);
                     var list = view.getView("infoFile");
-                    list.setChildValue("fileName",file.name);
-                    list.setChildValue("size",file.size);
-                    list.setChildValue("type",file.type);
-
-                    reader.readAsDataURL(file);
+                    list.setChildValue("fileName",file_selected.name);
+                    list.setChildValue("size",file_selected.size);
+                    list.setChildValue("type",file_selected.type);
+                    //obtenemos la dataURL del fichero.
+                    reader.readAsDataURL(file_selected);
                 },
                 onAfterHide:function(view){
-                    console.log("Ocultando vista");
-                    console.log(view);
-                    view.getView("filePreviewContainer").hideChild(file.name,true);
+                    view.getView("filePreviewContainer").removeChild(file_selected.id);
+        
                 }
             }
         });
@@ -122,7 +112,6 @@ var FileManager = (function(_super,$,environment){
         dropzone.get().on("drop",function(e){
             e.stopPropagation();
             e.preventDefault();
-            console.log("Has soltado sobre el dropzone");
             var file = null;
             //Comprobamos el tipo del evento.
             if(e.type == "change"){
@@ -130,12 +119,13 @@ var FileManager = (function(_super,$,environment){
                 file = e.target.files[0];
             }else if(e.type == "drop"){
                 //paramos la animación
-                //$(this).removeClass("flash");
                 //usuario selecciona el archivo arrastrándolo directamente.
                 file = e.originalEvent.dataTransfer.files[0]; 
             }
+            file_selected = file;
+            file_selected.id  = 1111;
             //Previsualizamos el fichero.
-            showPreviewFile(file);
+            loadPreviewFile();
         });
 
 

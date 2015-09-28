@@ -810,13 +810,14 @@ var Conversation = (function(_super,$,environment){
                                     creation:message.creacion,
                                     status:status,
                                     close:closeStatus,
-                                    text:message.text
+                                    text:message.content.text
                                 }
                                 break;
                             case "IMG":
                                 view_name = "imgContent";
+                                var src = message.content.folder + message.content.name + "." + message.content.format;
                                 data = {
-                                    img:message.folder + message.name + "." + message.format
+                                    img:src
                                 }
                                 break;
 
@@ -933,11 +934,6 @@ var Conversation = (function(_super,$,environment){
                             $("audio").circleAudioPlayer();
                             loaderData.load({
                                 id:conversation.id,
-                                filter:{
-                                    type:"message_text",
-                                    value:"",
-                                    field:"text"
-                                },
                                 callbacks:{
                                     onDataLoaded:function(messages){
                                         var filter = this.filterValue;
@@ -1002,15 +998,9 @@ var Conversation = (function(_super,$,environment){
                             
                         },
                         onBeforeHide:function(view){
-                            
-                            console.log(view);
-                            console.log("Número de mensajes de la conv : " + view.size());
                             if (view.size() > MAX_MESSAGES_BY_CONV) {
                                 var diff = view.size() - MAX_MESSAGES_BY_CONV;
-                                console.log("Esta es la diferencia :");
-                                console.log(diff);
                                 view.removeNthFirstChilds(diff);
-                                console.log("Valor a resetear : " + view.size());
                                 loaderManager.resetLoaderTo(view.getId(),MAX_MESSAGES_BY_CONV);
                             };
 

@@ -97,7 +97,6 @@ var ServiceLocator = (function(_super,environment){
                 }else{
                     //si es cadena la codificamos a base64
                     if (isNaN(parseInt(param[1]))) {
-                        console.log(param[0] + " -- - - " + param[1]);
                         params[param[0]] = self.utils.utf8_to_b64(param[1]);
                     };
                 }

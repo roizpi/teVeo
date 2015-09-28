@@ -242,7 +242,7 @@ var View = (function(_super,$,environment){
 		return Object.keys(this.views).length;
 	};
 	//Oculta y opcionalmente elimina un elemento.
-	View.prototype.hide = function(remove,callback) {
+	View.prototype.hide = function(remove) {
 		var deferred = $.Deferred();
 		var self = this;
 		this.onBeforeHide();
@@ -463,9 +463,6 @@ var View = (function(_super,$,environment){
 
 	View.prototype.hideChild = function(id,remove,callback) {
 		var view = this.views && this.views[id];
-		console.log(this.views);
-		console.log("Id : " + id);
-		console.log(view);
 		if(view){
 			view.hide(remove).done(callback);
 			if (remove) {

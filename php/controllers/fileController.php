@@ -24,13 +24,12 @@ class fileController extends baseController{
 			}
 
 			$file_folder = self::FILES_BASE_PATH.$conv_folder."/";
-			$file_name = substr(base64_encode(openssl_random_pseudo_bytes('30')), 0, 22);
+			$file_name = substr(str_replace(array("/",".","\\"),"_",base64_encode(openssl_random_pseudo_bytes('30'))), 0, 22);
 			//eliminamos data:image/png; y base64, de la cadena que tenemos
-			list(, $data) = explode(';', $data);
-			list(, $data) = explode(',',$data);
 			//Decodificamos $data codificada en base64.
+			$data = base64_decode(substr($data,strpos($data, "base64") + 6));			
 			// Escribir los contenidos en el fichero
-			$exito = file_put_contents(ROOT_DIR.$file_folder.$file_name.".".$format, base64_decode($data),LOCK_EX);
+			$exito = file_put_contents(ROOT_DIR.$file_folder.$file_name.".".$format, $data,LOCK_EX);
 			$response["response_message"]["data"] = array("error" => false,"msg" => array("folder" => $file_folder,"name" => $file_name));
 		}
 		

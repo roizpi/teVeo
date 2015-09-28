@@ -18,7 +18,7 @@ var LoaderDataManager = (function(_super,$,environment){
 
 		function LoaderData(config){
 			self = this;
-			this.countData;
+			this.countData = 0;
 			this.filterType;
 			this.filterValue;
 			this.filterField;

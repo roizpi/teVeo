@@ -156,14 +156,8 @@ class conversationController extends baseController{
     }
 
 
-    private function getLatestMessages($idConv,$filter,$limit,$exclusions){
-
+    private function getLatestMessages($idConv,$limit){
         $query = 'SELECT * FROM LATEST_MESSAGES WHERE idConv = :idConv';
-        //Validamos las exclusiones.
-        if (is_array($exclusions) && sizeof($exclusions)) {
-            $query .= ' AND id NOT IN ('.join(",",$exclusions).')';
-        }
-
         //Validamos el Limit
         if (is_int($limit['start']) && is_int($limit['count'])) {
             $query .= " LIMIT {$limit['start']},{$limit['count']}";
@@ -174,6 +168,20 @@ class conversationController extends baseController{
         //Extraemos los resultados
         $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
         //Obtenemos el contenido de cada mensaje.
+        for ($i=0; $i < sizeof($messages) ; $i++) { 
+            $id = $messages[$i]["id"];
+            switch ($messages[$i]["type"]) {
+                case 'IMG':
+                    $query = "SELECT folder,name,format,caption FROM MENSAJES_IMG WHERE id = $id";
+                    break;
+                default:
+                    $query = "SELECT text FROM MENSAJES_TEXT WHERE id = $id";
+                    break;
+            }
+            $result = $this->conn->query($query);
+            $content = $result->fetch(PDO::FETCH_ASSOC);
+            $messages[$i]['content'] = $content;
+        }
         return $messages;
     }
 
@@ -207,7 +215,7 @@ class conversationController extends baseController{
                 break;
             default:
                 //Obtenemos mensajes de cualquier tipo.
-                $messages = $this->getLatestMessages($idConv,$filter,$limit,$exclusions);
+                $messages = $this->getLatestMessages($idConv,$limit);
                 break;
         }
         

@@ -2293,7 +2293,8 @@ h1,h2,h3,p,li,.logo,.btn{
 .conversation-wrapper .conversation .message-wrapper .content-wrapper .img-wrapper{
   display: block;
   position: relative;
-
+  overflow: hidden;
+  border-radius: inherit;
 }
 
 .conversation-wrapper .conversation .message-wrapper .content-wrapper .img-wrapper::after{
