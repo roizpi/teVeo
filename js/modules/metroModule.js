@@ -4,7 +4,6 @@ var Metro = (function(_super,$,environment){
 
 	var templating;
 	var serviceLocator;
-	var utils;
 	var self;
 
 	function Metro(movieDB,conversation){
@@ -13,7 +12,6 @@ var Metro = (function(_super,$,environment){
 		this.conversation = conversation;
 		templating = environment.getService("TEMPLATE_MANAGER");
 		serviceLocator = environment.getService("SERVICE_LOCATOR");
-		utils = environment.getService("UTILS");
 	}
 
 
@@ -23,7 +21,7 @@ var Metro = (function(_super,$,environment){
 			//Obtenemos el primer poster no nulo.
 			for (var i = 0; i < element.posters.length; i++) {
 				if (element.posters[i].src) {
-					poster = utils.utf8_decode(element.posters[i].src);
+					poster = element.posters[i].src;
 					break;
 				};
 			};

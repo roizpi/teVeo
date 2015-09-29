@@ -5,7 +5,7 @@
         <article class="flex-block flex-block-y-full flex-direction-column flex-liquid-content">
             <header class="header flex-block">
                 <!-- Título de la Conversación -->
-                <h2 data-view="title" data-type="text"></h2>
+                <h2 data-view="title" data-type="text" class="in tlt"></h2>
                 <!--Buscador-->
                 <form class="search-form-type2" action="#" method="GET"  data-view="searchFormMessages" autocomplete="off">
                     <div class="input-group">
@@ -82,7 +82,7 @@
         </article>
         <article id='conversationPanel' class='flex-block flex-block-y-full flex-direction-column flex-liquid-content'>
             <header class="header flex-block">
-                <h2 class="singleLine">Conversaciones con Elisabeth</h2>
+                <h2 class="singleLine">Conversaciones con <span data-view='userName' data-type='text'></span></h2>
             </header>
             <form action="" class="search-form  y-large" data-view="searchConversations" autocomplete="off">
                 <input type="search" role="search" name="search" data-action="searchContacts" placeholder="introduce búsqueda..."/>
@@ -110,7 +110,7 @@
                             <table>
                                 <caption>Detalle Conversación</caption>
                                 <tr>
-                                    <th>Nombre</th><td data-view="convName" data-type='text'></td>
+                                    <th>Nombre</th><td class='singleLine' data-view="convName" data-type='text'></td>
                                 </tr>
                                 <tr>
                                     <th>Creación</th><td data-view="creation" data-type='text'></td>

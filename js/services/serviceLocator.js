@@ -460,7 +460,7 @@ var ServiceLocator = (function(_super,environment){
             params:{
                 idUserOne:idUserOne,
                 idUserTwo:idUserTwo,
-                name:window.encodeURI(name)
+                name:name
             }
         });
     }

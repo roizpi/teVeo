@@ -226,7 +226,7 @@ var Conversation = (function(_super,$,environment){
             closeClick : true
         });
 
-    
+        
         //Obtenemos la vista searchFormMessages.
         var searchMessages = viewConversations.getView("searchFormMessages");
         searchMessages.get().on("submit",function(e){
@@ -881,6 +881,19 @@ var Conversation = (function(_super,$,environment){
     var initConversationList = function(data){
         //Obtenemos una referencia al contenedor de conversaciones.
         var container = viewConversations.getView("conversationListContainer");
+        //Obtenemos el nombre del contancto.
+        var name = self.contacts.getContactFirstName(data.idUser);
+        var $userName = viewConversations.getView("userName").get();
+        $userName.text(name).removeData("textillate").textillate({ 
+            in: { 
+                effect: 'fadeInLeftBig',
+                delayScale: 1.5,
+                delay: 50
+            },
+            out: { effect: 'fadeOutLeftBig', sync: true },
+            autoStart: true,
+            type: 'char'
+        });
         //Intentamos mostrar la conversación
         container.hideAllChild(false).done(function(){
             container.showChild(data.idUser,function(){
@@ -913,9 +926,19 @@ var Conversation = (function(_super,$,environment){
                 service:"getMessages"
             });
         }
-        
-        var title = viewConversations.getView("title");
-        title.get().text(conversation.name);
+        //Configuramos el título
+        var $title = viewConversations.getView("title").get();
+        $title.text(conversation.name).removeData("textillate").textillate({ 
+            in: { 
+                effect: 'fadeInLeftBig',
+                delayScale: 1.5,
+                delay: 50
+            },
+            out: { effect: 'fadeOutLeftBig', sync: true },
+            autoStart: true,
+            type: 'char'
+        });
+
         //Obtenemos una referencia al contenedor de conversaciones.
         var container = viewConversations.getView("conversationContainer");
         //Intentamos mostrar la conversación
@@ -1149,7 +1172,6 @@ var Conversation = (function(_super,$,environment){
                 onCreate:onCreateViewConversations
             }
         }).done(function(view){
-            console.log("IDENTIFICADOR del usuario : " + idUser);
 
             var container = view.getView("conversationListContainer");
             //Comprobamos si existe panel de conversaciones para este usuario.

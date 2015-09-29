@@ -464,6 +464,11 @@ var Contacts = (function(_super,$,environment){
             data:userContacts[idx]
         }
     };
+    //Devuelve el nombre del contacto.
+    Contacts.prototype.getContactFirstName = function(idUser) {
+        var contact = this.getContactById(idUser);
+        return contact.data.name;
+    };
 
 
     //Devuelve los identificadores de todos los contactos.
