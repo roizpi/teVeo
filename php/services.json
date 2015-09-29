@@ -340,5 +340,14 @@
         },
         "token_required":true,
         "throw_event":false
+    },
+    "DELETE_FILE":{
+        "type":2,
+        "controller":{
+            "controller_name":"fileController",
+            "action_name":"delete"
+        },
+        "token_required":true,
+        "throw_event":false
     }
 }

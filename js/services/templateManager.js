@@ -180,6 +180,9 @@ var View = (function(_super,$,environment){
 				case 'TOGGLE':
 					value === 'on' ? this.show() : this.hide(false);
 					break;
+				case 'ATTR':
+					$.isPlainObject(value) && this.el.attr(value);
+					break;
 				default:
 					console.log("Valor no conocido");
 			}

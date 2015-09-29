@@ -2230,7 +2230,7 @@ h1,h2,h3,p,li,.logo,.btn{
   position: relative;
 }
 
-.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper.text-wrapper header .delete{
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper .delete{
   position: absolute;
   top: 0;right: 0;
   width: 32px;height: 32px;
@@ -2244,12 +2244,12 @@ h1,h2,h3,p,li,.logo,.btn{
   transition:all .5s;
 }
 
-.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper.text-wrapper header .delete:hover,
-.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper.text-wrapper header .delete:active{
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper .delete:hover,
+.conversation-wrapper .conversation .message-wrapper.emisor .content-wrapper .delete:active{
   text-shadow:#4353FF 0px 0px 4px;
 }
 
-.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper.text-wrapper header .delete{
+.conversation-wrapper .conversation .message-wrapper.receptor .content-wrapper .delete{
   display: none;
 }
 
@@ -2392,14 +2392,13 @@ h1,h2,h3,p,li,.logo,.btn{
 
 .conversation-wrapper + .conversation-sendmessage .conversation-sendmessage-actions{
   width: 25%;
+  min-width: 150px;
   padding: 0 0.5rem;
-  background-color: #fff;
   position: relative;
-  text-align: right;
 }
 
 .conversation-wrapper + .conversation-sendmessage .conversation-sendmessage-actions .fa{
-  background-color: rgb(0, 138, 189);
+  background-color: #4353FF;
   color: #fff;
   box-sizing: content-box;
   padding: 1.1rem;

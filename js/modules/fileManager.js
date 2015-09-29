@@ -37,9 +37,10 @@ var FileManager = (function(_super,$,environment){
                             case 'SUCCESS':
                                 var container = view.getView("filePreviewContainer");
                                 var value = container.getView("imagePreview").getChildValue("img");
+                                var mime = file_selected.type.split("/");
                                 self.triggerEvent("FILE_SELECTED",{
-                                    type:2,
-                                    format:file_selected.type.split("/")[1],
+                                    type:mime[0],
+                                    format:mime[1],
                                     data:value
                                 });
                                 view.hide(false);
@@ -51,7 +52,8 @@ var FileManager = (function(_super,$,environment){
                     reader.addEventListener("load",function(e) {
                         var data = e.target.result;
                         view.getView("preloader").hide(false);
-                        view.getView("filePreviewContainer").createView("imagePreview",{
+                        var view_name = file_selected.type.split("/")[0]+"Preview";
+                        view.getView("filePreviewContainer").createView(view_name,{
                             id:file_selected.id,
                             img:data
                         });
@@ -63,6 +65,8 @@ var FileManager = (function(_super,$,environment){
                     list.setChildValue("size",file_selected.size);
                     list.setChildValue("type",file_selected.type);
                     //obtenemos la dataURL del fichero.
+                    console.log("Este es el fihero")
+                    console.log(file_selected);
                     reader.readAsDataURL(file_selected);
                 },
                 onAfterHide:function(view){
@@ -123,7 +127,7 @@ var FileManager = (function(_super,$,environment){
                 file = e.originalEvent.dataTransfer.files[0]; 
             }
             file_selected = file;
-            file_selected.id  = 1111;
+            file_selected.id  = (Math.random() * 2000) + 1;
             //Previsualizamos el fichero.
             loadPreviewFile();
         });

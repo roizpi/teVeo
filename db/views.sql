@@ -104,7 +104,7 @@ AS
         text
     FROM  MENSAJES M JOIN MENSAJES_TEXT USING(id);
 
-CREATE VIEW MENSAJES_VIEW_IMG
+CREATE VIEW MENSAJES_VIEW_MULTIMEDIA
 AS 
    SELECT 
         id,
@@ -116,8 +116,8 @@ AS
         folder,
         name,
         format,
-        caption
-   FROM  MENSAJES M JOIN MENSAJES_IMG USING(id);
+        legend
+   FROM  MENSAJES M JOIN MENSAJES_MULTIMEDIA USING(id);
 
 
 /*Devuelve los últimos mensajes*/

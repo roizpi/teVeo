@@ -3,7 +3,7 @@
 class conversationController extends baseController{
 
     const MESSAGE_TEXT = 1;
-    const MESSAGE_IMG = 2;
+    const MESSAGE_MULTIMEDIA = 2;
     
     //Obtiene todas las conversaciones en las que participa estos usuarios.
     public function getConversations($idUserOne,$idUserTwo){
@@ -170,17 +170,14 @@ class conversationController extends baseController{
         //Obtenemos el contenido de cada mensaje.
         for ($i=0; $i < sizeof($messages) ; $i++) { 
             $id = $messages[$i]["id"];
-            switch ($messages[$i]["type"]) {
-                case 'IMG':
-                    $query = "SELECT folder,name,format,caption FROM MENSAJES_IMG WHERE id = $id";
-                    break;
-                default:
-                    $query = "SELECT text FROM MENSAJES_TEXT WHERE id = $id";
-                    break;
+            if ($messages[$i]["type"] != "TEXT") {
+                $query = "SELECT folder,name,format,legend FROM MENSAJES_MULTIMEDIA WHERE id = $id";
+            }else{
+                $query = "SELECT text FROM MENSAJES_TEXT WHERE id = $id";
             }
             $result = $this->conn->query($query);
             $content = $result->fetch(PDO::FETCH_ASSOC);
-            $messages[$i]['content'] = $content;
+            $messages[$i] = array_merge($messages[$i],$content);
         }
         return $messages;
     }
@@ -266,10 +263,8 @@ class conversationController extends baseController{
         
     } 
 
-    private function appendImgContent($id,$content){
-        echo "Contenido de la imagen";
-        print_r($content);
-        $sql = "INSERT INTO MENSAJES_IMG (id,folder,name,format) VALUES(:id,:folder,:name,:format)";
+    private function appendMultimediaContent($id,$content){
+        $sql = "INSERT INTO MENSAJES_MULTIMEDIA (id,folder,name,format) VALUES(:id,:folder,:name,:format)";
         //Preparamos la sentencia.                             
         $stmt = $this->conn->prepare($sql);
         //Bindeamos los datos.
@@ -301,21 +296,17 @@ class conversationController extends baseController{
         $stmt->bindParam(':conversacion',$idConversacion,PDO::PARAM_INT); 
         $stmt->bindParam(':user',$idEmisor,PDO::PARAM_INT);
         $stmt->bindParam(':creacion',$microtime,PDO::PARAM_STR);
-        $stmt->bindParam(':type',$type,PDO::PARAM_INT);       
+        $stmt->bindParam(':type',$type,PDO::PARAM_STR);       
         //Ejecutamos la sentencia.                                     
         $stmt->execute();
         $id = $this->conn->lastInsertId();
-        switch ($type) {
-            case self::MESSAGE_TEXT:
-                $this->appendTextContent($id,$content);
-                $query = "SELECT * FROM MENSAJES_VIEW_TEXT WHERE id = $id";
-                break;
-            case self::MESSAGE_IMG:
-                $this->appendImgContent($id,$content);
-                $query = "SELECT * FROM MENSAJES_VIEW_IMG WHERE id = $id";
-                break;
-            default:
-                break;
+        echo "Tipo del MENSAJE : $type" .PHP_EOL;
+        if (strtoupper($type) != "TEXT") {
+            $this->appendMultimediaContent($id,$content);
+            $query = "SELECT * FROM MENSAJES_VIEW_MULTIMEDIA WHERE id = $id";
+        }else{
+            $this->appendTextContent($id,$content);
+            $query = "SELECT * FROM MENSAJES_VIEW_TEXT WHERE id = $id";
         }
 
         $result = $this->conn->query($query);

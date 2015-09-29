@@ -37,5 +37,36 @@ class fileController extends baseController{
         return $response;
 	}
 
+	public function delete($idConv,$name,$format){
+
+		$response =  array(
+	        "response_message" => array(
+	           	"type" => "RESPONSE",
+	            "name" => "FILE_DELETION",
+	            "data" => array()
+	        )
+	    );
+
+	    if(is_numeric($idConv)){
+			define("ROOT_DIR",$_SERVER['DOCUMENT_ROOT']."/teVeo/");
+			$conv_folder = "conv_".$idConv;
+			$file = ROOT_DIR.self::FILES_BASE_PATH.$conv_folder.$name.".".$format;
+			if(file_exists($file)){
+				if(unlink($file)){
+					$response["response_message"]["data"] = array("error" => false,"msg" => array("msg" => "Fichero borrado con éxito"));
+				}else{
+					$response["response_message"]["data"] = array("error" => true,"msg" => array("msg" => "Error al borrar el fichero"));
+				}
+			}else{
+				$response["response_message"]["data"] = array("error" => true,"msg" => array("msg" => "El fichero no existe"));
+			}
+
+		}else{
+			$response["response_message"]["data"] = array("error" => true,"msg" => array("msg" => "Identificador de conversación no válido"));
+		}
+
+		return $response;
+	}
+
 
 }

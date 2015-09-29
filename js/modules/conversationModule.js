@@ -11,9 +11,6 @@ var Conversation = (function(_super,$,environment){
     const MESSAGE_RECEIVED = 2;
     const MESSAGE_DELETED = 3;
 
-    //Tipos de Mensajes
-    const MESSAGE_TEXT = 1;
-    const MESSAGE_IMG = 2;
 
     var self;
     //Mensajes pendientes.
@@ -317,7 +314,7 @@ var Conversation = (function(_super,$,environment){
             this.message.value = "";
             var container = viewConversations.getView("conversationContainer");
             //Creamos el mensaje de tipo texto.
-            createMessage(MESSAGE_TEXT,{
+            createMessage("TEXT",{
                 text:text
             });
         }).delegate("[data-action]","click",function(e){
@@ -810,16 +807,22 @@ var Conversation = (function(_super,$,environment){
                                     creation:message.creacion,
                                     status:status,
                                     close:closeStatus,
-                                    text:message.content.text
+                                    text:message.text
                                 }
                                 break;
-                            case "IMG":
+                            case "IMAGE":
                                 view_name = "imgContent";
-                                var src = message.content.folder + message.content.name + "." + message.content.format;
+                                var src = message.folder + message.name + "." + message.format;
                                 data = {
+                                    details:{
+                                        href:src,
+                                        title:"Imagen de prueba"
+                                    },
                                     img:src
                                 }
                                 break;
+                            case "AUDIO":
+                                view_name = "soundContent";
 
                         }
 
