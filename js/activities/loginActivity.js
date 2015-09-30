@@ -87,7 +87,7 @@ var LoginActivity = (function(environment,$){
 	LoginActivity.prototype.onResume = function() {
 
 		var video = this.view.getView("video").getNativeNode();
-		//video.play();
+		video.play();
 
 	};
 

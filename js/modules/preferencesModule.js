@@ -54,6 +54,7 @@ var Preferences = (function(_super,$){
     };
     
     var timerChangeWallpaper = null;
+    var userConnected;
     
     
 
@@ -67,7 +68,7 @@ var Preferences = (function(_super,$){
         //Configuramos manejadores.
         //attachHandlers();
 
-        
+        userConnected = environment.getService("SESSION_MANAGER").getUser();
 
     }
 

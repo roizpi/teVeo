@@ -3,7 +3,7 @@ var Searchs = (function(_super,$,environment){
 
     __extends(Searchs, _super);
 
-    var self,templating,serviceLocator,searchUserView;
+    var self,templating,serviceLocator,searchUserView,userConnected;
 
     //Mínimo de resultados mostrados;
     const MIN_RESULT_SHOWN = 5;
@@ -21,6 +21,7 @@ var Searchs = (function(_super,$,environment){
         this.applications = applications;
         this.notificator = notificator;
         this.geoLocation = geoLocation;
+        userConnected = environment.getService("SESSION_MANAGER").getUser();
 
             
     }

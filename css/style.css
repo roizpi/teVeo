@@ -4820,6 +4820,13 @@ span.css-emoticon.nintendo-controller {
 }
 
 
+.weather{
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+
 /*
 
     Fichas

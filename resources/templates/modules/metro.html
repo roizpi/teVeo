@@ -36,29 +36,29 @@
     </div>
 
     <!-- Weather Tile -->
-    <div class="tile tile-big bg-cyan fg-white" data-role="tile" data-view='tileWeather'>
+    <div class="tile tile-large bg-cyan fg-white" data-role="tile" data-view='tileWeather'>
         <div class="tile-content iconic">
             <span class="icon mif-sun"></span>
         </div>
-        <div class="tile-content" data-view='weather' data-type='template'>
-            <div class="flex-block flex-block-full flex-liquid-content flex-direction-column">
+        <div class="tile-content animateView" data-view='weather' data-type='template' data-animationin="fadeIn" data-animationout="fadeOut">
+            <div class="weather flex-block flex-block-full flex-liquid-content flex-direction-column" data-view='sky' data-type='background'>
                 <div class="date-loc">
                     <span data-view='location' data-type='text'>Tokyo</span>
                     -
-                    <span data-view='date' data-type='text'>30 September</span>
+                    <span data-view='date' data-type='text'></span>
                 </div>
                     
                 <div class="bw_summary">
                     <span class="bw_icon-container"></span>
-                    <p>Partly Cloudy</p>
+                    <p data-view='summary' data-type='text'></p>
                     <div class="bw_degree">
-                        <p>23°</p>
+                        <p data-view='temperature' data-type='text'></p>
                     </div>
                 </div>
                     
                 <div class="bw_degree-up-down">
-                    <span class="bw_up-degree">24°</span>
-                    <span class="bw_down-degree">22°</span>
+                    <span class="bw_up-degree" data-view='maxTemperature' data-type='text'></span>
+                    <span class="bw_down-degree" data-view='minTemperature' data-type='text'></span>
                 </div>
 
                 <div class="bw_days">

@@ -62,7 +62,8 @@
 			"METRO",
 			"CONVERSATION",
 			"MOVIEDB",
-			"FILE_MANAGER"
+			"FILE_MANAGER",
+			"WEATHER"
 		],
 		"templates":{
 			"gui":{

@@ -572,6 +572,20 @@ var ServiceLocator = (function(_super,environment){
 
     }
 
+    ServiceLocator.prototype.getForecast = function(data) {
+        return $.post("php/httpService.php",{
+            token:self.sessionManager.getToken(),
+            service:"GET_FORECAST",
+            type:HTTP_SERVICE,
+            encode:false,
+            params:{
+                latitude:data.latitude,
+                longitude:data.longitude,
+                units:data.units
+            }
+        });
+    };
+
     
     //Enviar un mensaje en una conversación.
     ServiceLocator.prototype.createMessage = function(idConv,idUserEmisor,idUsuRecep,type,content){

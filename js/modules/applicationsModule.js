@@ -4,7 +4,7 @@ var ApplicationsManager = (function(_super,$,environment){
     __extends(ApplicationsManager, _super);
 
     //Solicitudes de amistad pendientes.
-    var applicationsOfFriendship = [],self,serviceLocator,templating;
+    var applicationsOfFriendship = [],self,serviceLocator,templating,userConnected;
 
     function ApplicationsManager(notificator){
         self = this;
@@ -20,7 +20,7 @@ var ApplicationsManager = (function(_super,$,environment){
             "REJECT_APPLICATION":[],
             "NO_APPLICATION_FOUND":[]
         }
-
+        userConnected = environment.getService("SESSION_MANAGER").getUser();
 
 
         //Configuramos manejadores.

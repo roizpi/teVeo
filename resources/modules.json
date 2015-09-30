@@ -226,7 +226,8 @@
         "className":"Weather",
         "file":"weatherModule.js",
         "order":15,
-        "dependences":["GEO_LOCATION"]
+        "dependences":["GEO_LOCATION"],
+        "templates":{}
     },
     "METRO":{
         "name":"metro",

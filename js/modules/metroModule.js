@@ -116,14 +116,24 @@ var Metro = (function(_super,$,environment){
 		});
 
 
-		var condition = weather.getCurrentConditions(latitude, longitude);
+		self.weather.getCurrentConditions().done(function(condition){
+
+			var tileWeather = view.getView("tileWeather");
+			tileWeather.createView("weather",{
+				date:condition.getTime('LL'),
+				sky:condition.getSkyBackgroundImage(),
+				summary:condition.getSummary(),
+				temperature:condition.getTemperature()
+			});
+
+		});
 		//Temperatura.
 		//condition.getTemperature();
 	
 		/*
 		 * GET HOURLY CONDITIONS FOR TODAY
 		 */
-		var conditions_today = forecast.getForecastToday(latitude, longitude);
+		/*var conditions_today = forecast.getForecastToday(latitude, longitude);
 
 
 		var items = '';
@@ -132,20 +142,20 @@ var Metro = (function(_super,$,environment){
 			items += "<li>"  + conditions_today[i].getTime('HH:mm') + ': ' + conditions_today[i].getTemperature() + "</li>";
 		}
 	
-		document.getElementById("itemList").innerHTML = items;
+		document.getElementById("itemList").innerHTML = items;*/
 	
 		/*
 		 * GET DAILY CONDITIONS FOR NEXT 7 DAYS
 		 */
 	
-		var conditions_week = forecast.getForecastWeek(latitude, longitude);
+		/*var conditions_week = forecast.getForecastWeek(latitude, longitude);
 		var items2 = '';
 	
 		for(i=0; i<conditions_week.length; i++) {
 			items2 += "<li>"  + conditions_week[i].getTime('YYYY-MM-DD') + ': ' + conditions_week[i].getMaxTemperature() + "</li>";
 		}
 	
-		document.getElementById("itemList2").innerHTML = items2;	
+		document.getElementById("itemList2").innerHTML = items2;	*/
 
 		var tiles = {
 
