@@ -221,12 +221,19 @@
             }
         }
     },
+    "WEATHER":{
+        "name":"weather",
+        "className":"Weather",
+        "file":"weatherModule.js",
+        "order":15,
+        "dependences":["GEO_LOCATION"]
+    },
     "METRO":{
         "name":"metro",
         "className":"Metro",
         "file":"metroModule.js",
-        "order":15,
-        "dependences":["MOVIEDB","CONVERSATION"],
+        "order":16,
+        "dependences":["MOVIEDB","CONVERSATION","WEATHER"],
         "templates":{
             "metro":{
                 "DASHBOARD":{
@@ -244,7 +251,7 @@
         "name":"fileManager",
         "className":"FileManager",
         "file":"fileManager.js",
-        "order":16,
+        "order":17,
         "deferred":true,
         "dependences":null,
         "templates":{
@@ -270,5 +277,6 @@
             }
         }
     }
+    
     
 }

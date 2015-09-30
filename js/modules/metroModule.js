@@ -6,10 +6,11 @@ var Metro = (function(_super,$,environment){
 	var serviceLocator;
 	var self;
 
-	function Metro(movieDB,conversation){
+	function Metro(movieDB,conversation,weather){
 		self = this;
 		this.movieDB = movieDB;
 		this.conversation = conversation;
+		this.weather = weather;
 		templating = environment.getService("TEMPLATE_MANAGER");
 		serviceLocator = environment.getService("SERVICE_LOCATOR");
 	}
@@ -113,6 +114,38 @@ var Metro = (function(_super,$,environment){
 			}
 			
 		});
+
+
+		var condition = weather.getCurrentConditions(latitude, longitude);
+		//Temperatura.
+		//condition.getTemperature();
+	
+		/*
+		 * GET HOURLY CONDITIONS FOR TODAY
+		 */
+		var conditions_today = forecast.getForecastToday(latitude, longitude);
+
+
+		var items = '';
+	
+		for(i=0; i<conditions_today.length; i++) {
+			items += "<li>"  + conditions_today[i].getTime('HH:mm') + ': ' + conditions_today[i].getTemperature() + "</li>";
+		}
+	
+		document.getElementById("itemList").innerHTML = items;
+	
+		/*
+		 * GET DAILY CONDITIONS FOR NEXT 7 DAYS
+		 */
+	
+		var conditions_week = forecast.getForecastWeek(latitude, longitude);
+		var items2 = '';
+	
+		for(i=0; i<conditions_week.length; i++) {
+			items2 += "<li>"  + conditions_week[i].getTime('YYYY-MM-DD') + ': ' + conditions_week[i].getMaxTemperature() + "</li>";
+		}
+	
+		document.getElementById("itemList2").innerHTML = items2;	
 
 		var tiles = {
 

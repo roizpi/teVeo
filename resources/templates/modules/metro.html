@@ -35,6 +35,56 @@
         </div>
     </div>
 
+    <!-- Weather Tile -->
+    <div class="tile tile-big bg-cyan fg-white" data-role="tile" data-view='tileWeather'>
+        <div class="tile-content iconic">
+            <span class="icon mif-sun"></span>
+        </div>
+        <div class="tile-content" data-view='weather' data-type='template'>
+            <div class="flex-block flex-block-full flex-liquid-content flex-direction-column">
+                <div class="date-loc">
+                    <span data-view='location' data-type='text'>Tokyo</span>
+                    -
+                    <span data-view='date' data-type='text'>30 September</span>
+                </div>
+                    
+                <div class="bw_summary">
+                    <span class="bw_icon-container"></span>
+                    <p>Partly Cloudy</p>
+                    <div class="bw_degree">
+                        <p>23°</p>
+                    </div>
+                </div>
+                    
+                <div class="bw_degree-up-down">
+                    <span class="bw_up-degree">24°</span>
+                    <span class="bw_down-degree">22°</span>
+                </div>
+
+                <div class="bw_days">
+                    <ul class="bw_days-list">
+                        <li class="bw_day-item bw_day-1">
+                            <p class="bw_day-title">Wed</p>
+                            <span class="bw_icon-container"></span>
+                        </li>
+                        <li class="bw_day-item bw_day-2">
+                            <p class="bw_day-title">Thu</p>
+                            <span class="bw_icon-container"></span>
+                        </li>
+                        <li class="bw_day-item bw_day-3">
+                            <p class="bw_day-title">Fri</p>
+                            <span class="bw_icon-container"></span>
+                        </li>
+                        <li class="bw_day-item bw_day-4">
+                            <p class="bw_day-title">Sat</p>
+                            <span class="bw_icon-container"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     
                 
 </div>

@@ -1,9 +1,5 @@
 (function($){
 
-	userConnected = {};
-    userConnected.id = 4;
-    userConnected.name ="Sergio";
-    userConnected.ubicacion = "avila";
     sessionStorage.setItem("session_token",1234);
 
     //Inicializamos plugin ionSound.

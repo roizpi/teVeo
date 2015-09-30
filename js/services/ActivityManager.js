@@ -54,6 +54,7 @@ var ActivityManager = (function(_super,$,environment){
 				category:"ACTIVITY_UPLOADPAGE_VIEWS",
 				handlers:{
 					onAfterShow:function(uploadpage){
+						console.log("Cargando pantalla");
 						//Registramos la actividad
 						self.historyManager.registerActivity(activity);
 						//Ruta de la actividad.
