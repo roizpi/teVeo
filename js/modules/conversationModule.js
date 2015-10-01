@@ -730,7 +730,7 @@ var Conversation = (function(_super,$,environment){
                 loaderData.increaseAmount(1);
             };
 
-        }else if(message.type.toUpperCase() == 'IMG'){
+        }else if(message.type.toUpperCase() == 'IMAGE'){
             //Mostramos  el mensaje enviado.
             createViewMessage(message,{
                 direction:"desc"

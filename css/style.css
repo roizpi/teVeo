@@ -501,7 +501,7 @@ h1,h2,h3,p,li,.logo,.btn{
   color: #fff;
   font-weight: bold;
   text-shadow:#000 4px 4px 5px;
-  text-transform: capitalize;
+  text-transform: lowercase;
 }
 
 /*
