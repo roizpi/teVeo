@@ -158,6 +158,8 @@ var View = (function(_super,$,environment){
 					if (format == "DATE" && !isNaN(parseInt(value))) {
 						var date = new Date(parseInt(value));
 						value = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+					}else if(format == "ROUND" && !isNaN(parseInt(value))){
+						value = Math.round(parseInt(value));
 					}
 					this.el.text(value);
 

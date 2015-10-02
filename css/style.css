@@ -4826,6 +4826,23 @@ span.css-emoticon.nintendo-controller {
   background-position: center;
 }
 
+.weather .temperature::after{
+  content:"\00B0";
+}
+
+.weather .current_summary > *{
+  display: block;
+  font-size: 1.6rem;
+  text-align: center;
+  margin: .7rem 0;
+}
+
+.weather .current_summary .temperature{
+  font-size: 2.3rem;
+  font-weight: bold;
+}
+
+
 
 /*
 

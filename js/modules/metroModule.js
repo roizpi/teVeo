@@ -116,11 +116,12 @@ var Metro = (function(_super,$,environment){
 		});
 
 
-		self.weather.getCurrentConditions().done(function(condition){
+		self.weather.getCurrentCondition().done(function(condition){
 
 			var tileWeather = view.getView("tileWeather");
 			tileWeather.createView("weather",{
 				date:condition.getTime('LL'),
+				foreground:condition.getForegroundImage(),
 				sky:condition.getSkyBackgroundImage(),
 				summary:condition.getSummary(),
 				temperature:condition.getTemperature()

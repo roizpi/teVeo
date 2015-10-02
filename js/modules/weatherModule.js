@@ -49,8 +49,13 @@ var Weather = (function(_super,$,environment){
 		}
 		//Devuelve la imagen grande
 		this.getSkyBackgroundImage = function() {
-			return "resources/img/weather/" + raw_data.icon + ".png";
+			return raw_data.background_img;
 		}
+
+		this.getForegroundImage = function(){
+			return raw_data.foreground_img;
+		}
+
 		//Devuelve el timestamp.
 		this.getTime = function(format) {
 			if(!format) {
@@ -124,7 +129,7 @@ var Weather = (function(_super,$,environment){
 	/* API Pública del Módulo*/
 
 	//Devuelve las codiciones actuales.
-	Weather.prototype.getCurrentConditions = function () {
+	Weather.prototype.getCurrentCondition = function () {
 		return requestData().pipe(function(data){
 			console.log("Esta es la data");
 			console.log(data);
