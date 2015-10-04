@@ -12,8 +12,8 @@ abstract class baseController{
 	}
     
     private static function loadController($controller){
-        $class = $controller->controller_name;
-        $method = $controller->action_name;
+        $class = $controller['controller_name'];
+        $method = $controller['action_name'];
         if(!array_key_exists($class,self::$controllerCache)){
             $folder = dirname(__DIR__).self::CONTROLLERS_FOLDER;
             $fileName = $folder.$class.".php";
@@ -45,7 +45,7 @@ abstract class baseController{
     
     public static function execute($controller,$params){
         $obj = self::loadController($controller);
-        $response = call_user_method_array($controller->action_name, $obj,$params);
+        $response = call_user_method_array($controller['action_name'], $obj,$params);
         return $response;
     }
     

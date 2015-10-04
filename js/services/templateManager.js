@@ -151,6 +151,12 @@ var View = (function(_super,$,environment){
 			switch(type){
 
 				case 'IMG':
+				case 'AUDIO':
+				case 'VIDEO':
+
+					if (value instanceof Blob) {
+						value = URL.createObjectURL(value);
+					};
 					this.el.attr("src",value);
 					break;
 				case 'TEXT':
@@ -450,6 +456,8 @@ var View = (function(_super,$,environment){
 		if (n && !isNaN(parseInt(n))) {
 			var self = this;
 			var views = this.getViewsOrderByAsc("creation");
+			console.log("Ordenados desc");
+			console.log(views);
 			//Eliminamos la vistas n primeras vistas.
 			views.slice(0,n).forEach(function(view){
 				self.removeChild(view.id);

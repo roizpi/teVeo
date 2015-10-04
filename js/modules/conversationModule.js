@@ -446,7 +446,7 @@ var Conversation = (function(_super,$,environment){
                 console.log("ID conversacion : " + currentConv.id);
                 console.log(loaderData);
                 loaderData.load({
-                    id:currentConv.id,
+                    idConv:currentConv.id,
                     callbacks:{
                         onDataLoaded:function(messages){
                             var filter = this.filterValue;
@@ -730,7 +730,7 @@ var Conversation = (function(_super,$,environment){
                 loaderData.increaseAmount(1);
             };
 
-        }else if(message.type.toUpperCase() == 'IMAGE'){
+        }else{
             //Mostramos  el mensaje enviado.
             createViewMessage(message,{
                 direction:"desc"
@@ -818,12 +818,24 @@ var Conversation = (function(_super,$,environment){
                                         href:src,
                                         title:"Imagen de prueba"
                                     },
-                                    img:src
+                                    img:src,
+                                    creation:message.creacion
                                 }
                                 break;
-                            case "AUDIO":
-                                view_name = "soundContent";
-
+                            case "VIDEO":
+                                view_name = "videoContent";
+                                var src = message.folder + message.name + "." + message.format;
+                                data = {
+                                    authorName:user.name,
+                                    creation:message.creacion,
+                                    status:status,
+                                    close:closeStatus,
+                                    video:{
+                                        src:src,
+                                        type:'video/'+ message.format
+                                    }
+                                }
+                                break;
                         }
 
                         //Creamos contenido del mensaje.
@@ -954,12 +966,18 @@ var Conversation = (function(_super,$,environment){
                     id:conversation.id
                 },{
                     handlers:{
+                        onCreate:function(){
+                            $("audio[data-circle-audio-player]").circleAudioPlayer();
+                        },
                         onAfterFirstShow:function(view){
-                            console.log("Circle Audio Player");
-                            console.log($("audio desde initConversation"));
-                            $("audio").circleAudioPlayer();
+                            //Cargamos los mensajes de la conversación.
                             loaderData.load({
-                                id:conversation.id,
+                                idConv:conversation.id,
+                                filter:{
+                                    type:"ALL",
+                                    field:null,
+                                    value:null
+                                },
                                 callbacks:{
                                     onDataLoaded:function(messages){
                                         var filter = this.filterValue;
@@ -1024,9 +1042,12 @@ var Conversation = (function(_super,$,environment){
                             
                         },
                         onBeforeHide:function(view){
+                            console.log("Número de mensajes : " + view.size());
                             if (view.size() > MAX_MESSAGES_BY_CONV) {
                                 var diff = view.size() - MAX_MESSAGES_BY_CONV;
+                                console.log("Diferencia : " + diff);
                                 view.removeNthFirstChilds(diff);
+                                console.log("Después del borrado : " + view.size());
                                 loaderManager.resetLoaderTo(view.getId(),MAX_MESSAGES_BY_CONV);
                             };
 

@@ -4,7 +4,7 @@ class fileController extends baseController{
 
 	const FILES_BASE_PATH = 'resources/files/';
 
-	public function save($idConv,$format,$data){
+	public function save($idConv,$format){
 
 
 		$response =  array(
@@ -25,11 +25,15 @@ class fileController extends baseController{
 
 			$file_folder = self::FILES_BASE_PATH.$conv_folder."/";
 			$file_name = substr(str_replace(array("/",".","\\"),"_",base64_encode(openssl_random_pseudo_bytes('30'))), 0, 22);
-			//eliminamos data:image/png; y base64, de la cadena que tenemos
-			//Decodificamos $data codificada en base64.
-			$data = base64_decode(substr($data,strpos($data, "base64") + 6));			
+			if(isset($_FILES['file']) and !$_FILES['file']['error']){
+			    move_uploaded_file($_FILES['file']['tmp_name'], ROOT_DIR.$file_folder.$file_name.".".$format);
+			}
+			// pull the raw binary data from the POST array
+			//$data = substr($blob, strpos($blob, ",") + 1);
+			// decode it
+			//$data = base64_decode($data);			
 			// Escribir los contenidos en el fichero
-			$exito = file_put_contents(ROOT_DIR.$file_folder.$file_name.".".$format, $data,LOCK_EX);
+			//$exito = file_put_contents(ROOT_DIR.$file_folder.$file_name.".".$format,$data,LOCK_EX);
 			$response["response_message"]["data"] = array("error" => false,"msg" => array("folder" => $file_folder,"name" => $file_name));
 		}
 		

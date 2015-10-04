@@ -15,9 +15,9 @@ if (isset($_SERVER['HTTP_REFERER']) && preg_match("/^http\:\/\/localhost\/teveo/
 	//cargamos los servicios.
 	$content = @file_get_contents(SERVICES_PATH);
 	if ($content) {
-		$services = get_object_vars(json_decode($content));
+		$services = (array) json_decode($content,true);
 		foreach ($services as $key => $service) {
-			if($service->type != HTTP_SERVICE){
+			if($service['type'] != HTTP_SERVICE){
 				unset($services[$key]);
 			}
 		}
@@ -29,16 +29,19 @@ if (isset($_SERVER['HTTP_REFERER']) && preg_match("/^http\:\/\/localhost\/teveo/
 
 		//Comprobamos si el servicio solicitado es HTTP_SERVICE.
 		if (array_key_exists($service,$services)) {
-			if ($services[$service]->token_required) {
+			if ($services[$service]['token_required']) {
 				//Comprobamos si el token de sesión está presente en la petición.
 				if ($token) {
 					//decodificamos el token de sesión.
                     $token = json_decode(base64_decode($token));
                     if (!is_null($params)) {
+                    	if (!is_array($params)) {
+                    		$params = (array) json_decode($params,true);
+                    	}
                     	$params = $encode ? decodeParams($params) : $params;
                     }
                     //Ejecutamos la acción del controlador
-            		$response = baseController::execute($services[$service]->controller,$params);
+            		$response = baseController::execute($services[$service]['controller'],$params);
 					//Codificamos los datos de la respuesta.
             		if($encode) encodeData($response["response_message"]['data']['msg']);
             		//Enviamos respuesta

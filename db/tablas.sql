@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS CONVERSACIONES(
 CREATE TABLE IF NOT EXISTS MENSAJES(
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     status      ENUM("LEIDO","NOLEIDO") DEFAULT "NOLEIDO" NOT NULL,
-    type        ENUM("TEXT","IMAGE","AUDIO") DEFAULT "TEXT" NOT NULL,
+    type        ENUM("TEXT","IMAGE","AUDIO","VIDEO") DEFAULT "TEXT" NOT NULL,
     creacion    VARCHAR(30) NOT NULL,
     user        BIGINT UNSIGNED NOT NULL,
         CONSTRAINT MEN_USER_FK FOREIGN KEY(user) REFERENCES USUARIOS(id)
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS MENSAJES_MULTIMEDIA(
           ON UPDATE CASCADE,
     folder      VARCHAR(60) NOT NULL,
     name        CHAR(22) NOT NULL,
-    format      ENUM('jpg', 'png', 'gif','jpeg','mp4') NOT NULL DEFAULT 'png',
+    format      ENUM('jpg', 'png', 'gif','jpeg','mp4','ogg') NOT NULL DEFAULT 'png',
     legend      VARCHAR(30)
 )ENGINE=INNODB CHARSET=LATIN1 COMMENT="Tabla de Multimedia";
 

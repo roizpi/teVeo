@@ -18,7 +18,7 @@ class ServerSocket extends WebSocketServer {
         // Services
         $services = @file_get_contents(self::SERVICES_PATH);
         if ($services) {
-            $this->websocket_services = json_decode($services);
+            $this->websocket_services = (array) json_decode($services,true);
         }
     }
 
@@ -28,12 +28,12 @@ class ServerSocket extends WebSocketServer {
         try{
 
             //Ejecutamos la acción del controlador
-            $response = baseController::execute($service->controller,$params);
+            $response = baseController::execute($service['controller'],$params);
 
             //Comprobamos si es necesario ejecutar una tarea posterior 
-            if(isset($service->task_before_send)){
+            if(isset($service['task_before_send'])){
                 //recogemos el nombre de la tarea.
-                $task = $service->task_before_send;
+                $task = $service['task_before_send'];
                 if($task == "attachUser"){
                     //la información.
                     $data = $response["task_before_send_data"];
@@ -62,7 +62,7 @@ class ServerSocket extends WebSocketServer {
             //Enviamos la respuesta al emisor.
             $this->send($conn,json_encode($response["response_message"]));
             //Si el servicio debe notificar a otros clientes
-            if($service->throw_event){
+            if($service['throw_event']){
                 //Obtenemos los targets
                 $targets = $response["event_message"]["targets"];
                 //Los eliminamos del evento
@@ -99,26 +99,26 @@ class ServerSocket extends WebSocketServer {
     
     protected function process ($conn, $message) {
         //Decodificamos el mensaje.
-        $msg = json_decode($message);
+        $msg = (array) json_decode($message,true);
         echo var_dump($msg) . PHP_EOL;
         //Comprobamos si existe el servicio solicitado.
-        if(array_key_exists($msg->service,$this->websocket_services)){
+        if(array_key_exists($msg['service'],$this->websocket_services)){
             //Obtenemos el servicio.
-            $service = get_object_vars($this->websocket_services)[$msg->service];
+            $service = $this->websocket_services[$msg['service']];
             //Decodificamos los parámetros.
-            if ($msg->encode) {
-               $params = decodeParams($msg->params);
+            if ($msg['encode']) {
+               $params = decodeParams($msg['params']);
             }else{
-                $params = $msg->params;
+                $params = $msg['params'];
             }
             
             //Comprobamos si el servicio requiere token de acceso.
-            if (isset($service->token_required)) {
+            if (isset($service['token_required'])) {
                 //Comprobamos si hay token de sessión en la petición
-                if(array_key_exists("token",get_object_vars($msg))){
+                if(array_key_exists("token",$msg)){
                     //decodificamos el token de sesión.
-                    $token = json_decode(base64_decode($msg->token));
-                    if(isset($service->require_user_id))
+                    $token = json_decode(base64_decode($msg['token']));
+                    if(isset($service['require_user_id']))
                         $this->resolveService($service,[$token->idUser],$conn);
                     else
                         $this->resolveService($service,$params,$conn);

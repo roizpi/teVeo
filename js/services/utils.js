@@ -33,15 +33,23 @@ var Utils = (function(){
       return type ? createBlob(parts, {type: type}) : createBlob(parts);
     });
   }
-    
-  //Convert a binary string to a <code>Blob</code>. Returns a Promise.
-  var binaryStringToBlob = function(binary, type) {
-    return Promise.resolve().then(function () {
-      return base64StringToBlob(btoa(binary), type);
-    });
+
+
+  // Can't find original post, but this is close
+  // http://stackoverflow.com/questions/6965107/ (continues on next line)
+  // converting-between-strings-and-arraybuffers
+  var arrayBufferToBinaryString = function(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var length = bytes.byteLength;
+    var i = -1;
+    while (++i < length) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return binary;
   }
-
-
+    
+  
   /*
     Métodos Públicos
     **********************
@@ -339,6 +347,34 @@ var Utils = (function(){
 
   Utils.prototype.b64_to_utf8 = function(str) {
     return decodeURIComponent(escape(window.atob( str )));
+  }
+
+  //Convert a binary string to a <code>Blob</code>. Returns a Promise.
+  Utils.prototype.binaryStringToBlob = function(binary, type) {
+    return Promise.resolve().then(function () {
+      return base64StringToBlob(btoa(binary), type);
+    });
+  }
+
+ // Convert a <code>Blob</code> to a binary string. Returns a Promise.
+  Utils.prototype.blobToBinaryString = function(blob) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      var hasBinaryString = typeof reader.readAsBinaryString === 'function';
+      reader.onloadend = function (e) {
+        var result = e.target.result || '';
+        if (hasBinaryString) {
+          return resolve(result);
+        }
+        resolve(arrayBufferToBinaryString(result));
+      };
+      reader.onerror = reject;
+      if (hasBinaryString) {
+        reader.readAsBinaryString(blob);
+      } else {
+        reader.readAsArrayBuffer(blob);
+      }
+    });
   }
 
 

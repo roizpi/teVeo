@@ -45,9 +45,10 @@
                             <a class="img-wrapper fancybox" data-view='details' data-type='attr'>
                                 <img data-view='img' data-type='img' src="" />
                             </a>
+                            <span class="messageDate" data-view="creation" data-type="text" data-format='date'></span>
                         </div>
                         <!-- Mensajes de tipo audio -->
-                        <div class="content-wrapper sound-wrapper animateView" data-view='soundContent' data-type='template'>
+                        <div class="content-wrapper sound-wrapper animateView" data-view='audioContent' data-type='template'>
                             <header class="flex-block" data-view='dataMessage'>
                                 <span class="authorName" data-view="authorName" data-type="text">Sergio Sánchez</span>
                                 <span class="fa" data-view="status" data-type="class"></span>
@@ -56,10 +57,26 @@
                                 </a>
                             </header>
                             <audio controls preload="false" data-radius="40" data-skin="green" data-circle-audio-player>
-                                <source src="" type="audio/mpeg">
+                                <source data-view='audio' data-type='attr'>
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
+                        <!-- Mensaje de tipo video -->
+                        <div class="content-wrapper sound-wrapper animateView" data-view='videoContent' data-type='template'>
+                            <header class="flex-block" data-view='dataMessage'>
+                                <span class="authorName" data-view="authorName" data-type="text"></span>
+                                <span class="fa" data-view="status" data-type="class"></span>
+                                <a href="#"  class='delete animateView' data-action='deleteMessage' data-view="close" data-type="toggle" data-animationin="fadeIn" data-animationout="fadeOut">
+                                    <span class="fa fa-close"></span>
+                                </a>
+                            </header>
+                            <video width='100' height='100' controls preload="false">
+                                <source data-view='video' data-type='attr' src='' type=''>
+                                Your browser does not support the video element.
+                            </video>
+                            <span class="messageDate" data-view="creation" data-type="text" data-format='date'></span>
+                        </div>
+                        
                     </li>
     
                 </ul>

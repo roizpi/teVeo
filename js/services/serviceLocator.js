@@ -514,7 +514,7 @@ var ServiceLocator = (function(_super,environment){
             type:WEBSOCKET_SERVICE,
             encode:true,
             params:{
-                idConver:data.id,
+                idConver:data.idConv,
                 filter:{
                     type:data.type,
                     field:data.field,
@@ -544,31 +544,25 @@ var ServiceLocator = (function(_super,environment){
 
     ServiceLocator.prototype.uploadFile = function(idConv,file) {
 
-        return $.post("php/httpService.php",{
-            token:self.sessionManager.getToken(),
-            service:"UPLOAD_FILE",
-            type:HTTP_SERVICE,
-            encode:false,
-            params:{
-                idConv:idConv,
-                format:file.format,
-                data:file.data
-            }
+        //You need to use the FormData API and set the jQuery.ajax's processData and contentType to false.
+        var fd = new FormData();
+        fd.append('token',self.sessionManager.getToken());
+        fd.append('service',"UPLOAD_FILE");
+        fd.append('type',HTTP_SERVICE);
+        fd.append('encode',false);
+        fd.append('file',file.data);
+        fd.append('params',JSON.stringify({
+            idConv:idConv,
+            format:file.format
+        }));
+        
+        return $.ajax({
+            type: 'POST',
+            url:'php/httpService.php',
+            data: fd,
+            processData: false,
+            contentType: false
         });
-
-        /*$.post("php/httpService.php",{
-            token:11111,
-            service:"UPLOAD_FILE",
-            type:2,
-            encode:false,
-            params:{
-                idConv:1,
-                format:"hola",
-                data:"hola"
-            }
-        }).done(function(response){
-            console.log(response);
-        });*/
 
     }
 

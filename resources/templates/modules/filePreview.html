@@ -8,8 +8,16 @@
                     <div data-role="preloader" data-type="ring"></div>
                 </div>
                 <div class='image-container animateView' data-view='imagePreview' data-type='template' data-animationin="flipInY" data-animationout="flipOutY" >
-                    <img class='animateView' src="" data-view='img' data-type='img' />
+                    <img class='animateView' src="" data-view='src' data-type='img'/>
                 </div>
+                <audio controls preload="false" data-view='audioPreview' data-type='template' data-animationin="fadeIn" data-animationout="fadeOut" data-radius="40" data-skin="green" data-circle-audio-player>
+                    <source data-view='src' data-type='audio' src='' >
+                    Your browser does not support the audio element.
+                </audio>
+                <video controls preload="false" data-view='videoPreview' data-type='template' data-animationin="fadeIn" data-animationout="fadeOut">
+                    <source data-view='src' data-type='video' src='' >
+                    Your browser does not support the video element.
+                </video>
                
             </div>
 
