@@ -27,34 +27,11 @@ class weatherController extends baseController{
 			$sunrise_timestamp = date_sunrise($time,SUNFUNCS_RET_TIMESTAMP,$forecast['latitude'],$forecast['longitude']);
 			$sunset_timestamp = date_sunset($time,SUNFUNCS_RET_TIMESTAMP,$forecast['latitude'],$forecast['longitude']);
 			//print_r($forecast);
-			/*
-				cloudCover: A numerical value between 0 and 1 (inclusive) representing the percentage of sky occluded by clouds. 
-				---> A value of 0 corresponds to clear sky,
-				---> 0.4 to scattered clouds (nubes dispersas), 
-				--> 0.75 to broken cloud cover (cubierto de nubers),
-				--> 1 to completely overcast skies (completamente cubierto).
-			*/
-			if ($time >= $sunrise_timestamp && $time <= $sunset_timestamp) {
 
-				if (floatval($forecast['currently']['cloudCover']) >= 0.4) {
-					$forecast['currently']['background_img'] = self::WEATHER_FOLDER."white_cloudy_day.jpg";
-				}else{
-					$forecast['currently']['background_img'] = self::WEATHER_FOLDER."clear_day.jpg";
-				}
-				
-				$forecast['currently']['foreground_img'] = self::WEATHER_FOLDER."sun.png";
-
-			}else{
-
-				if (floatval($forecast['currently']['cloudCover']) >= 0.4) {
-					$forecast['currently']['background_img'] = self::WEATHER_FOLDER."cloudy_night.jpg";
-				}else{
-					$forecast['currently']['background_img'] = self::WEATHER_FOLDER."clear_night.jpg";
-				}
-
-				$forecast['currently']['foreground_img'] = self::WEATHER_FOLDER."moon.png";
-			}
+			$forecast['currently']['sunrise_timestamp'] = $sunrise_timestamp;
+			$forecast['currently']['sunset_timestamp'] = $sunset_timestamp;
 			
+		
 			$response["response_message"]["data"] = array("error" => false,"msg" => array("forecast" => $forecast));
 			
 

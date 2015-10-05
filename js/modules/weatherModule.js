@@ -4,6 +4,8 @@ var Weather = (function(_super,$,environment){
 
 	var self,serviceLocator;
 
+	const WEATHER_FOLDER = 'resources/img/weather/';
+
 	function Weather(geoLocation){
 		self = this;
 		this.geoLocation = geoLocation;
@@ -31,99 +33,134 @@ var Weather = (function(_super,$,environment){
 		});
 	};
 
-	var ForecastError = function(errors) {
-		this.errors = errors;
-	}
+	var ForecastConditions = (function(){
 
-	var ForecastConditions = function(raw_data) {
-		ForecastConditions.prototype = {
-			raw_data: raw_data
+		function ForecastConditions(data){
+			this.data = data;
 		}
 		//Retorna la temperatura.
-		this.getTemperature = function() {
-			return raw_data.temperature;
-		}
+		ForecastConditions.prototype.getTemperature = function() {
+			return this.data.temperature;
+		};
 		//Retorna la leyenda de la condición.
-		this.getSummary = function() {
-			return raw_data.summary;
-		}
-		//Devuelve la imagen grande
-		this.getSkyBackgroundImage = function() {
-			return raw_data.background_img;
-		}
-
-		this.getForegroundImage = function(){
-			return raw_data.foreground_img;
-		}
+		ForecastConditions.prototype.getSummary = function() {
+			return this.data.summary;
+		};
 
 		//Devuelve el timestamp.
-		this.getTime = function(format) {
+		ForecastConditions.prototype.getTime = function(format) {
 			if(!format) {
-				return raw_data.time;
+				return this.data.time;
 			} else {
-				return moment.unix(raw_data.time).format(format);
+				return moment.unix(this.data.time).format(format);
 			}
 		}
+
 		//Retorna de la presión.
-		this.getPressure = function() {
-			return raw_data.pressure;
+		ForecastConditions.prototype.getPressure = function() {
+			return this.data.pressure;
 		}
 		//Retorna la humedad
-		this.getHumidity = function() {
-			return raw_data.humidity;
+		ForecastConditions.prototype.getHumidity = function() {
+			return this.data.humidity;
 		}
 		//Retorna la velocidad del viento.
-		this.getWindSpeed = function() {
-			return raw_data.windSpeed;
+		ForecastConditions.prototype.getWindSpeed = function() {
+			return this.data.windSpeed;
 		}
+
 		//Retorna la dirección del tiempo.
-		this.getWindBearing = function() {
-			return raw_data.windBearing;
+		ForecastConditions.prototype.getWindBearing = function() {
+			return this.data.windBearing;
 		}
 		//Retorna el tipo del precipitación.
-		this.getPrecipitationType = function() {
-			return raw_data.precipType;
+		ForecastConditions.prototype.getPrecipitationType = function() {
+			return this.data.precipType;
 		}
 		//Retorna la probabilidad de precipitación. 0..1
-		this.getPrecipitationProbability = function() {
-			return raw_data.precipProbability;
+		ForecastConditions.prototype.getPrecipitationProbability = function() {
+			return this.data.precipProbability;
 		}
 		
-		this.getCloudCover = function() {
-			return raw_data.cloudCover;
+		ForecastConditions.prototype.getCloudCover = function() {
+			return this.data.cloudCover;
 		}
+
 		//Retorna la temperatura mínima
 		// Sólo disponible para el pronóstico semanal.
-		this.getMinTemperature = function() {
-			return raw_data.temperatureMin;
+		ForecastConditions.prototype.getMinTemperature = function() {
+			return this.data.temperatureMin;
 		}
 		//Retorna la temperatura máxima.
 		//Sólo disponible para el pronóstico semanal.
-		this.getMaxTemperature = function() {
-			return raw_data.temperatureMax;
+		ForecastConditions.prototype.getMaxTemperature = function() {
+			return this.data.temperatureMax;
 		}
 		//Retorna la hora del amanecer.
-		this.getSunrise = function() {
-			return raw_data.sunriseTime;
+		ForecastConditions.prototype.getSunrise = function() {
+			return this.data.sunriseTime;
 		}
+
 		//Retorna la hora del atardecer.
-		this.getSunset = function() {
-			return raw_data.sunsetTime;
+		ForecastConditions.prototype.getSunset = function() {
+			return this.data.sunsetTime;
 		}
+
 		//Retorna la intensidad de las precipitaciones.
-		this.getPrecipIntensity = function() {
-			return raw_data.precipIntensity;
+		ForecastConditions.prototype.getPrecipIntensity = function() {
+			return this.data.precipIntensity;
 		}
+
 		//Retorna el dew point
-		this.getDewPoint = function() {
-			return raw_data.dewPoint;
+		ForecastConditions.prototype.getDewPoint = function() {
+			return this.data.dewPoint;
 		}
-		this.getOzone = function() {
-			return raw_data.ozone;
+		ForecastConditions.prototype.getOzone = function() {
+			return this.data.ozone;
 		}
 
+		ForecastConditions.prototype.getForegroundImage = function(){
+			var foreground = null;
+			if (this.data.time >= this.data.sunrise_timestamp && this.data.time <= this.data.sunset_timestamp) {
+				foreground = WEATHER_FOLDER+"sun.png";
+			}else{
+				foreground = WEATHER_FOLDER+"moon.png";
+			}
+			return foreground;
+		}
 
-	}
+		ForecastConditions.prototype.getSkyBackgroundImage = function() {
+			/*
+				cloudCover: A numerical value between 0 and 1 (inclusive) representing the percentage of sky occluded by clouds. 
+				---> A value of 0 corresponds to clear sky,
+				---> 0.4 to scattered clouds (nubes dispersas), 
+				--> 0.75 to broken cloud cover (cubierto de nubers),
+				--> 1 to completely overcast skies (completamente cubierto).
+			*/
+			var background = null;
+			if (this.data.time >= this.data.sunrise_timestamp && this.data.time <= this.data.sunset_timestamp) {
+
+				if (parseFloat(this.data.cloudCover) >= 0.4) {
+					background = WEATHER_FOLDER+"white_cloudy_day.jpg";
+				}else{
+					background = WEATHER_FOLDER+"clear_day.jpg";
+				}
+
+			}else{
+
+				if (parseFloat(this.data.cloudCover) >= 0.4) {
+					background = WEATHER_FOLDER+"cloudy_night.jpg";
+				}else{
+					background = WEATHER_FOLDER+"clear_night.jpg";
+				}
+			}
+
+			return background;
+		};
+
+		return ForecastConditions;
+
+	})();
 
 
 	/* API Pública del Módulo*/
