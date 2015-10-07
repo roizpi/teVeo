@@ -351,6 +351,18 @@ var Conversation = (function(_super,$,environment){
                         console.log("El módulo no existe o no está activado");
                     }
                 break;
+
+                case 'APPEND_RESOURCES':
+                    var resources = sendMessage.getView("resources");
+                    if (resources.isVisible()) {
+                        resources.setValue("off");
+                    }else{
+                        resources.setValue("on");
+                    }
+
+                    break;
+
+
             }
 
         });
@@ -368,8 +380,9 @@ var Conversation = (function(_super,$,environment){
                         convListContainer.get().find("[data-action]").removeClass("active");
                         //Marcamos como activa la conversación y recogemos su información.
                         var conversation = $this.addClass("active").parent().data("info");
+                        conversation = JSON.parse(conversation);
                         //Iniciamos la conversación.
-                        initConversation(JSON.parse(conversation));
+                        initConversation(conversation);
                         //Notificamos el cambio de conversación.
                         serviceLocator.notifyChangeOfConversation(userConnected.id,conversation.user,conversation.id);
                     };

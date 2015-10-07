@@ -16,6 +16,7 @@ var View = (function(_super,$,environment){
 		this.exclusions = exclusions != null ? new RegExp(exclusions,"ig") : null;
 		this.direction = direction;
 		this.views = {};
+		this.defaults = {};
 		this.templates={};
 		this.timestamp = new Date().getTime();
 
@@ -490,6 +491,12 @@ var View = (function(_super,$,environment){
 		}
 	};
 
+	View.prototype.hideDefaultChilds = function(remove) {
+		$.each(this.views,function(idx,view){
+			view.type == "default" && view.hide(remove);
+		});
+	};
+
 	View.prototype.hideAllChild = function(remove) {
 		var promises = [];
 		for(var view in this.views){
@@ -580,6 +587,7 @@ var View = (function(_super,$,environment){
 			options = $.extend(options,optionsDefault);
 			//Clonamos la template.
 			var $template = template.clone(true).removeClass("template").data("id",name);
+			this.hideDefaultChilds(false);
 			//Creamos la vista a partir de la template.
 			var view = create($template,data,options);
 			//Guardamos la vista creada.

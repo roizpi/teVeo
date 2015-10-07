@@ -2323,6 +2323,15 @@ h1,h2,h3,p,li,.logo,.btn{
   background-color: rgba(67, 83, 255, 0.47);
 }
 
+.conversation-wrapper .conversation .message-wrapper .content-wrapper .img-wrapper + .messageDate{
+  position: absolute;
+  right: 5%;
+  bottom: 0;
+  font-size: .8rem;
+  font-style: italic;
+  color: #fff;
+}
+
 .conversation-wrapper .conversation .message-wrapper .content-wrapper .img-wrapper:hover::after{
   -webkit-transform:scale(1) rotateY(360deg);
   transform:scale(1) rotateY(360deg);
@@ -2331,73 +2340,38 @@ h1,h2,h3,p,li,.logo,.btn{
 
 /* Estilos para la barra de envio de mensajes*/
 
-.conversation-wrapper + .conversation-sendmessage{
-  width: 100%;
-  max-width: 600px;
+.form-sendmessages{
+  max-width: 500px !important;
+  width: 90%;
   margin: 0 auto;
-  min-height: 50px;
-  max-height: 50px;
+  min-height: 3.5rem;
+  max-height: 3.5rem !important;
+  position: relative;
 }
 
-.conversation-wrapper + .conversation-sendmessage > *{
+.form-sendmessages .t-menu{
+  position: absolute;
+  bottom: 190%;
+  right: 0;
+}
+
+.form-sendmessages .t-menu::after{
+  content: '';
+  width: 0;
+  height: 0;
+  border-style: solid;
+  position: absolute;
+  top: 0;top: 100%;
+  border-width: 40px 35px 0px 34px;
+  border-color: #fff transparent transparent;
+}
+
+.form-sendmessages > *{
   display: inline-block;
   vertical-align: top;
-  height: 50px;
 }
 
-
-.conversation-wrapper + .conversation-sendmessage .text{
-  width: 75%;
-  background-color: #fff;
-  overflow: visible; /*clear fix hack*/
-  position: relative;
-}
-
-.conversation-wrapper + .conversation-sendmessage .text > *{
-  display: inline-block;
-  float: right;
-  height: 100%;
-}
-
-.conversation-wrapper + .conversation-sendmessage .text input[type=text]{
-  border: none;
-  width: 90%;
-  text-indent: 14px;
-  color: #4353FF;
-  outline: none;
-  -webkit-transition:box-shadow .5s;
-    transition:box-shadow .5s;
-}
-
-.conversation-wrapper + .conversation-sendmessage .text input[type=text]:focus{
-  box-shadow: #4353FF 0px 0px 10px inset;
-}
-
-.conversation-wrapper + .conversation-sendmessage .text input[type=text] ~ label{
-  width: 10%;
-  line-height: 50px;
-  text-align: center;
-  color: #4353FF;
-}
-
-.conversation-wrapper + .conversation-sendmessage .text input[type=text] ~ label > .fa{
-    -webkit-transition:all .5s;
-            transition:all .5s;
-}
-
-.conversation-wrapper + .conversation-sendmessage .text input[type=text]:focus ~ label > .fa{
-  font-size: 1.1em;
-  text-shadow:#4353FF 0px 0px 5px;
-}
-
-.conversation-wrapper + .conversation-sendmessage .conversation-sendmessage-actions{
-  width: 25%;
-  min-width: 150px;
-  padding: 0 0.5rem;
-  position: relative;
-}
-
-.conversation-wrapper + .conversation-sendmessage .conversation-sendmessage-actions .fa{
+.form-sendmessages .fa{
   background-color: #4353FF;
   color: #fff;
   box-sizing: content-box;
@@ -2406,16 +2380,31 @@ h1,h2,h3,p,li,.logo,.btn{
   -webkit-transition:text-shadow .5s;
   transition:text-shadow .5s;
   cursor: pointer;
+  border: none;
 }
 
-.conversation-wrapper + .conversation-sendmessage .conversation-sendmessage-actions .fa:hover{
-  text-shadow:#fff 4px 4px 5px;
+.form-sendmessages .fa:hover,
+.form-sendmessages .fa:active{
+  text-shadow:#fff 0px 0px 6px;
 }
 
-
-.conversation-wrapper + .conversation-sendmessage .text + button[type=submit]{
-  line-height: 50px;
+.form-sendmessages input[type=text]{
+  border: none;
+  height: 90%;
+  width: 75%;
+  text-indent: 1.5rem;
+  color: #4353FF;
+  outline: none;
+  border-radius: 50px 0px 50px 10px;
+  position: relative;
+  -webkit-transition:box-shadow .5s;
+    transition:box-shadow .5s;
 }
+
+.form-sendmessages input[type=text]:focus{
+  box-shadow: #4353FF 0px 0px 10px inset;
+}
+
 
 
 /*

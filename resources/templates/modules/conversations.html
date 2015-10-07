@@ -82,21 +82,16 @@
                 </ul>
             </div>
             
-            <form class="conversation-sendmessage flex-block flex-liquid-content" data-action="send-message" action="#" method="post" data-view='sendMessage'>
-                <div class="text">
-                    <input type="text"  name="message" id="message" data-message required autocomplete="off" autocorrect="off" placeholder="escribe un mensaje"/>
-                    <label for="message"><span class="fa fa-paper-plane"></span></label>
-                </div>
-                <!--<button type="submit" class='btn btn-normal btn-action'>Enviar</button>-->
-                <div class="conversation-sendmessage-actions flex-block">
-                    <span data-microphone class="fa fa-paper-plane"></span>
-                    <span class='fa fa-plus'></span>
-                    <ul class="t-menu" id="appendResources">
-                        <li><a href="#" data-action='request_file'><span class="mif-file-empty icon"></span></a></li>
-                        <li><a href="#"><span class="mif-video-camera icon"></span></a></li>
-                        <li><a href="#"><span class="mif-camera icon"></span></a></li>
-                    </ul>
-                </div>
+            <form class="form-sendmessages" data-action="send-message" action="#" method="post" data-view='sendMessage'>
+        
+                <input type="text"  name="message" id="message" data-message required autocomplete="off" autocorrect="off" placeholder="escribe un mensaje"/>
+                <button type='submit' class="fa fa-paper-plane"></button>
+                <a href="#" class='fa fa-plus' data-action='append_resources'></a>
+                <ul class="t-menu animateView" data-view='resources' data-type='toggle' data-animationin="fadeIn" data-animationout="fadeOut">
+                    <li><a href="#" data-action='request_file'><span class="mif-file-empty icon"></span></a></li>
+                    <li><a href="#"><span class="mif-video-camera icon"></span></a></li>
+                    <li><a href="#"><span class="mif-camera icon"></span></a></li>
+                </ul>
             </form>
             
         </article>
