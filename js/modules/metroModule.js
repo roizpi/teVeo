@@ -120,8 +120,9 @@ var Metro = (function(_super,$,environment){
 
 			var tileWeather = view.getView("tileWeather");
 			tileWeather.createView("weather",{
+				location:condition.getCity(),
 				date:condition.getTime('LL'),
-				foreground:condition.getForegroundImage(),
+				foreground:condition.getForeground(),
 				sky:condition.getSkyBackgroundImage(),
 				summary:condition.getSummary(),
 				temperature:condition.getTemperature()

@@ -22,12 +22,15 @@ var Weather = (function(_super,$,environment){
 
 	var requestData = function () {
 		//Obtenemos las coordenadas del usuario.
-		return self.geoLocation.getCoords().pipe(function(coords){
+		return self.geoLocation.getLocation().pipe(function(location){
 			//Obtenemos el pronóstico.
 			return serviceLocator.getForecast({
-				latitude:coords.latitude,
-                longitude:coords.longitude,
+				latitude:location.coords.latitude,
+                longitude:location.coords.longitude,
                 units:"auto"
+			}).pipe(function(forecast){
+				forecast.data.msg.forecast.currently['city'] = location.address_components.town;
+				return forecast.data.msg.forecast;
 			});
 			
 		});
@@ -45,6 +48,10 @@ var Weather = (function(_super,$,environment){
 		//Retorna la leyenda de la condición.
 		ForecastConditions.prototype.getSummary = function() {
 			return this.data.summary;
+		};
+
+		ForecastConditions.prototype.getCity = function() {
+			return this.data.city;
 		};
 
 		//Devuelve el timestamp.
@@ -119,14 +126,55 @@ var Weather = (function(_super,$,environment){
 			return this.data.ozone;
 		}
 
-		ForecastConditions.prototype.getForegroundImage = function(){
-			var foreground = null;
-			if (this.data.time >= this.data.sunrise_timestamp && this.data.time <= this.data.sunset_timestamp) {
-				foreground = WEATHER_FOLDER+"sun.png";
+		ForecastConditions.prototype.getForeground= function(){
+
+			var $fragment = $(document.createDocumentFragment());
+			var clouds,cloudName,timeIcon;
+			//obtenemos número de nubes
+			if (parseFloat(this.data.cloudCover) >= 0.4 && parseFloat(this.data.cloudCover) < 0.75) {
+				clouds = 2;
+			}else if(parseFloat(this.data.cloudCover) >= 0.75){
+				clouds = 4;
 			}else{
-				foreground = WEATHER_FOLDER+"moon.png";
+				clouds = 0;
 			}
-			return foreground;
+
+			//obtenemos el tipo de nubes.
+			if (this.data.time >= this.data.sunrise_timestamp && this.data.time <= this.data.sunset_timestamp) {
+				
+				if (parseFloat(this.data.precipProbability) > 0.7) {
+					cloudName = "dark_cloud_day";
+				}else{
+					cloudName = "white_cloud_day";
+				}
+
+				if (parseFloat(this.data.cloudCover) < 1) {
+					timeIcon = "sun.png"; 
+				};
+				
+			}else{
+				cloudName = "dark_cloud_night";
+
+				if (parseFloat(this.data.cloudCover) < 1) {
+					timeIcon = "moon.png"; 
+				};
+			}
+
+			if (timeIcon) {
+				$("<img>",{
+					class:'time',
+					src:WEATHER_FOLDER + timeIcon
+				}).appendTo($fragment);
+			};
+
+			for(var i = 1; i <= clouds; i++ ){
+				$("<img>",{
+					class:'cloud',
+					src:WEATHER_FOLDER + cloudName + '_' + i + '.png'
+				}).appendTo($fragment);
+			}
+
+			return $fragment;
 		}
 
 		ForecastConditions.prototype.getSkyBackgroundImage = function() {
@@ -167,11 +215,9 @@ var Weather = (function(_super,$,environment){
 
 	//Devuelve las codiciones actuales.
 	Weather.prototype.getCurrentCondition = function () {
-		return requestData().pipe(function(data){
-			console.log("Esta es la data");
-			console.log(data);
-			if(data !== false) {
-				return new ForecastConditions(data.data.msg.forecast.currently);
+		return requestData().pipe(function(forecast){
+			if(forecast !== false) {
+				return new ForecastConditions(forecast.currently);
 			}
 		});
 		

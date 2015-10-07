@@ -171,7 +171,13 @@ var View = (function(_super,$,environment){
 
 					break;
 				case 'HTML':
-					this.el.html(value);
+				
+					if ($.isPlainObject(value)) {
+						this.el.append(value);
+					}else{
+						this.el.html(value);
+					}
+					
 					break;
 				case 'BACKGROUND':
 					this.el.css("background-image","url("+value+")");

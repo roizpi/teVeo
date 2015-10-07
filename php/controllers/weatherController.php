@@ -20,6 +20,7 @@ class weatherController extends baseController{
 		$url = self::API_ENDPOINT . self::API_KEY . '/';
 		$url .= $latitude .','.$longitude .'?units='.$units;
 		$forecast = file_get_contents($url);
+		//print_r($http_response_header);
 		if (isset($http_response_header) && strpos($http_response_header[0],'200')){
 			$forecast = (array) json_decode($forecast,true);
 			$time = $forecast["currently"]["time"];
