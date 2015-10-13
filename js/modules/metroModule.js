@@ -224,19 +224,20 @@ var Metro = (function(_super,$,environment){
 		for (var tile in tiles) 
 
 			(function(tile){
-				var tileContent;
-				//Obtenemos el contenido para el tile.
-				getTileContent({
-					name:tile.name,
-					count:tile.count,
-					update:tile.update,
-					onSuccess:function(data){
 
-						view.createView("tileNews",{
-							name:tile.name
-						},{
-							handlers:{
-								onCreate:function(view){
+				view.createView("tileNews",{
+					name:tile.name
+				},{
+
+					handlers:{
+						onCreate:function(view){
+							var tileContent;
+							//Obtenemos el contenido para el tile.
+							getTileContent({
+								name:tile.name,
+								count:tile.count,
+								update:tile.update,
+								onSuccess:function(data){
 									//Configuramos el tamaño del tile.
 									view.get().addClass(tile.size);
 									tile.action && view.get().attr("data-action",tile.action);
@@ -252,32 +253,28 @@ var Metro = (function(_super,$,environment){
 											title:title
 										});
 									}
-	
+								},
+								onUpdated:function(data){
+									//Actualizamos el contenido.
+									data = data.map(function(element){
+										return {
+											title:element.title[0],
+											poster:getPoster(element)
+										}
+									});
+									tileContent.updateChilds(data);
+								},
+								onError:function(){
+
 								}
-							},
-							animations:{
-								animationIn:"zoomInUp",
-								animationOut:"zoomOutDown"
-							}
-						});
-
+							});
+						}
 					},
-					onUpdated:function(data){
-						//Actualizamos el contenido.
-						data = data.map(function(element){
-							return {
-								title:element.title[0],
-								poster:getPoster(element)
-							}
-						});
-						tileContent.updateChilds(data);
-					},
-					onError:function(){
-
+					animations:{
+						animationIn:"zoomInUp",
+						animationOut:"zoomOutDown"
 					}
 				});
-
-				
 
 			})(tiles[tile]);
 

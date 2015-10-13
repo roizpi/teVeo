@@ -1,20 +1,50 @@
-<div class="viewContainer" data-view="conversations" data-type='main'>
+<div class="view-container" data-view="conversations" data-type='main'>
     <h2 class="view-tittle">Conversaciones</h2>
     
     <div class="view-content flex-block flex-block-full flex-liquid-content">
-        <article class="flex-block flex-block-y-full flex-direction-column flex-liquid-content">
+        
+        <!-- Panel de conversación actual -->
+        <article class="view-content-panel view-content-panel-main flex-block flex-block-y-full flex-direction-column flex-liquid-content">
             <header class="header flex-block">
                 <!-- Título de la Conversación -->
-                <h2 data-view="title" data-type="text" class="in tlt"></h2>
+                <h2 data-view="title" data-type="text" class="in tlt singleLine"></h2>
                 <!--Buscador-->
-                <form class="search-form-type2" action="#" method="GET"  data-view="searchFormMessages" autocomplete="off">
+                <!--<form class="search-form-type2" action="#" method="GET"  data-view="searchFormMessages" autocomplete="off">
                     <div class="input-group">
                         <input type="search" class="form-control" placeholder="buscar mensaje" name="query" autocomplete="off">
                         <span class="input-group-btn">
                             <button class="submit"><span class="fa fa-search"></span></button>
                         </span>
                     </div>
-                </form> 
+                </form>-->
+                <!-- Barra de Tareas -->
+                <ul class="actions" role="menu" data-view='searchFormMessages'>
+                    <!-- Búsqueda Mensaje de Texto -->
+                    <li class="action" role="listitem" data-action="search_text">
+                        <a href="#" title="Buscar Mensaje de texto">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </li>
+                    <!-- Búsqueda de fotos -->
+                    <li class="action" role="listitem" data-action="search_photos">
+                        <a href="#" title="Mostrar Fotos">
+                            <span class="fa fa-file-photo-o"></span>
+                        </a>
+                    </li>
+                    <!-- Búsqueda de mensajes de audio -->
+                    <li class="action" role="listitem" data-action="search_sounds">
+                        <a href="#" title="Mostrar Mensajes de Audio">
+                            <span class="fa fa-file-sound-o"></span>
+                        </a>
+                    </li>
+                    <!-- Búsqueda de mensajes de video -->
+                    <li class="action" role="listitem" data-action="search_videos">
+                        <a href="#" title="Mostrar Mensajes de Video">
+                            <span class="fa fa-file-video-o"></span>
+                        </a>
+                    </li>
+                              
+                </ul> 
             </header>
             <div class="conversation-wrapper scroll-pane" data-view="conversationContainer">
                 <ul class="conversation animateView" data-view="conversation" data-type="template" data-animationin="fadeIn" data-animationout="fadeOut">
@@ -56,10 +86,13 @@
                                     <span class="fa fa-close"></span>
                                 </a>
                             </header>
-                            <audio controls preload="false" data-radius="40" data-skin="green" data-circle-audio-player>
-                                <source data-view='audio' data-type='attr'>
+                            <audio controls preload="false" data-radius="40" data-skin="plane" data-circle-audio-player>
+                                <source data-view='source' data-type='attr'>
                                 Your browser does not support the audio element.
                             </audio>
+                            <footer>
+                                <span class="messageDate" data-view="creation" data-type="text" data-format='date'></span>
+                            </footer>   
                         </div>
                         <!-- Mensaje de tipo video -->
                         <div class="content-wrapper sound-wrapper animateView" data-view='videoContent' data-type='template'>
@@ -71,7 +104,7 @@
                                 </a>
                             </header>
                             <video width='100' height='100' controls preload="false">
-                                <source data-view='video' data-type='attr' src='' type=''>
+                                <source data-view='source' data-type='attr' src='' type=''>
                                 Your browser does not support the video element.
                             </video>
                             <span class="messageDate" data-view="creation" data-type="text" data-format='date'></span>
@@ -93,9 +126,10 @@
                     <li><a href="#"><span class="mif-camera icon"></span></a></li>
                 </ul>
             </form>
-            
         </article>
-        <article id='conversationPanel' class='flex-block flex-block-y-full flex-direction-column flex-liquid-content'>
+
+        <!-- Panel de conversaciones -->
+        <article class='view-content-panel view-content-panel-secondary flex-block flex-block-y-full flex-direction-column flex-liquid-content'>
             <header class="header flex-block">
                 <h2 class="singleLine">Conversaciones con <span data-view='userName' data-type='text'></span></h2>
             </header>

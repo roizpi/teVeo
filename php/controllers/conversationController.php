@@ -184,7 +184,7 @@ class conversationController extends baseController{
 
     private function getLatestTextMessages($idConv,$filter,$limit,$exclusions){
 
-        $query = 'SELECT * FROM LAST_MENSAJES_VIEW_TEXT WHERE idConv = :idConv AND UPPER(text) LIKE :text';
+        $query = 'SELECT * FROM LAST_MENSAJES_VIEW_TEXT WHERE idConv = :idConv AND UPPER(text) LIKE UPPER(:text)';
         //Validamos las exclusiones.
         if (is_array($exclusions) && sizeof($exclusions)) {
             $query .= ' AND id NOT IN ('.join(",",$exclusions).')';

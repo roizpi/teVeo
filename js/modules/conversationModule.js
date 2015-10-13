@@ -27,6 +27,7 @@ var Conversation = (function(_super,$,environment){
     var current
     var title;
 
+
     function Conversation(webSpeech,notificator,contacts){
 
         self = this;
@@ -223,7 +224,7 @@ var Conversation = (function(_super,$,environment){
             closeClick : true
         });
 
-        
+    
         //Obtenemos la vista searchFormMessages.
         var searchMessages = viewConversations.getView("searchFormMessages");
         searchMessages.get().on("submit",function(e){
@@ -238,20 +239,18 @@ var Conversation = (function(_super,$,environment){
                 if (text) {
                     exclusions = conv.filterChild(text,true);
                 }else{
-                    console.log("Borrando todos los mensajes...");
                     conv.hideAllChild(true);
                 }
+                //Obtenemos la diferencia.
+                var diff = MIN_MESSAGES_BY_CONV - conv.size();
+                //Obtenemos el loader de la conversacion actual.
+                var loaderData = loaderManager.getLoader(currentConv.id);
                 
-                if (conv.size() < MIN_MESSAGES_BY_CONV) {
-                    //Obtenemos la diferencia.
-                    var diff = MIN_MESSAGES_BY_CONV - conv.size();
-                    //Obtenemos el loader de la conversacion actual.
-                    var loaderData = loaderManager.getLoader(currentConv.id);
+                if (diff >= 0) {
 
                     loaderData.load({
-                        id:currentConv.id,
                         filter:{
-                            type:"message_text",
+                            type:"MESSAGE_TEXT",
                             value:text
                         },
                         limit:{
@@ -260,9 +259,9 @@ var Conversation = (function(_super,$,environment){
                         exclusions:exclusions,
                         callbacks:{
                             onDataLoaded:function(messages){
-                                console.log("Estos son los mensajes devueltos....");
+                                console.log("Mensajes encontrados ...");
                                 console.log(messages);
-                                var filter = this.filterValue;
+                                var filter = this.getFilter();
                                 //Mostramos cada mensaje.
                                 messages.forEach(function(message){
                                     createViewMessage(message,{
@@ -271,8 +270,8 @@ var Conversation = (function(_super,$,environment){
                                     });
                                 });
 
-                                //Colocamos el scroll en el último mensaje.
-                                container.scrollToLast();
+                                //Colocamos el scroll en el primer resultado.
+                                container.scrollAtChild(messages.pop().id);
                             },
                             onNoDataFound:function(){
 
@@ -282,15 +281,22 @@ var Conversation = (function(_super,$,environment){
                                         text:"No se encontraron mensajes para '" + text + "'",
                                         level:"info"
                                     });
-                                };
+                                }else{
+                                    //Colocamos el scroll en el primer resultado.
+                                    container.scrollAtFirstChild();
+                                }
                                 
                             }
                         }
                     });
+                }else{
+                    console.log("No es necesario esta es la diferencia");
+                    console.log(MIN_MESSAGES_BY_CONV - conv.size());
+                    loaderData.resetTo(diff);
+                    //Colocamos el scroll en el primer resultado.
+                    container.scrollAtFirstChild();
                 }
                 
-                //Colocamos el scroll en el primer resultado.
-                container.scrollToTop();
             };
         });
 
@@ -723,6 +729,7 @@ var Conversation = (function(_super,$,environment){
 
     var showMessage = function(message){
         $.ionSound.play("acceptYourApplication");
+        //Obtenemos referencia al cargador de datos para esta conversación.
         var loaderData = loaderManager.getLoader(message.idConv);
 
         if (message.type.toUpperCase() == 'TEXT') {
@@ -805,13 +812,11 @@ var Conversation = (function(_super,$,environment){
                         }else{
                             view.get().addClass("receptor");
                         }
-                        if (options) {
-                            options.filter && view.highlight(options.filter);
-                        };   
+                        
                     },
                     onAfterFirstShow:function(view){
 
-                        var view_name,data;
+                        var view_name,data,onCreate = null;
                         switch(message.type){
                             case "TEXT":
                                 view_name = "textContent";
@@ -822,6 +827,12 @@ var Conversation = (function(_super,$,environment){
                                     close:closeStatus,
                                     text:message.text
                                 }
+                                onCreate = function(view){
+                                    if (options) {
+                                        options.filter && view.highlight(options.filter);
+                                    };  
+                                }
+
                                 break;
                             case "IMAGE":
                                 view_name = "imgContent";
@@ -836,23 +847,32 @@ var Conversation = (function(_super,$,environment){
                                 }
                                 break;
                             case "VIDEO":
-                                view_name = "videoContent";
+                            case "AUDIO":
+                                view_name = message.type.toLowerCase()+"Content";
                                 var src = message.folder + message.name + "." + message.format;
                                 data = {
                                     authorName:user.name,
                                     creation:message.creacion,
                                     status:status,
                                     close:closeStatus,
-                                    video:{
+                                    source:{
                                         src:src,
-                                        type:'video/'+ message.format
+                                        type:message.type.toLowerCase() + "/" + message.format
                                     }
                                 }
+
+                                onCreate = function(view){
+                                    view.get().find("audio[data-circle-audio-player]").circleAudioPlayer();
+                                }
+
                                 break;
                         }
 
                         //Creamos contenido del mensaje.
                         view.createView(view_name,data,{
+                            handlers:{
+                                onCreate:onCreate
+                            },
                             animations:{
                                 animationIn:animationin,
                                 animationOut:animationout
@@ -980,8 +1000,7 @@ var Conversation = (function(_super,$,environment){
                 },{
                     handlers:{
                         onCreate:function(){
-                            $("audio[data-circle-audio-player]").circleAudioPlayer();
-                        },
+                                                    },
                         onAfterFirstShow:function(view){
                             //Cargamos los mensajes de la conversación.
                             loaderData.load({

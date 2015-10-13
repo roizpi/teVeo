@@ -5,6 +5,7 @@ var FileManager = (function(_super,$,environment){
     const DEFAULT_TITLE = "Eliga los archivos a adjuntar";
 
     var self,file_selected,utils;
+   
 
 	function FileManager(){
         self = this;
@@ -74,6 +75,7 @@ var FileManager = (function(_super,$,environment){
             category:"OVERLAY_MODULE_VIEW",
             handlers:{
                 onCreate:function(view){
+                    $("audio[data-circle-audio-player]").circleAudioPlayer()
                     view.get().delegate("[data-action]","click",function(e){
                         e.preventDefault();
                         e.stopPropagation();

@@ -329,7 +329,7 @@ var View = (function(_super,$,environment){
 	};
 
 	View.prototype.scrollAt = function(pos) {
-		if (pos && !isNaN(parseInt(pos))) {
+		if (!isNaN(parseInt(pos))) {
 			this.el.scrollTop(pos);
 		};
 	};
@@ -340,6 +340,14 @@ var View = (function(_super,$,environment){
 
 	View.prototype.scrollAtChild = function(id) {
 		var child = this.getView(id);
+		var pos = child.el.position().top;
+		this.scrollAt(pos);
+		return child;
+	};
+
+	View.prototype.scrollAtFirstChild = function() {
+		var key = Object.keys(this.views).shift();
+		var child = this.views[key];
 		var pos = child.el.position().top;
 		this.scrollAt(pos);
 		return child;

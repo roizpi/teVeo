@@ -44,6 +44,8 @@ var LoaderDataManager = (function(_super,$,environment){
 
 			if(config.idConv){
                 request.idConv = config.idConv;
+            }else{
+            	request.idConv = this.lastRequest.idConv;
             }
 
             if(config.filter){
@@ -68,7 +70,7 @@ var LoaderDataManager = (function(_super,$,environment){
             	request.filterField = this.lastRequest.filterField;
             	request.filterValue = this.lastRequest.filterValue;
 
-            	request.start = this.countData ;
+            	request.start = this.countData;
 				if (config.limit) {
 					request.count = config.limit.count;
 				}else{
@@ -133,7 +135,7 @@ var LoaderDataManager = (function(_super,$,environment){
 		};
 
 		LoaderData.prototype.getFilter = function() {
-			return this.filterValue;
+			return this.lastRequest.filterValue;
 		};
 
 
