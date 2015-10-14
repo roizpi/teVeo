@@ -11,7 +11,7 @@
         "throw_event":false
     },
     "GET_LATEST_SPORTS_NEWS":{
-        "type":1,
+        "type":2,
         "controller":{
             "controller_name":"newsController",
             "action_name":"getLatestSportsNews"
@@ -20,7 +20,7 @@
         "throw_event":false
     },
     "GET_LATEST_TECHNOLOGY_NEWS":{
-        "type":1,
+        "type":2,
         "controller":{
             "controller_name":"newsController",
             "action_name":"getLatestTechnologyNews"
@@ -29,7 +29,7 @@
         "throw_event":false
     },
     "GET_LATEST_GENERAL_NEWS":{
-        "type":1,
+        "type":2,
         "controller":{
             "controller_name":"newsController",
             "action_name":"getGeneralNewsToday"
@@ -38,7 +38,7 @@
         "throw_event":false
     },
     "GET_LATEST_VIDEOGAMES_NEWS":{
-        "type":1,
+        "type":2,
         "controller":{
             "controller_name":"newsController",
             "action_name":"getLatestVideoGamesNews"
