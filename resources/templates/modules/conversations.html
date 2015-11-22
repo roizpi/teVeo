@@ -95,7 +95,7 @@
                             </footer>   
                         </div>
                         <!-- Mensaje de tipo video -->
-                        <div class="content-wrapper sound-wrapper animateView" data-view='videoContent' data-type='template'>
+                        <div class="content-wrapper video-wrapper animateView" data-view='videoContent' data-type='template'>
                             <header class="flex-block" data-view='dataMessage'>
                                 <span class="authorName" data-view="authorName" data-type="text"></span>
                                 <span class="fa" data-view="status" data-type="class"></span>
@@ -103,10 +103,12 @@
                                     <span class="fa fa-close"></span>
                                 </a>
                             </header>
-                            <video width='100' height='100' controls preload="false">
-                                <source data-view='source' data-type='attr' src='' type=''>
-                                Your browser does not support the video element.
-                            </video>
+                            <div class='surface'>
+                                <video controls preload="false">
+                                    <source data-view='source' data-type='attr' src='' type=''></source>
+                                    Your browser does not support the video element.
+                                </video>
+                            </div>
                             <span class="messageDate" data-view="creation" data-type="text" data-format='date'></span>
                         </div>
                         
@@ -122,8 +124,9 @@
                 <a href="#" class='fa fa-plus' data-action='append_resources'></a>
                 <ul class="t-menu animateView" data-view='resources' data-type='toggle' data-animationin="fadeIn" data-animationout="fadeOut">
                     <li><a href="#" data-action='request_file'><span class="mif-file-empty icon"></span></a></li>
-                    <li><a href="#"><span class="mif-video-camera icon"></span></a></li>
-                    <li><a href="#"><span class="mif-camera icon"></span></a></li>
+                    <li><a href="#" data-action='record_video'><span class="mif-video-camera icon"></span></a></li>
+                    <li><a href="#" data-action='record_audio'><span class="mif-audio icon"></span></a></li>
+                    <li><a href="#" data-action='make_photo'><span class="mif-camera icon"></span></a></li>
                 </ul>
             </form>
         </article>

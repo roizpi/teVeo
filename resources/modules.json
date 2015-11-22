@@ -259,7 +259,7 @@
             "request_file":{
                 "DASHBOARD":{
                     "region":"action",
-                    "file":"requestFile.html",
+                    "file":"request_file_view.html",
                     "animations":{
                         "animationIn":"fadeIn",
                         "animationOut":"fadeOut"
@@ -275,6 +275,46 @@
                         "animationOut":"fadeOut"
                     }
                 }  
+            }
+        }
+    },
+    "MEDIA_STREAM":{
+        "name":"mediaStream",
+        "className":"MediaStream",
+        "file":"mediaStream.js",
+        "order":18,
+        "deferred":true,
+        "dependences":null,
+        "templates":{
+            "make_photo":{
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"make_photo_view.html",
+                    "animations":{
+                        "animationIn":"fadeIn",
+                        "animationOut":"fadeOut"
+                    }
+                }  
+            },
+            "record_video":{
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"record_video_view.html",
+                    "animations":{
+                        "animationIn":"fadeIn",
+                        "animationOut":"fadeOut"
+                    }
+                }  
+            },
+            "record_audio":{
+                "DASHBOARD":{
+                    "region":"action",
+                    "file":"record_video_audio.html",
+                    "animations":{
+                        "animationIn":"fadeIn",
+                        "animationOut":"fadeOut"
+                    }
+                }
             }
         }
     }

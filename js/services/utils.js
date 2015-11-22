@@ -71,6 +71,14 @@ var Utils = (function(){
     img.src = url;
   };
 
+  Utils.prototype.base64URLToBlob = function(data) {
+    return Promise.resolve().then(function () {
+      var base64String = data.substr(data.indexOf(',') + 1);
+      console.log(base64String);
+      return base64StringToBlob(base64String, 'image/jpg');
+    });
+  };
+
   Utils.prototype.utf8_encode = function(argString) {
   
       if (argString === null || typeof argString === 'undefined') {

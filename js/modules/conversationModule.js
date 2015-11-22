@@ -327,10 +327,10 @@ var Conversation = (function(_super,$,environment){
             e.preventDefault();
             e.stopPropagation();
             var action = this.dataset.action.toUpperCase();
+            //Obtenemos el servicio de administración de módulos
+            var managerModule = environment.getService("MANAGER_MODULE");
             switch(action){
                 case "REQUEST_FILE":
-                    //Obtenemos el servicio de administración de módulos
-                    var managerModule = environment.getService("MANAGER_MODULE");
                     if(managerModule.isExists("FILE_MANAGER") && managerModule.isDeferred("FILE_MANAGER")){
                         //Solicitamos el módulo diferido indicado como parámetro.
                         managerModule.getDefferedModule("FILE_MANAGER",function(fileManager){
@@ -341,14 +341,7 @@ var Conversation = (function(_super,$,environment){
 
                             fileManager.addEventListener("FILE_SELECTED",function(file){
 
-                                serviceLocator.uploadFile(currentConv.id,file).done(function(response){
-                                    //Creamos el mensaje.
-                                    createMessage(file.type,{
-                                        folder:response.data.msg.folder,
-                                        name:response.data.msg.name,
-                                        format:file.format
-                                    });
-                                });
+                                createMediaMessage(file);
                                 
                             },true);
                         });
@@ -357,7 +350,31 @@ var Conversation = (function(_super,$,environment){
                         console.log("El módulo no existe o no está activado");
                     }
                 break;
+                case 'RECORD_VIDEO':
+                case 'RECORD_AUDIO':
+                case 'MAKE_PHOTO':
+                    if(managerModule.isExists("MEDIA_STREAM") && managerModule.isDeferred("MEDIA_STREAM")){
+                        //Solicitamos el módulo diferido indicado como parámetro.
+                        managerModule.getDefferedModule("MEDIA_STREAM",function(mediaStream){
+                            
+                            if(action == "RECORD_VIDEO" || action == "RECORD_AUDIO"){
+                                mediaStream.recordMedia(action);
+                                mediaStream.addEventListener("RECORD_SUCCESS",function(record){
+                                    createMediaMessage(record);
+                                },true);
+                                
+                            }else if(action == "MAKE_PHOTO"){
+                                //Cargamos la vista para hacer fotos desde la cámara web.
+                                mediaStream.makePhoto();
+                                //Implemetamos manejador para el evento de foto realizada.
+                                mediaStream.addEventListener("PHOTO_MAKED",function(photo){
+                                    createMediaMessage(photo);
+                                },true);
+                            }
 
+                        });
+                    }
+                    break;
                 case 'APPEND_RESOURCES':
                     var resources = sendMessage.getView("resources");
                     if (resources.isVisible()) {
@@ -727,30 +744,22 @@ var Conversation = (function(_super,$,environment){
             });
     }
 
+    var createMediaMessage = function(file){
+        serviceLocator.uploadFile(currentConv.id,file).done(function(response){
+            //Creamos el mensaje.
+            createMessage(file.type,{
+                folder:response.folder,
+                name:response.name,
+                format:file.format
+            });
+        });
+    }
+
     var showMessage = function(message){
         $.ionSound.play("acceptYourApplication");
         //Obtenemos referencia al cargador de datos para esta conversación.
         var loaderData = loaderManager.getLoader(message.idConv);
-
-        if (message.type.toUpperCase() == 'TEXT') {
-            var filter = loaderData.getFilter();
-            var pattern = new RegExp(filter,'im');
-            //comprobamos si el mensaje concuerda con el patrón actual.
-            if (message.text.match(pattern)) {
-                //Mostramos  el mensaje enviado.
-                createViewMessage(message,{
-                    direction:"desc",
-                    filter:filter
-                });
-                //Colocamos el scroll al final del contenedor.
-                var container = viewConversations.getView("conversationContainer");
-                //Colocamos el scroll en el último mensaje.
-                container.scrollToLast();
-                //Incrementamos la cantidad de datos.
-                loaderData.increaseAmount(1);
-            };
-
-        }else{
+        if (message.type.toUpperCase() != 'TEXT' || loaderData.matchToCurrentFilter(message.text)) {
             //Mostramos  el mensaje enviado.
             createViewMessage(message,{
                 direction:"desc"

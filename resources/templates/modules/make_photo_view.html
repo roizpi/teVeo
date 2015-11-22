@@ -1,0 +1,25 @@
+<div class='overlay' data-view="makePhoto" data-type='main'>
+	<div class='overlay-content overlay-content-large'>
+        <div class='overlay-content-header'>
+            <h3 class='title'>Sácate una foto !!!</h3>
+            <a href="#" data-action='close' class='close'><span class="fa fa-close"></span></a>
+        </div>
+		
+		<div class='overlay-content-body flex-block flex-direction-column'>
+            <div class='flex-block flex-block-x-full'>
+                <video class='video' data-view='stream' data-type='video' preload="false">
+                    Your browser does not support the video element.
+                </video>
+                <div data-view='photos' class='photos-container flex-block flex-content-wrap'>
+                    <div class='animateView photo' data-view='photo' data-type='template' data-animationin="fadeIn" data-animationout="fadeOut">
+                        <canvas data-view='canvas' width='200'></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="actions">
+                <a href="#" class="btn btn-normal btn-action" data-action='send_photo'>Aceptar</a>
+                <a href="#" class="btn btn-normal btn-action" data-action='drop_photos'>Borrar fotos</a>
+            </div>
+        </div>
+	</div>
+</div>

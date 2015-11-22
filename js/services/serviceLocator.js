@@ -16,13 +16,11 @@
             this.utils = utils;
             this.debug = debug;
             this.sessionManager = sessionManager;
-
         }
-
-
 
         //Método para resolver el servicio, en función de su tipo.
         var resolveService = function(service){
+            console.log(service);
             var promise = null;
             if (service.type == WEBSOCKET_SERVICE) {
                 promise = WebSocketResolverService.getInstance().resolve(service);
@@ -372,20 +370,20 @@
 
         ServiceLocator.prototype.uploadFile = function(idConv,file) {
 
-            //You need to use the FormData API and set the jQuery.ajax's processData and contentType to false.
-            var fd = new FormData();
-            fd.append('token',self.sessionManager.getToken());
-            fd.append('service',"UPLOAD_FILE");
-            fd.append('type',HTTP_SERVICE);
-            fd.append('encode',false);
-            fd.append('file',file.data);
-            fd.append('params',JSON.stringify({
-                idConv:idConv,
-                format:file.format
-            }));
+            return resolveService({
+                token:self.sessionManager.getToken(),
+                service:"UPLOAD_FILE",
+                type:HTTP_SERVICE,
+                encode:false,
+                format:"FORMDATA",
+                params:{
+                    idConv:idConv,
+                    format:file.format
+                },
+                file:file.data
+                
+            });
             
-            return resolveService(fd);
-
         }
 
         ServiceLocator.prototype.getForecast = function(data) {
@@ -775,9 +773,8 @@
 
         //Método para codificar en base64 parámetros de una petición.
         var encodeParams = function(params){
-    
             for(var param in params){
-                if (param[param] instanceof Object) {
+                if (params[param] instanceof Object) {
                     params[param] = encodeParams(params[param]);
                 }else{
                     //si es cadena la codificamos a base64
@@ -908,19 +905,34 @@
 
         HttpResolverService.prototype.resolve = function(data) {
             var promise = null;
-            if (data instanceof FormData) {
+            if (data['format'] && data['format'].toUpperCase() == "FORMDATA") {
+                //You need to use the FormData API and set the jQuery.ajax's processData and contentType to false.
+                var fd = new FormData();
+                for(var value in data){
+                    if ($.isPlainObject(data[value])) {
+                        data[value] = JSON.stringify(data[value]);
+                    };
+                    fd.append(value,data[value]);
+                }
+
                 promise = $.ajax({
                     type: 'POST',
                     url:URL,
-                    data: data,
+                    data: fd,
                     processData: false,
                     contentType: false
                 });
+
             }else{
                 promise = $.post(URL,data);
             }
+                
 
-            return promise;
+            return promise.pipe(function(response){
+                if(!response.data.error){
+                    return response.data.msg;
+                }
+            });
         }
 
         return{

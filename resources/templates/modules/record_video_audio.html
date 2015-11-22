@@ -1,0 +1,19 @@
+<div class='overlay' data-view="recordAudio" data-type='main'>
+	<div class='overlay-content overlay-content-large'>
+        <div class='overlay-content-header'>
+            <h3 class='title'>Grabar Audio</h3>
+            <a href="#" data-view='close' class='close'><span class="fa fa-close"></span></a>
+        </div>
+		<div class='overlay-content-body flex-block flex-direction-column'>
+            <h3 class="help  y-normal" data-view="help" data-type="text">La duración máxima del audio mensaje será de 2 minutos</h3>
+			<audio class='audio' data-view='stream' data-type='audio' preload="false">
+                Your browser does not support the video element.
+            </audio>
+            <div class="flex-block flex-block-x-medium" data-view='recordActions'>
+                <a href="#"  title="Pausar" data-action='pause' class="btn btn-medium btn-action btn-disabled"><span class='fa fa-pause'></span>&nbsp; Pausar</a>
+                <a href="#"  title="Grabar" data-action='record' class="btn  btn-medium btn-action"><span class='fa fa-play'></span>&nbsp; Grabar</a>
+                <a href="#"  title="Finalizar" data-action='finish' class="btn btn-medium  btn-action btn-disabled"><span class='fa fa-stop'></span>&nbsp; Finalizar</a>
+            </div>
+		</div>
+	</div>
+</div>

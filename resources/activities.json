@@ -63,7 +63,8 @@
 			"CONVERSATION",
 			"MOVIEDB",
 			"FILE_MANAGER",
-			"WEATHER"
+			"WEATHER",
+			"MEDIA_STREAM"
 		],
 		"templates":{
 			"gui":{

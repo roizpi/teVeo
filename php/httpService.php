@@ -4,7 +4,7 @@ error_reporting(0);
 require_once 'funciones.inc.php';
 require_once 'controllers/baseController.php';
 
-if (isset($_SERVER['HTTP_REFERER']) && preg_match("/^http\:\/\/localhost\/teveo/",$_SERVER['HTTP_REFERER']) ) {
+if (isset($_SERVER['HTTP_REFERER']) && preg_match("/^http\:\/\/localhost:3000\/teveo/",$_SERVER['HTTP_REFERER']) ) {
 
 	date_default_timezone_set('Europe/Madrid');
 	header('Content-Type: application/json');

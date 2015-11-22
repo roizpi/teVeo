@@ -122,6 +122,10 @@ var LoaderDataManager = (function(_super,$,environment){
 
 		};
 
+		LoaderData.prototype.matchToCurrentFilter = function(text) {
+			return !this.lastRequest.filterValue || text.match(new RegExp(this.lastRequest.filterValue,'im'));
+		};
+
 		LoaderData.prototype.resetTo = function(val) {
 			this.countData = val;
 		};

@@ -394,6 +394,14 @@ var View = (function(_super,$,environment){
 		return this;
 	};
 
+	View.prototype.addData = function(key,value) {
+		this.el.data(key,value);
+	};
+
+	View.prototype.getData = function(key) {
+		return this.el.data(key);
+	};
+
 	View.prototype.filterChild = function(pattern,remove) {
 		var matches = [];
 		var pattern = new RegExp("("+pattern+")","i");

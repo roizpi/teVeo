@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS MENSAJES_MULTIMEDIA(
           ON UPDATE CASCADE,
     folder      VARCHAR(60) NOT NULL,
     name        CHAR(22) NOT NULL,
-    format      ENUM('jpg', 'png', 'gif','jpeg','mp4','ogg','wav') NOT NULL DEFAULT 'png',
+    format      ENUM('jpg', 'png', 'gif','jpeg','mp4','ogg','wav','webm') NOT NULL DEFAULT 'png',
     legend      VARCHAR(30)
 )ENGINE=INNODB CHARSET=LATIN1 COMMENT="Tabla de Multimedia";
 

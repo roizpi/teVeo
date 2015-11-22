@@ -22,7 +22,8 @@ var Searchs = (function(_super,$,environment){
         this.notificator = notificator;
         this.geoLocation = geoLocation;
         userConnected = environment.getService("SESSION_MANAGER").getUser();
-
+        console.log("userConnected");
+        console.log(userConnected);
             
     }
 
